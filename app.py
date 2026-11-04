@@ -1,16 +1,29 @@
-import streamlit as st
-from modules.job_posts.page import render as job_postspage
-from modules.jd_match.page import render as jd_matchpage
-from modules.training_match.page import render as training_matchpage
-from modules.mypage.page import render as mypagepage
+from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
+from modules.auth.Signin import router as signin_router
+from modules.auth.Signup import router as signup_router
+from modules.job_posts.router import router as job_postsrouter
+from modules.jd_match.router import router as jd_matchrouter
+from modules.training_match.router import router as training_matchrouter
+from modules.mypage.Mypage import router as mypagerouter
 
-st.set_page_config(page_title="Career Compass")
+app = FastAPI(title="Career Compass")
+app.state.main_path = "/main"
 
-pages = {
-    "공고 조회": job_postspage,
-    "준비 상황 비교": jd_matchpage,
-    "교육 추천": training_matchpage,
-    "마이페이지": mypagepage,
-}
-selection = st.sidebar.radio("메뉴", list(pages))
-pages[selection]()
+app.include_router(signin_router)
+app.include_router(signup_router)
+app.include_router(job_postsrouter)
+app.include_router(jd_matchrouter)
+app.include_router(training_matchrouter)
+app.include_router(mypagerouter)
+
+
+@app.get("/")
+def root():
+    return RedirectResponse("/signin")
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="127.0.0.1", port=8000)
