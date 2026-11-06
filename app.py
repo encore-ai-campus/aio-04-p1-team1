@@ -8,6 +8,7 @@ from modules.auth.router import router as auth_router
 from modules.job_posts.router import router as job_postsrouter
 from modules.jd_match.router import router as jd_matchrouter
 from modules.training_match.router import router as training_matchrouter
+from modules.training_posts.router import router as training_postsrouter
 from modules.mypage.router import router as mypagerouter
 
 app = FastAPI(title="Career Compass")
@@ -20,6 +21,7 @@ app.include_router(auth_callback_router)
 app.include_router(job_postsrouter)
 app.include_router(jd_matchrouter)
 app.include_router(training_matchrouter)
+app.include_router(training_postsrouter)
 app.include_router(mypagerouter)
 
 
@@ -50,4 +52,4 @@ def root():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="127.0.0.1", port=8003)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
