@@ -8,7 +8,7 @@ from modules.auth.router import router as auth_router
 from modules.job_posts.router import router as job_postsrouter
 from modules.jd_match.router import router as jd_matchrouter
 from modules.training_match.router import router as training_matchrouter
-from modules.mypage.Mypage import router as mypagerouter
+from modules.mypage.router import router as mypagerouter
 
 app = FastAPI(title="Career Compass")
 app.state.main_path = "/main"

@@ -1,12 +1,9 @@
 from html import escape
 
-from fastapi import APIRouter, Request
+from fastapi import Request
 from fastapi.responses import HTMLResponse
 from shared.components.header import render_header
 from shared.components.menu import render_menu
-
-
-router = APIRouter(tags=["마이페이지"])
 
 
 def page_user(request):
@@ -31,29 +28,6 @@ def render_member_page(page, user):
     html = html.replace("__TITLE__", title).replace("__SUBTITLE__", subtitle)
     html = html.replace("__NAME__", escape(user["name"], quote=True)).replace("__EMAIL__", escape(user["email"], quote=True))
     return HTMLResponse(html)
-
-
-@router.get("/main", response_class=HTMLResponse, summary="임시 홈 화면")
-def main_page(request: Request):
-    return render_member_page("main", page_user(request))
-
-
-@router.get("/mypage", response_class=HTMLResponse, summary="마이페이지 홈")
-def mypage(request: Request):
-    user = page_user(request)
-    return render_member_page("home", user)
-
-
-@router.get("/mypage/bookmarks", response_class=HTMLResponse, summary="관심목록 페이지")
-def bookmarks_page(request: Request):
-    user = page_user(request)
-    return render_member_page("bookmarks", user)
-
-
-@router.get("/mypage/profile", response_class=HTMLResponse, summary="내 정보 페이지")
-def profile_page(request: Request):
-    user = page_user(request)
-    return render_member_page("profile", user)
 
 
 TEMPLATE = r'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>__TITLE__ · 취준나침반</title>
