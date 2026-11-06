@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
-from modules.jd_match.page import render_match_page
+from modules.jd_match.router import render_match_page
 
 router = APIRouter(prefix="/job_posts", tags=["job_posts"])
 
