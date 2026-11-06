@@ -7,7 +7,6 @@ from modules.auth.router import callback_router as auth_callback_router
 from modules.auth.router import router as auth_router
 from modules.job_posts.router import router as job_postsrouter
 from modules.jd_match.router import router as jd_matchrouter
-from modules.training_match.router import router as training_matchrouter
 from modules.training_posts.router import router as training_postsrouter
 from modules.mypage.router import router as mypagerouter
 
@@ -20,7 +19,6 @@ app.include_router(auth_router)
 app.include_router(auth_callback_router)
 app.include_router(job_postsrouter)
 app.include_router(jd_matchrouter)
-app.include_router(training_matchrouter)
 app.include_router(training_postsrouter)
 app.include_router(mypagerouter)
 
