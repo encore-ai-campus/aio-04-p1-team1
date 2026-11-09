@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+.venv/
+.venv-local/
+__pycache__/
+.pytest_cache/
+.runtime/
+*.py[cod]
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
