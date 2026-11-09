@@ -1,4 +1,5 @@
-fastapi
+fastapi[standard]
 uvicorn
 psycopg[binary]
 python-dotenv
+httpx

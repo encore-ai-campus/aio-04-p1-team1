@@ -47,14 +47,14 @@
                 </span>
               </span>
               <div>
-                <div class="company-name">
+                <div id="company-name" class="company-name">
                   나침테크
                 </div>
-                <div class="company-note">
+                <div id="company-note" class="company-note">
                   IT·플랫폼 · 예시 기업
                 </div>
               </div>
-              <span class="deadline">
+              <span id="deadline" class="deadline">
                 상시채용
               </span>
             </div>
@@ -63,7 +63,7 @@
               <br>
               주니어 데이터 분석가
             </h2>
-            <div class="tags">
+            <div id="job-tags" class="tags">
               <span class="tag">
                 서울 · 성수
               </span>
@@ -83,12 +83,12 @@
               <h3>
                 함께할 일을 소개해요
               </h3>
-              <p class="description">
+              <p id="position-detail" class="description">
                 흩어진 데이터에서 의미 있는 흐름을 발견하고,
                 <br>
                 팀이 더 나은 결정을 내릴 수 있도록 돕습니다.
               </p>
-              <ul style="margin-top:16px">
+              <ul id="main-tasks" style="margin-top:16px">
                 <li>
                   서비스 주요 지표 분석 및 인사이트 도출
                 </li>
@@ -108,7 +108,7 @@
                 <h3>
                   이런 역량이 필요해요
                 </h3>
-                <ul>
+                <ul id="qualifications">
                   <li>
                     Python 기반 데이터 분석
                   </li>
@@ -127,7 +127,7 @@
                 <h3>
                   이런 경험이면 더 좋아요
                 </h3>
-                <ul>
+                <ul id="preferred-qualifications">
                   <li>
                     AWS 환경 사용 경험
                   </li>
@@ -140,8 +140,8 @@
                 </ul>
               </section>
             </div>
-            <p class="job-foot">
-              이 화면의 공고와 이력은 UI 확인을 위한 가상 예시입니다.
+            <p id="job-foot" class="job-foot">
+              실제 Supabase 공고 데이터를 불러오는 중입니다.
             </p>
           </div>
         </article>
@@ -151,15 +151,15 @@
               <h2>
                 나와 공고의 연결점
               </h2>
-              <span class="live-dot">
+              <span id="score-source" class="live-dot">
                 예시 이력 기준
               </span>
             </div>
             <div class="score-content">
-              <div class="score-ring" role="img" aria-label="예시 역량 일치율 67퍼센트">
+              <div id="score-ring" class="score-ring" role="img" aria-label="역량 일치율을 불러오는 중">
                 <div class="score-center">
-                  <span class="score-number">
-                    67
+                  <span id="score-number" class="score-number">
+                    -
                     <small>
                       %
                     </small>
@@ -170,12 +170,12 @@
                 </div>
               </div>
               <div class="score-copy">
-                <h3>
+                <h3 id="score-summary">
                   6개 역량 중
                   <br>
                   4개가 연결돼요
                 </h3>
-                <p>
+                <p id="score-description">
                   이미 갖춘 강점은 살리고,
                   <br>
                   부족한 두 가지를 채워 보세요.
@@ -866,5 +866,54 @@ footer  {
   }
 }
     </style>
+    <script>
+      (() => {
+        const pathParts = window.location.pathname.split("/").filter(Boolean);
+        const jobId = pathParts[pathParts.length - 1];
+        const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+        if (!uuidPattern.test(jobId)) return;
+
+        const text = (value, fallback = "-") => value || fallback;
+        const list = (value) => {
+          const items = (value || "").split(/\r?\n|•/).map(item => item.trim()).filter(Boolean);
+          return items.length ? items.map(item => `<li>${item}</li>`).join("") : "<li>등록된 내용이 없습니다.</li>";
+        };
+
+        const fetchJson = url => fetch(url).then(response => {
+          if (!response.ok) throw new Error(url.includes("/score") ? "적합도 분석에 실패했습니다." : "공고를 찾을 수 없습니다.");
+          return response.json();
+        });
+
+        Promise.all([
+          fetchJson(`/jd_match/job-postings/${jobId}`),
+          fetchJson(`/jd_match/job-postings/${jobId}/score`)
+        ])
+          .then(([job, score]) => {
+            document.querySelector("#company-name").textContent = text(job.company_name);
+            document.querySelector("#company-note").textContent = text(job.address || job.region_id);
+            document.querySelector("#deadline").textContent = text(job.deadline_date || job.deadline_type);
+            document.querySelector("#job-title").textContent = text(job.title);
+            document.querySelector("#job-tags").innerHTML = [job.region_id, job.career_type, job.employment_type]
+              .filter(Boolean).map(item => `<span class="tag">${item}</span>`).join("");
+            document.querySelector("#position-detail").textContent = text(job.position_detail);
+            document.querySelector("#main-tasks").innerHTML = list(job.main_tasks);
+            document.querySelector("#qualifications").innerHTML = list(job.qualifications);
+            document.querySelector("#preferred-qualifications").innerHTML = list(job.preferred_qualifications);
+            document.querySelector("#job-foot").textContent = "Supabase에 저장된 실제 공고 데이터입니다.";
+            const percent = Number(score.score_percent || 0);
+            document.querySelector("#score-number").innerHTML = `${percent}<small>%</small>`;
+            document.querySelector("#score-ring").style.background =
+              `conic-gradient(var(--green) 0 ${percent * 3.6}deg, #e5dfc4 ${percent * 3.6}deg 360deg)`;
+            document.querySelector("#score-ring").setAttribute("aria-label", `역량 일치율 ${percent}%`);
+            document.querySelector("#score-source").textContent = "JEV 분석 결과";
+            document.querySelector("#score-summary").innerHTML = `JEV 분석 결과<br>${percent}% 적합해요`;
+            document.querySelector("#score-description").textContent = "공고의 자격요건과 우대사항을 내 프로필과 비교한 결과입니다.";
+          })
+          .catch(error => {
+            document.querySelector("#job-foot").textContent = error.message;
+          });
+      })();
+    </script>
   </body>
 </html>

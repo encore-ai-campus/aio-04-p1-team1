@@ -34,7 +34,7 @@ def signup(body: SignupRequest):
 
 @router.post("/signin", response_model=User, summary="로그인")
 def signin(body: SigninRequest, request: Request, response: Response):
-    return authenticate(body, request, response)
+    return authenticate(body, request)
 
 
 @router.get("/me", response_model=User, summary="현재 로그인한 회원")
