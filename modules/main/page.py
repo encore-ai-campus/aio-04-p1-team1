@@ -3,10 +3,12 @@
 from html import escape
 
 from fastapi.responses import HTMLResponse
+from modules.main.member_shell import apply_member_shell
 
 
 def render_main(user):
-    return HTMLResponse(PAGE.replace('__MEMBER_NAME__', escape(str(user['name']), quote=True)))
+    html = PAGE.replace('__MEMBER_NAME__', escape(str(user['name']), quote=True))
+    return HTMLResponse(apply_member_shell(html, user, 'main'))
 
 
 PAGE = r'''<!doctype html>
@@ -29,9 +31,10 @@ PAGE = r'''<!doctype html>
 @media(max-width:820px){.site-header{height:73px}.header-inner{padding:0 20px}.header-left{gap:13px}.brand{font-size:20px;gap:9px}.brand-mark{width:35px;height:35px}.welcome-name{display:none}.header-right{gap:0}.mypage-button{font-size:11px;padding:9px 13px}.page{padding:26px 20px 0}.greeting{margin-bottom:22px}.greeting h1{font-size:25px}.greeting>p:last-child{font-size:12px}.dashboard-grid{display:flex;flex-direction:column;gap:21px}.hero{width:100%;order:1;min-height:330px}.hero h2{font-size:31px}.hero-actions .action-button{font-size:14px;padding:14px 18px}.sidebar{display:contents}.profile-card{order:2;width:100%}.profile-fields{grid-template-columns:1fr 1fr 1fr;gap:20px}.profile-card .card-title{margin-bottom:14px}.manage-profile{justify-content:flex-start;gap:12px;margin-top:17px}.summary-stack{order:3;width:100%;grid-template-columns:1fr 1fr;gap:12px}.summary-card{padding:15px}.jobs-section{order:4;width:100%}.chat-card{order:5;width:100%;padding:22px}.chat-bubble{max-width:460px}.chat-form{max-width:100%}.site-footer{font-size:9px;padding:19px 0;flex-wrap:wrap}.site-footer span:last-child{display:none}}
 @media(max-width:520px){.header-inner{padding:0 16px}.header-left{gap:10px}.brand{font-size:18px}.brand-mark{width:31px;height:31px}.icon-button{width:36px;height:36px;border-radius:9px}.mypage-button{padding:8px 10px;font-size:10px}.page{padding:24px 16px 0}.greeting h1{font-size:23px;line-height:1.55;word-break:keep-all}.greeting>p:last-child{line-height:1.9;word-break:keep-all}.eyebrow{font-size:9px}.hero{padding:27px 17px;min-height:335px;border-radius:19px}.hero h2{font-size:27px;letter-spacing:-1.2px}.hero-description{font-size:11px;max-width:260px;word-break:keep-all}.hero-actions{gap:9px}.hero-actions .action-button{font-size:11px;min-height:52px;padding:12px 9px;gap:7px;flex:1;max-width:none;width:auto}.hero-actions .icon{width:15px;height:15px}.hero-role{font-size:10px}.profile-fields{grid-template-columns:1fr;gap:11px}.profile-field{display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px;align-items:start}.profile-field dt{padding-top:3px;margin:0}.profile-field dd.role-value{font-size:13px}.card-title{font-size:16px}.summary-stack{gap:10px}.summary-card{padding:14px 12px;gap:8px;flex-wrap:wrap;min-height:104px}.summary-icon{width:27px;height:27px;border-radius:8px}.summary-icon .icon{width:16px;height:16px}.summary-copy h3{font-size:11px}.summary-copy p{font-size:9px}.summary-value{margin-left:auto;font-size:22px}.summary-value.pending{font-size:10px}.job-grid{grid-template-columns:1fr;gap:13px}.job-card{padding:19px 20px 15px}.job-card h3{font-size:16px}.company,.job-meta{font-size:11px}.section-heading h2{font-size:19px}.section-note{font-size:9px}.all-jobs{font-size:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+__CC_CSS__
 </style>
 </head>
-<body>
+<body class="cc-member-page">
 <a class="skip" href="#main-content">본문 바로가기</a>
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" style="position:absolute;overflow:hidden"><defs>
 <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
@@ -47,30 +50,18 @@ PAGE = r'''<!doctype html>
 <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 20V4m-6 6 6-6 6 6"/></symbol>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
 </defs></svg>
-<header class="site-header"><div class="header-inner"><div class="header-left">
-<button class="icon-button" id="menu-toggle" type="button" aria-label="메뉴 열기" aria-controls="main-menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg></button>
-<a class="brand" href="/main" aria-label="취준나침반 메인"><svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="21" fill="#f7ca43"/><path d="m31 10-5 16-13 8 5-16Z" fill="#263127"/><path d="m31 10-9 12-4-4Z" fill="#fffaf0"/></svg><span>취준나침반</span></a>
-</div><div class="header-right"><span class="welcome-name">__MEMBER_NAME__님</span><a class="mypage-button" href="/mypage">마이페이지</a></div></div></header>
-<div class="drawer-backdrop" id="menu-backdrop" hidden></div>
-<aside class="nav-drawer" id="main-menu" inert aria-label="주 메뉴">
-<div class="drawer-heading"><span class="drawer-title">나의 취준나침반</span><button id="menu-close" class="icon-button" type="button" aria-label="메뉴 닫기"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></div>
-<p class="drawer-label">YOUR NEXT DIRECTION</p><nav class="menu-list" aria-label="서비스 메뉴">
-<a class="menu-item current" href="/main" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg>메인</a>
-<a class="menu-item" href="/jd_match"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg>적합도 분석</a>
-<button class="menu-item" type="button" data-pending="training"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg>교육추천<span class="soon">준비 중</span></button>
-<button class="menu-item" type="button" data-pending="jobs"><svg class="icon" aria-hidden="true"><use href="#i-case"/></svg>공고모음<span class="soon">준비 중</span></button>
-<button class="menu-item" type="button" data-pending="courses"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>교육모음<span class="soon">준비 중</span></button>
-</nav><p class="drawer-note">각자의 속도로,<br>더 선명한 내일을 향해.</p></aside>
-<main class="page" id="main-content" tabindex="-1">
-<section class="greeting" aria-labelledby="greeting-title"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1 id="greeting-title">__MEMBER_NAME__님, 오늘의 다음 기회를 찾아볼까요?</h1><p>내 프로필을 바탕으로 나에게 맞는 공고와 다음 준비를 이어가요.</p></section>
+__CC_HEADER__
+__CC_MENU__
+<main class="page cc-page" data-member-content id="main-content" tabindex="-1">
+<section class="greeting cc-page-heading" aria-labelledby="greeting-title"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1 id="greeting-title">__MEMBER_NAME__님, 오늘의 다음 기회를 찾아볼까요?</h1><p>내 프로필을 바탕으로 나에게 맞는 공고와 다음 준비를 이어가요.</p></section>
 <div class="dashboard-grid">
-<section class="hero" aria-labelledby="hero-title"><p class="hero-label">나만의 취업 준비 대시보드</p><h2 id="hero-title">내 프로필에 맞는 공고,<br>필요한 배움까지</h2><p class="hero-description">지금까지 쌓아온 경험에서 가능성을 발견하고,<br>나에게 필요한 다음 한 걸음을 찾아보세요.</p><p class="hero-role" id="hero-role">나의 프로필을 확인하고 있어요.</p><div class="hero-actions"><a class="action-button primary" href="/jd_match">적합도 분석하기<svg class="icon" aria-hidden="true"><use href="#i-up-right"/></svg></a><button type="button" class="action-button secondary" data-pending="training">교육 추천받기<svg class="icon" aria-hidden="true"><use href="#i-up-right"/></svg></button></div></section>
+<section class="hero" aria-labelledby="hero-title"><p class="hero-label">나만의 취업 준비 대시보드</p><h2 id="hero-title">내 프로필에 맞는 공고,<br>필요한 배움까지</h2><p class="hero-description">지금까지 쌓아온 경험에서 가능성을 발견하고,<br>나에게 필요한 다음 한 걸음을 찾아보세요.</p><p class="hero-role" id="hero-role">나의 프로필을 확인하고 있어요.</p><div class="hero-actions"><a class="action-button primary" href="/jd_match">적합도 분석하기<svg class="icon" aria-hidden="true"><use href="#i-up-right"/></svg></a><button type="button" class="action-button secondary" data-cc-pending="training">교육 추천받기<svg class="icon" aria-hidden="true"><use href="#i-up-right"/></svg></button></div></section>
 <aside class="sidebar" aria-label="내 준비 현황">
 <section class="card profile-card" aria-labelledby="profile-title"><h2 class="card-title" id="profile-title"><span class="title-icon"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg></span>나의 준비 프로필</h2><dl class="profile-fields"><div class="profile-field"><dt>희망 직무</dt><dd class="role-value" id="profile-role">불러오는 중…</dd></div><div class="profile-field"><dt>자격증</dt><dd id="profile-certificates">불러오는 중…</dd></div><div class="profile-field"><dt>교육이수</dt><dd id="profile-courses">불러오는 중…</dd></div></dl><a class="manage-profile" href="/mypage#profile-overview">마이페이지에서 프로필 관리하기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a><p class="profile-note" id="profile-note" role="status" aria-live="polite"></p><button class="text-button" type="button" id="profile-retry" hidden>프로필 다시 불러오기</button></section>
 <div class="summary-stack"><a class="card summary-card" href="#today-jobs"><span class="summary-icon"><svg class="icon" aria-hidden="true"><use href="#i-case"/></svg></span><div class="summary-copy"><h3>추천 공고</h3><p>맞춤 공고를 준비 중이에요</p></div><span class="summary-value pending">준비 중</span></a><a class="card summary-card" href="/mypage#bookmarks"><span class="summary-icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span><div class="summary-copy"><h3>관심목록</h3><p id="saved-detail">저장한 정보를 불러오는 중이에요</p></div><span class="summary-value" id="saved-total">—</span></a></div>
 <section class="card chat-card" aria-labelledby="chat-title"><div class="chat-heading"><span class="title-icon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span><h2 id="chat-title">취준나침반 챗봇</h2><span class="pending-tag">준비 중</span></div><p class="chat-bubble">안녕하세요!<br>어떤 직무와 기회를 찾고 계신가요?</p><div class="chat-shortcuts"><a class="shortcut" href="#today-jobs">공고 살펴보기</a><a class="shortcut" href="/jd_match">적합도 분석</a></div><form class="chat-form" id="chat-form"><label class="sr-only" for="chat-input">챗봇 질문</label><input id="chat-input" name="message" placeholder="궁금한 내용을 입력해 주세요" maxlength="500" autocomplete="off" aria-describedby="chat-message"><button class="send-button" type="submit" aria-label="질문 보내기"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg></button></form><p class="chat-message" id="chat-message" role="status" aria-live="polite">챗봇 상담 기능은 준비 중이에요.</p></section>
 </aside>
-<section class="jobs-section" id="today-jobs" aria-labelledby="jobs-title"><div class="section-heading"><h2 id="jobs-title">오늘 살펴볼 공고</h2><button class="all-jobs" type="button" data-pending="jobs">공고 전체 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div><p class="section-note">화면 구성 확인을 위한 예시 공고예요. 실제 채용 정보와는 달라요.</p><div class="job-grid">
+<section class="jobs-section" id="today-jobs" aria-labelledby="jobs-title"><div class="section-heading"><h2 id="jobs-title">오늘 살펴볼 공고</h2><button class="all-jobs" type="button" data-cc-pending="jobs">공고 전체 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div><p class="section-note">화면 구성 확인을 위한 예시 공고예요. 실제 채용 정보와는 달라요.</p><div class="job-grid">
 <article class="job-card"><div class="job-top"><span class="job-tag">예시 공고</span><button class="bookmark-placeholder" disabled aria-label="예시 공고는 저장할 수 없습니다" title="실제 공고가 연결되면 저장할 수 있어요"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button></div><p class="company">나침데이터 · 예시 기업</p><h3>주니어 데이터 분석가</h3><p class="job-meta">서울 성동구 · 신입 · 정규직</p><div class="job-bottom"><span>화면 확인용</span><button class="job-detail" type="button" data-job="0">상세 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div></article>
 <article class="job-card"><div class="job-top"><span class="job-tag">예시 공고</span><button class="bookmark-placeholder" disabled aria-label="예시 공고는 저장할 수 없습니다" title="실제 공고가 연결되면 저장할 수 있어요"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button></div><p class="company">온길테크 · 예시 기업</p><h3>Python 백엔드 개발자</h3><p class="job-meta">서울 강남구 · 신입·경력 · 정규직</p><div class="job-bottom"><span>화면 확인용</span><button class="job-detail" type="button" data-job="1">상세 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div></article>
 <article class="job-card"><div class="job-top"><span class="job-tag">예시 공고</span><button class="bookmark-placeholder" disabled aria-label="예시 공고는 저장할 수 없습니다" title="실제 공고가 연결되면 저장할 수 있어요"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button></div><p class="company">모아서비스 · 예시 기업</p><h3>함께 성장할 서비스 기획자</h3><p class="job-meta">경기 성남시 · 신입 · 정규직</p><div class="job-bottom"><span>화면 확인용</span><button class="job-detail" type="button" data-job="2">상세 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div></article>
@@ -83,13 +74,8 @@ PAGE = r'''<!doctype html>
 <script>
 (()=>{
  'use strict';
- const byId=id=>document.getElementById(id),drawer=byId('main-menu'),toggle=byId('menu-toggle'),backdrop=byId('menu-backdrop'),notice=byId('notice');
- function setMenu(open){drawer.classList.toggle('open',open);drawer.inert=!open;toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'메뉴 닫기':'메뉴 열기');backdrop.hidden=!open;document.body.classList.toggle('menu-open',open);document.querySelector('.site-header').inert=open;document.querySelector('main').inert=open;if(open)requestAnimationFrame(()=>{if(drawer.classList.contains('open'))byId('menu-close').focus();});else toggle.focus();}
- toggle.addEventListener('click',()=>setMenu(!drawer.classList.contains('open')));byId('menu-close').addEventListener('click',()=>setMenu(false));backdrop.addEventListener('click',()=>setMenu(false));
- document.addEventListener('keydown',event=>{if(!drawer.classList.contains('open'))return;if(event.key==='Escape'){event.preventDefault();setMenu(false);}if(event.key==='Tab'){const items=[...drawer.querySelectorAll('a[href],button:not([disabled])')],first=items[0],last=items[items.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}});
- function showNotice(title,body){if(drawer.classList.contains('open'))setMenu(false);byId('notice-title').textContent=title;byId('notice-body').textContent=body;notice.showModal();}
- const pending={training:['나에게 필요한 배움을 준비하고 있어요','교육 추천 기능은 준비 중이에요.\n마이페이지에 자격증과 교육 경험을 정리해 두세요.'],jobs:['더 많은 기회를 모으고 있어요','공고모음은 준비 중이에요.\n지금은 메인 화면의 예시 공고와 관심목록을 확인할 수 있어요.'],courses:['새로운 배움을 모으고 있어요','교육모음은 준비 중이에요.\n나의 교육 경험은 마이페이지에서 등록하고 관리할 수 있어요.']};
- document.querySelectorAll('[data-pending]').forEach(button=>button.addEventListener('click',()=>showNotice(...pending[button.dataset.pending])));
+ const byId=id=>document.getElementById(id),notice=byId('notice');
+ function showNotice(title,body){byId('notice-title').textContent=title;byId('notice-body').textContent=body;notice.showModal();}
  const exampleJobs=[['주니어 데이터 분석가','나침데이터 · 서울 성동구 · 신입 · 정규직'],['Python 백엔드 개발자','온길테크 · 서울 강남구 · 신입·경력 · 정규직'],['함께 성장할 서비스 기획자','모아서비스 · 경기 성남시 · 신입 · 정규직'],['데이터 기반 마케팅 담당자','그린인사이트 · 서울 마포구 · 신입 · 정규직']];
  document.querySelectorAll('[data-job]').forEach(button=>button.addEventListener('click',()=>{const [title,meta]=exampleJobs[Number(button.dataset.job)];showNotice(title,meta+'\n\n화면 구성을 확인하기 위한 예시 공고예요. 실제 채용 정보가 연결되면 자세한 내용과 원문을 확인할 수 있어요.');}));
  byId('chat-form').addEventListener('submit',event=>{event.preventDefault();const input=byId('chat-input');if(!input.value.trim()){input.focus();return;}byId('chat-message').textContent='챗봇 상담은 아직 준비 중이에요. 먼저 공고를 살펴보거나 적합도 분석을 이용해 주세요.';});
@@ -100,4 +86,5 @@ PAGE = r'''<!doctype html>
  byId('profile-retry').addEventListener('click',loadProfile);loadProfile();loadBookmarks();
 })();
 </script>
+__CC_SCRIPT__
 </body></html>'''

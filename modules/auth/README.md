@@ -49,3 +49,12 @@ python -m pip install -r modules/auth/requirements.txt
 - `signup_guard.py`는 회원 정보를 쓰지 않으며 트랜잭션은 종료 시 롤백합니다. 테이블·정책·권한은 변경하지 않습니다.
 - TLS 인증서는 `supabase-ca.crt`와 신뢰 루트로 검증하며 `SUPABASE_DB_CA_FILE`로 인증서 경로를 지정할 수도 있습니다.
 - 이 차단은 앱의 회원가입 경로에 적용됩니다. 별도 인증메일 재발송 기능은 제공하지 않습니다.
+
+## 회원 탈퇴 준비 기능
+
+- 내 정보의 기본 정보 화면에서 저장 버튼 옆 `탈퇴하기`로 비밀번호 확인 창을 엽니다.
+- `POST /api/auth/withdrawal`은 로그인한 회원의 비밀번호와 확인값을 받아 Supabase Auth에서 재검증합니다. 이메일과 회원 ID는 클라이언트 입력을 받지 않습니다.
+- 확인용으로 발급받은 임시 인증 세션은 `scope=local`로 종료합니다. 기존 브라우저 로그인은 유지합니다. 비밀번호와 토큰은 응답·DB·로그에 저장하지 않습니다.
+- 현재는 `withdrawal_completed: false`와 준비 중 안내를 반환합니다. 계정과 서비스 데이터 삭제, 로그아웃 처리는 수행하지 않습니다.
+- 테이블과 탈퇴 정책 확정 후 `modules/auth/withdrawal_service.py`의 `complete_withdrawal(user_id)`에 데이터 정리와 Supabase Auth 계정 삭제를 연결합니다. 전체 처리가 실제 완료된 경우에만 `True`를 반환합니다.
+- 실제 완료 시에만 API가 인증 쿠키를 지우고 로그인 화면으로 이동합니다. 비밀번호 확인을 우회하는 별도 탈퇴 API는 제공하지 않습니다.

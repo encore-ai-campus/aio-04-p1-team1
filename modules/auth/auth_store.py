@@ -13,6 +13,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from shared.auth_dependencies import User
 from modules.auth.signup_guard import DUPLICATE_EMAIL_MESSAGE, signup_guard
+from modules.auth import withdrawal_service
 
 LEGACY_COOKIE_NAME = "compass_supabase_session"
 ACCESS_COOKIE_NAME = "compass_supabase_access"
@@ -253,6 +254,32 @@ def update_profile(body: ProfileUpdate, request: Request):
     if not rows or rows[0]["id"] != user["id"]:
         failure(503, "이름을 수정하지 못했습니다. 접근 권한을 확인해 주세요.")
     return {**user, "name": rows[0]["name"]}
+
+
+class WithdrawalRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    password: str = Field(min_length=1, max_length=128, repr=False)
+    password_confirm: str = Field(min_length=1, max_length=128, repr=False)
+
+    @model_validator(mode="after")
+    def matching_passwords(self):
+        if self.password != self.password_confirm:
+            raise ValueError("비밀번호 확인이 일치하지 않습니다.")
+        return self
+
+
+@api.post("/withdrawal", summary="회원 탈퇴 전 비밀번호 확인 및 처리")
+def request_withdrawal(body: WithdrawalRequest, request: Request):
+    user, _ = authenticated(request)
+    withdrawal_service.verify_password(user, body.password, supabase_request)
+    if withdrawal_service.complete_withdrawal(str(user["id"])) is True:
+        request.state.clear_auth_cookies = True
+        return {"password_verified": True, "withdrawal_completed": True, "message": "회원 탈퇴가 완료되었습니다."}
+    return {
+        "password_verified": True,
+        "withdrawal_completed": False,
+        "message": "비밀번호 확인이 완료되었습니다. 탈퇴 기능은 준비 중이며 계정과 데이터는 삭제되지 않았습니다.",
+    }
 
 
 def create_app(title):
