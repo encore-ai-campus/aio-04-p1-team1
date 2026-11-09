@@ -29,7 +29,7 @@ def render_member_page(page, user):
               "profile": ("나를 소개하는 기본 정보", "내 정보")}
     subtitle, title = titles[page]
     if page == "main":
-        content = '''<section class="panel placeholder"><span class="badge">메인 연결 확인용</span><h2>반가워요, __NAME__님.</h2><p>이 영역은 팀원이 구현한 메인 화면으로 교체할 예정입니다.<br>위쪽 마이페이지 버튼으로 회원 기능을 확인할 수 있어요.</p><a class="button primary" href="/mypage">마이페이지로 이동 →</a></section>'''
+        content = '''<section class="panel placeholder"><span class="badge">메인 연결 확인용</span><h2>반가워요, __NAME__님.</h2><p>이 영역은 팀원이 구현한 메인 화면으로 교체할 예정입니다.<br>위쪽 마이페이지 버튼으로 회원 기능을 확인할 수 있어요.</p><a class="button primary" href="/mypage">마이페이지로 이동 →</a> <a class="button" href="/training_posts">교육목록 보기 →</a> <a class="button" href="/training_match">AI 교육추천 →</a></section>'''
     elif page == "profile":
         content = '''<section class="panel profile"><h2>기본 정보</h2><p class="muted">계정에 등록된 정보를 확인하고 이름을 수정할 수 있어요.</p><form id="profile-form"><label for="profile-name">이름</label><input id="profile-name" name="name" minlength="2" maxlength="30" value="__NAME__" required><label for="profile-email">이메일</label><input id="profile-email" type="email" value="__EMAIL__" readonly><p class="hint">가입 이메일은 이 화면에서 변경할 수 없어요.</p><button class="button primary" id="profile-save" type="submit">변경 내용 저장</button></form><p id="profile-message" role="status" aria-live="polite"></p></section>'''
     else:

@@ -3,12 +3,10 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse
-from psycopg import Connection
 
 # from modules.jd_match.model import TestSejo
 # from modules.jd_match.service import get_test_rows
 from shared.components.header import render_header
-from shared.database import get_db
 
 router = APIRouter(prefix="/jd_match", tags=["jd_match"])
 TEMPLATE_PATH = Path(__file__).with_name("templates") / "match.html"

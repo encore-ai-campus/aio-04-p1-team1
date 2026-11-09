@@ -3,3 +3,4 @@ uvicorn
 psycopg[binary]
 python-dotenv
 httpx
+pg8000==1.31.6
