@@ -1,0 +1,33 @@
+취준나침반 공통 컴포넌트
+
+기존 앱 파일을 수정하지 않고 추가한 공유용 파일입니다.
+compass-preview.html을 직접 열어 헤더/메뉴/글꼴을 확인하세요.
+
+compass-header.html : 헤더 조각 (이름/현재 메뉴는 렌더러가 채움)
+compass-sidebar.html : 접이식 메뉴와 준비 중 안내창
+compass.css : 공통 색상 변수, 규격, 글꼴 (브랜드 600 / 그 외 400)
+compass.js : 기존 메뉴 동작/준비 중 안내/로그아웃 UI 동작
+A2Z-Regular.woff2 : 제공받은 에이투지체 4Regular
+A2Z-SemiBold.woff2 : 제공받은 에이투지체 6SemiBold
+compass.py : Python HTML 문자열에서 공통 파일을 사용하는 함수
+
+Python 사용 예시 (기존 코드에 자동 적용하지 않았습니다):
+from shared.components.compass import apply_member_shell
+
+html = """<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>__CC_CSS__</style></head><body class="cc-member-page">
+__CC_HEADER____CC_MENU__
+<main class="cc-page" data-member-content>페이지별 본문</main>
+__CC_SCRIPT__</body></html>"""
+html = apply_member_shell(html, authenticated_user, current="main")
+# current="mypage"이면 마이페이지가 현재 메뉴로 표시됩니다.
+# authenticated_user는 서버에서 인증한 사용자(dict, name 포함)를 전달합니다.
+
+이 렌더러는 CSS/JS/글꼴을 HTML에 포함하므로 app.py에 static 연결을 추가할 필요가 없습니다.
+HTML 조각만 직접 열면 완성된 화면이 아니므로 미리보기 파일을 여세요.
+JS는 기존 /api/auth/signout 엔드포인트를 호출합니다. 인증 API 자체는 변경하지 않습니다.
+기존 member_shell.py와 동시에 중복 적용하지 마세요. 사용할 페이지에서 공통 함수로 연결해야 합니다.
+페이지별 기존 CSS에 별도 font나 font-weight 선언이 있으면 공통 글꼴 적용 여부를 확인하세요.
+실제 로그인/회원가입/마이페이지에 자동 적용하지 않았습니다.
+글꼴 사용/재배포 조건은 제공받은 원본 글꼴 배포처의 라이선스를 따릅니다.
