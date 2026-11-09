@@ -1,26 +1,17 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from fastapi import Request
+from fastapi.responses import HTMLResponse, RedirectResponse
 
-from modules.mypage.Mypage import page_user, render_member_page
+from modules.mypage.Mypage import page_user, render_member_page, router
 
-router = APIRouter(tags=["마이페이지"])
+from modules.mypage import bookmarks_api, resume_api
 
+# 마이페이지 화면과 관련 API를 하나의 상위 라우터로 묶습니다.
+router.include_router(bookmarks_api.router)
+router.include_router(resume_api.router)
 
-@router.get("/main", response_class=HTMLResponse, summary="임시 홈 화면")
+@router.get("/main", response_class=HTMLResponse, tags=["연결 확인"], summary="팀원 메인 화면 연결 전 임시 화면")
 def main_page(request: Request):
-    return render_member_page("main", page_user(request))
-
-
-@router.get("/mypage", response_class=HTMLResponse, summary="마이페이지 홈")
-def mypage(request: Request):
-    return render_member_page("home", page_user(request))
-
-
-@router.get("/mypage/bookmarks", response_class=HTMLResponse, summary="관심목록 페이지")
-def bookmarks_page(request: Request):
-    return render_member_page("bookmarks", page_user(request))
-
-
-@router.get("/mypage/profile", response_class=HTMLResponse, summary="내 정보 페이지")
-def profile_page(request: Request):
-    return render_member_page("profile", page_user(request))
+    user = page_user(request)
+    if isinstance(user, RedirectResponse):
+        return user
+    return render_member_page("main", user)

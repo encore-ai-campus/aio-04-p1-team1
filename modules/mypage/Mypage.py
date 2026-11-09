@@ -8,6 +8,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from modules.auth import auth_store
 from modules.mypage.bookmarks_ui import CONTENT as BOOKMARKS_CONTENT, SCRIPT as BOOKMARKS_SCRIPT
 
+router = APIRouter(tags=["마이페이지"])
+
 def page_user(request):
     try:
         return auth_store.me(request)
