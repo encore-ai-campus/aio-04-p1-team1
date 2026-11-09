@@ -4,7 +4,6 @@ from contextlib import asynccontextmanager
 import os
 import re
 from urllib.parse import urlparse
-from uuid import UUID
 
 import httpx
 
@@ -12,6 +11,7 @@ from fastapi import APIRouter, FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from shared.auth_dependencies import User
 
 LEGACY_COOKIE_NAME = "compass_supabase_session"
 ACCESS_COOKIE_NAME = "compass_supabase_access"
@@ -80,12 +80,6 @@ def verified_session(request):
     request.state.auth_cookie_update = session
     request.state.verified_auth = (user, session["access_token"])
     return user, session["access_token"]
-
-
-class User(BaseModel):
-    id: UUID
-    name: str
-    email: str
 
 
 class SignupRequest(BaseModel):

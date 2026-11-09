@@ -28,7 +28,7 @@ def match_page():
 # def test_db(db: Connection = Depends(get_db)) -> List[TestSejo]:
 #     return get_test_rows(db)
 
-from modules.auth.dependencies import CurrentUser
+from shared.auth_dependencies import CurrentUser
 
 @router.get("/my-data")
 def get_my_data(user: CurrentUser):
