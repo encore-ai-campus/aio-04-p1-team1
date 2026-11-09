@@ -13,7 +13,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from shared.auth_dependencies import User
 from modules.auth.signup_guard import DUPLICATE_EMAIL_MESSAGE, signup_guard
-from modules.auth import withdrawal_service
+from modules.auth import withdrawal_service, password_service
 
 LEGACY_COOKIE_NAME = "compass_supabase_session"
 ACCESS_COOKIE_NAME = "compass_supabase_access"
@@ -162,6 +162,13 @@ def supabase_request(method, path, *, token=None, json=None, params=None, header
             failure(403, "이메일 인증 후 로그인해 주세요. 받은 메일함을 확인해 주세요.")
         if code in {"user_already_exists", "email_exists"} and path == "/auth/v1/signup":
             failure(409, DUPLICATE_EMAIL_MESSAGE)
+        if method == "PUT" and path == "/auth/v1/user":
+            if code == "same_password":
+                failure(400, "새 비밀번호는 이전 비밀번호와 다르게 입력해 주세요.")
+            if code == "weak_password":
+                failure(400, "비밀번호가 보안 기준에 맞지 않습니다. 더 강한 비밀번호를 입력해 주세요.")
+            if result.status_code in {400, 401, 403, 422}:
+                failure(400, "비밀번호를 변경하지 못했습니다. 이전 비밀번호와 보안 기준을 확인해 주세요.")
         if path.startswith("/rest/"):
             if path == "/rest/v1/bookmarks_LYR" and code == "23505":
                 raise HTTPException(status_code=409, detail={
@@ -254,6 +261,41 @@ def update_profile(body: ProfileUpdate, request: Request):
     if not rows or rows[0]["id"] != user["id"]:
         failure(503, "이름을 수정하지 못했습니다. 접근 권한을 확인해 주세요.")
     return {**user, "name": rows[0]["name"]}
+
+
+class PasswordChangeRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    current_password: str = Field(min_length=1, max_length=128, repr=False)
+    new_password: str = Field(min_length=8, max_length=128, repr=False)
+    password_confirm: str = Field(min_length=8, max_length=128, repr=False)
+
+    @field_validator("new_password")
+    @classmethod
+    def password_strength(cls, value):
+        if not re.search(r"[A-Za-z]", value) or not re.search(r"[0-9]", value):
+            raise ValueError("새 비밀번호는 영문과 숫자를 모두 포함해 주세요.")
+        return value
+
+    @model_validator(mode="after")
+    def matching_passwords(self):
+        if self.new_password != self.password_confirm:
+            raise ValueError("새 비밀번호 확인이 일치하지 않습니다.")
+        if self.current_password == self.new_password:
+            raise ValueError("새 비밀번호는 이전 비밀번호와 다르게 입력해 주세요.")
+        return self
+
+
+@api.post("/password", summary="이전 비밀번호 확인 후 비밀번호 변경")
+def change_member_password(body: PasswordChangeRequest, request: Request):
+    user, access_token = authenticated(request)
+    password_service.change_password(user, body.current_password, body.new_password, supabase_request)
+    try:
+        supabase_request("POST", "/auth/v1/logout", token=access_token, params={"scope": "local"})
+    except HTTPException:
+        pass  # 변경 후 종료된 세션일 수 있습니다. 브라우저 쿠키는 항상 지웁니다.
+    request.state.clear_auth_cookies = True
+    return {"password_changed": True, "reauthentication_required": True,
+            "message": "비밀번호가 변경되었습니다. 새 비밀번호로 다시 로그인해 주세요."}
 
 
 class WithdrawalRequest(BaseModel):

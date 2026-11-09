@@ -33,7 +33,14 @@ def render_member_page(page, user):
               "profile": ("나를 소개하는 기본 정보", "내 정보")}
     subtitle, title = titles[page]
     if page == "profile":
-        content = '''<section class="panel profile"><h2>기본 정보</h2><p class="muted">계정에 등록된 정보를 확인하고 이름을 수정할 수 있어요.</p><form id="profile-form"><label for="profile-name">이름</label><input id="profile-name" name="name" minlength="2" maxlength="30" value="__NAME__" required><label for="profile-email">이메일</label><input id="profile-email" type="email" value="__EMAIL__" readonly><p class="hint">가입 이메일은 이 화면에서 변경할 수 없어요.</p><div class="profile-actions"><button class="button withdraw-trigger" id="withdraw-open" type="button">탈퇴하기</button><button class="button primary" id="profile-save" type="submit">변경 내용 저장</button></div></form><p id="profile-message" role="status" aria-live="polite"></p></section>
+        content = '''<section class="panel profile"><h2>기본 정보</h2><p class="muted">계정에 등록된 정보를 확인하고 이름을 수정할 수 있어요.</p><form id="profile-form"><label for="profile-name">이름</label><input id="profile-name" name="name" minlength="2" maxlength="30" value="__NAME__" required><label for="profile-email">이메일</label><input id="profile-email" type="email" value="__EMAIL__" readonly><p class="hint">가입 이메일은 이 화면에서 변경할 수 없어요.</p><div class="profile-button-bar"><div class="password-change-row"><button class="button" id="password-change-open" type="button">비밀번호 변경</button></div><div class="profile-actions"><button class="button withdraw-trigger" id="withdraw-open" type="button">탈퇴하기</button><button class="button primary" id="profile-save" type="submit">변경 내용 저장</button></div></div></form><p id="profile-message" role="status" aria-live="polite"></p></section>
+
+<dialog class="password-dialog" id="password-dialog" aria-labelledby="password-dialog-title" aria-describedby="password-dialog-note">
+<h2 id="password-dialog-title">비밀번호 변경</h2><p id="password-dialog-note">이전 비밀번호를 확인한 뒤 새 비밀번호로 변경합니다. 변경 후에는 다시 로그인해 주세요.</p>
+<form id="password-change-form"><label for="password-current">이전 비밀번호</label><input id="password-current" name="current_password" type="password" autocomplete="current-password" maxlength="128" required autofocus>
+<label for="password-new">새 비밀번호</label><input id="password-new" name="new_password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required aria-describedby="password-strength-note"><p class="password-help" id="password-strength-note">영문과 숫자를 포함해 8~128자로 입력해 주세요.</p>
+<label for="password-confirm">새 비밀번호 확인</label><input id="password-confirm" name="password_confirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+<p id="password-change-message" class="password-change-message" role="status" aria-live="polite" tabindex="-1"></p><div class="password-dialog-actions"><button class="button" id="password-change-cancel" type="button">취소</button><button class="button primary" id="password-change-submit" type="submit">비밀번호 변경</button></div></form></dialog>
 <dialog class="withdraw-dialog" id="withdraw-dialog" aria-labelledby="withdraw-title" aria-describedby="withdraw-note">
 <div class="withdraw-icon" aria-hidden="true">!</div><h2 id="withdraw-title">회원 탈퇴</h2>
 <p class="withdraw-intro">보안을 위해 현재 사용 중인 비밀번호를 확인해 주세요.</p>
@@ -79,6 +86,9 @@ header{border-bottom:1px solid var(--line);background:white}.header-inner{max-wi
 
 .profile-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:18px}.profile .profile-actions .button{margin-top:0}.button.withdraw-trigger{background:#c8463c;border-color:#c8463c;color:white;font-weight:700}.button.withdraw-trigger:hover{background:#b63b32;border-color:#b63b32}
 .withdraw-dialog{width:calc(100% - 32px);max-width:460px;max-height:88vh;overflow:auto;border:1px solid var(--line);border-radius:20px;padding:29px;color:var(--ink);box-shadow:0 18px 70px #26312725}.withdraw-dialog::backdrop{background:#26312766}.withdraw-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#fff0ed;color:#b63b32;font-size:23px;font-weight:800;margin-bottom:14px}.withdraw-dialog h2{font-size:23px;margin:0 0 10px;letter-spacing:-.7px}.withdraw-intro{font-size:12px;line-height:1.9;color:var(--muted);margin:0 0 16px}.withdraw-note{font-size:12px;line-height:1.9;background:#fff6ef;color:#8b6249;border:1px solid #f0dfd3;border-radius:10px;padding:12px 14px;margin:0 0 21px}.withdraw-dialog label{display:block;font-size:12px;font-weight:700;margin:16px 0 8px}.withdraw-dialog input{width:100%;font-size:14px}.withdraw-message{font-size:12px;line-height:1.9;min-height:20px;margin:14px 0;outline:none}.withdraw-actions{display:flex;justify-content:flex-end;gap:9px}.withdraw-actions .button{margin:0;min-width:76px}.withdraw-dialog button:disabled{cursor:wait}.withdraw-message:focus-visible{outline:2px solid #bcb48b;outline-offset:4px}
+
+.profile-button-bar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px}.profile-button-bar .password-change-row,.profile-button-bar .profile-actions{margin-top:0}.profile-button-bar .profile-actions{margin-left:auto}.password-change-row{display:flex;justify-content:flex-start;margin-top:16px}.profile .password-change-row .button{margin:0}.password-dialog{width:calc(100% - 32px);max-width:460px;max-height:88vh;overflow:auto;border:1px solid var(--line);border-radius:20px;padding:29px;color:var(--ink);box-shadow:0 18px 70px #26312725}.password-dialog::backdrop{background:#26312766}.password-dialog h2{font-size:23px;margin:0 0 10px;letter-spacing:-.7px}.password-dialog>p{font-size:12px;line-height:1.9;color:var(--muted);margin:0 0 20px}.password-dialog label{display:block;font-size:12px;font-weight:700;margin:16px 0 8px}.password-dialog input{width:100%;font-size:14px}.password-dialog .password-help{font-size:10px;line-height:1.8;color:var(--muted);margin:7px 0 0}.password-change-message{font-size:12px;line-height:1.9;min-height:20px;margin:14px 0;outline:none}.password-dialog-actions{display:flex;justify-content:flex-end;gap:9px}.password-dialog-actions .button{margin:0;min-width:76px}
+
 __CC_CSS__
 </style></head><body class="cc-member-page" data-page="__PAGE__">__CC_HEADER__
 __CC_MENU__
@@ -106,6 +116,23 @@ if(page==='profile'){
   try{const data=await api('/api/auth/withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password,password_confirm:confirmation})});form.reset();if(data.withdrawal_completed){location.replace('/signin');return;}message.className='withdraw-message success';message.textContent=data.message;message.focus();}
   catch(error){form.reset();message.className='withdraw-message error';message.textContent=error.message;message.focus();}
   finally{submit.disabled=false;cancel.disabled=false;submit.textContent='탈퇴하기';}
+ });
+}
+
+
+if(page==='profile'){
+ const dialog=document.getElementById('password-dialog'),form=document.getElementById('password-change-form'),open=document.getElementById('password-change-open'),cancel=document.getElementById('password-change-cancel'),submit=document.getElementById('password-change-submit'),message=document.getElementById('password-change-message');let changed=false;
+ open.addEventListener('click',()=>{changed=false;form.reset();form.querySelectorAll('input').forEach(node=>node.disabled=false);cancel.textContent='취소';submit.textContent='비밀번호 변경';message.textContent='';message.className='password-change-message';dialog.showModal();});
+ cancel.addEventListener('click',()=>dialog.close());dialog.addEventListener('cancel',event=>{if(submit.disabled)event.preventDefault();});
+ dialog.addEventListener('close',()=>{form.reset();if(changed){location.replace('/signin');return;}open.focus();});
+ form.addEventListener('submit',async event=>{event.preventDefault();if(submit.disabled)return;if(changed){location.replace('/signin');return;}const previous=document.getElementById('password-current'),next=document.getElementById('password-new'),confirm=document.getElementById('password-confirm');message.className='password-change-message';message.textContent='';
+  if(next.value!==confirm.value){message.className='password-change-message error';message.textContent='새 비밀번호 확인이 일치하지 않습니다.';confirm.focus();return;}
+  if(!/[A-Za-z]/.test(next.value)||!/[0-9]/.test(next.value)){message.className='password-change-message error';message.textContent='새 비밀번호는 영문과 숫자를 모두 포함해 주세요.';next.focus();return;}
+  if(previous.value===next.value){message.className='password-change-message error';message.textContent='새 비밀번호는 이전 비밀번호와 다르게 입력해 주세요.';next.focus();return;}
+  submit.disabled=true;cancel.disabled=true;submit.textContent='변경 중…';message.textContent='비밀번호를 확인하고 변경하고 있어요.';
+  try{const data=await api('/api/auth/password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({current_password:previous.value,new_password:next.value,password_confirm:confirm.value})});form.reset();changed=data.password_changed===true;message.className='password-change-message success';message.textContent=data.message;message.focus();if(changed){form.querySelectorAll('input').forEach(node=>node.disabled=true);cancel.textContent='닫기';}}
+  catch(error){form.reset();message.className='password-change-message error';message.textContent=error.message;message.focus();}
+  finally{submit.disabled=false;cancel.disabled=false;submit.textContent=changed?'로그인하기':'비밀번호 변경';}
  });
 }
 
