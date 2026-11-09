@@ -12,13 +12,14 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from shared.auth_dependencies import User
+from modules.auth.signup_guard import DUPLICATE_EMAIL_MESSAGE, signup_guard
 
 LEGACY_COOKIE_NAME = "compass_supabase_session"
 ACCESS_COOKIE_NAME = "compass_supabase_access"
 REFRESH_COOKIE_NAME = "compass_supabase_refresh"
 SESSION_SECONDS = 60 * 60 * 24
 api = APIRouter(prefix="/api/auth", tags=["회원 인증"])
-SIGNUP_MESSAGE = "입력하신 이메일로 인증 메일을 확인해 주세요. 이메일 인증 후 로그인할 수 있습니다. 이미 가입한 경우 기존 계정으로 로그인해 주세요."
+SIGNUP_MESSAGE = "입력하신 이메일로 인증 메일을 확인해 주세요. 이메일 인증 후 로그인할 수 있습니다."
 
 
 def configuration():
@@ -159,7 +160,7 @@ def supabase_request(method, path, *, token=None, json=None, params=None, header
         if code == "email_not_confirmed":
             failure(403, "이메일 인증 후 로그인해 주세요. 받은 메일함을 확인해 주세요.")
         if code in {"user_already_exists", "email_exists"} and path == "/auth/v1/signup":
-            return {}  # 기존 계정 존재 여부를 노출하지 않는 동일 안내
+            failure(409, DUPLICATE_EMAIL_MESSAGE)
         if path.startswith("/rest/"):
             if path == "/rest/v1/bookmarks_LYR" and code == "23505":
                 raise HTTPException(status_code=409, detail={
@@ -193,9 +194,10 @@ def profile(user, access_token):
 
 @api.post("/signup", status_code=202, summary="회원가입 및 인증 메일 요청")
 def signup(body: SignupRequest):
-    supabase_request("POST", "/auth/v1/signup",
-                     params={"redirect_to": configuration()[2]},
-                     json={"email": body.email, "password": body.password, "data": {"name": body.name}})
+    with signup_guard(body.email):
+        supabase_request("POST", "/auth/v1/signup",
+                         params={"redirect_to": configuration()[2]},
+                         json={"email": body.email, "password": body.password, "data": {"name": body.name}})
     return {"email_confirmation_required": True, "message": SIGNUP_MESSAGE}
 
 
