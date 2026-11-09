@@ -1,7 +1,8 @@
-""" service로 이동 """
+"""회원가입 페이지: python -m uvicorn Signup:app --reload --port 8001"""
 
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
+from modules.auth.auth_store import create_app
 from modules.auth.auth_ui import render_auth
 
 router = APIRouter(tags=["회원 화면"])
@@ -16,7 +17,7 @@ def signin_page():
     return render_auth("signin")
 
 
-app = FastAPI(title="취준나침반 - 회원가입")
+app = create_app("취준나침반 - 회원가입")
 app.include_router(router)
 app.add_api_route("/signin", signin_page, response_class=HTMLResponse,
                   tags=["회원 화면"], summary="로그인 페이지")

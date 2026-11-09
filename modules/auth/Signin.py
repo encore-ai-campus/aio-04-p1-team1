@@ -1,5 +1,8 @@
-from fastapi import APIRouter, FastAPI, Request
+"""로그인 페이지: python -m uvicorn Signin:app --reload --port 8002"""
+
+from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
+from modules.auth.auth_store import create_app
 from modules.auth.auth_ui import render_auth
 
 router = APIRouter(tags=["회원 화면"])
@@ -14,7 +17,7 @@ def signup_page():
     return render_auth("signup")
 
 
-app = FastAPI(title="취준나침반 - 로그인")
+app = create_app("취준나침반 - 로그인")
 app.include_router(router)
 app.add_api_route("/signup", signup_page, response_class=HTMLResponse,
                   tags=["회원 화면"], summary="회원가입 페이지")
