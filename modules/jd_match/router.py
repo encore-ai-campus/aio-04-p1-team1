@@ -15,6 +15,7 @@ from shared.database import get_db
 
 router = APIRouter(prefix="/jd_match", tags=["jd_match"])
 TEMPLATE_PATH = Path(__file__).with_name("templates") / "match.html"
+START_TEMPLATE_PATH = Path(__file__).with_name("templates") / "start.html"
 
 
 def page_user(request: Request):
@@ -31,10 +32,15 @@ def render_match_page(user):
     return apply_member_shell(page, user, current="jd_match")
 
 
+def render_start_page(user):
+    page = START_TEMPLATE_PATH.read_text(encoding="utf-8")
+    return apply_member_shell(page, user, current="jd_match")
+
+
 @router.get("", response_class=HTMLResponse)
 def match_page(request: Request):
     user = page_user(request)
-    return user if isinstance(user, RedirectResponse) else HTMLResponse(render_match_page(user))
+    return user if isinstance(user, RedirectResponse) else HTMLResponse(render_start_page(user))
 
 
 @router.get("/profile", response_model=Profile | None)
