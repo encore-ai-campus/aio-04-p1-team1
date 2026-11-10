@@ -7,38 +7,38 @@ from shared.components.compass import apply_member_shell
 
 # Match the main page's type scale without replacing the shared A2Z font.
 TRAINING_TYPOGRAPHY = r"""
-body.cc-member-page.cc-training-page{font-size:14px;font-weight:400}
-.cc-training-page .cc-brand,.cc-training-page .cc-brand span{font-size:24px;font-weight:800}
-.cc-training-page .cc-top-button{font-size:12px;font-weight:700}
-.cc-training-page .cc-member-name,.cc-training-page .cc-shell-message{font-size:12px;font-weight:400}
-.cc-training-page .cc-menu-heading,.cc-training-page .cc-menu-heading span{font-size:18px;font-weight:800}
-.cc-training-page .cc-menu-label{font-size:10px;font-weight:700}
-.cc-training-page .cc-menu-item{font-size:14px;font-weight:400}
-.cc-training-page .cc-menu-item[aria-current=page]{font-weight:800}
-.cc-training-page .cc-soon{font-size:9px;font-weight:400}
-.cc-training-page .cc-menu-note{font-size:11px;font-weight:400}
-.cc-training-page .cc-service-dialog h2{font-size:20px;font-weight:700}
-.cc-training-page .cc-service-dialog p{font-size:13px;font-weight:400}
-.cc-training-page .cc-dialog-confirm{font-size:12px;font-weight:700}
-.cc-training-page .cc-page-heading .eyebrow{font-size:10px;font-weight:700}
-.cc-training-page .cc-page-heading h1{font-size:29px;font-weight:800}
-.cc-training-page .cc-page-heading>p:last-child{font-size:13px;font-weight:400}
-.cc-training-page :is(.results-head h2,.rec-heading h2,.rec-certificates h2){font-size:20px;font-weight:700}
-.cc-training-page :is(.sidebar h2,.rec-panel h2){font-size:17px;font-weight:800}
-.cc-training-page :is(.card h3,.rec-card h3,.certificate-card h3){font-size:15px;font-weight:800}
-.cc-training-page :is(.provider,.card-meta,.rec-meta){font-size:10px;font-weight:400}
-.cc-training-page :is(.badge,.chip,.tags,.learning-badge,.certificate-label){font-size:9px;font-weight:400}
-.cc-training-page :is(.details,.rec-detail){font-size:10px;font-weight:700}
-.cc-training-page :is(.field>span,.ai-form label){font-size:12px;font-weight:700}
-.cc-training-page :is(select,.search input,.ai-form input,.ai-form textarea){font-size:12px;font-weight:400}
-.cc-training-page :is(.apply,.search button,.ai-submit){font-size:14px;font-weight:800}
-.cc-training-page :is(.reset,.analysis-button){font-size:11px;font-weight:700}
-.cc-training-page :is(.sort select,.rec-condition,.gap-line,.gap-pill){font-size:12px;font-weight:400}
-.cc-training-page :is(.rec-reason,.certificate-card p,.analysis-summary,.gap-explanation){font-size:12px;font-weight:400}
-.cc-training-page :is(.sidebar-note,.catalogue-note,.rec-footnote,.input-hint){font-size:10px;font-weight:400}
-.cc-training-page .pagination button{font-size:12px;font-weight:400}
-.cc-training-page .pagination .selected{font-weight:700}
-.cc-training-page footer{font-size:10px;font-weight:400}
+body.cc-member-page.cc-training-page{font-size:14px}
+.cc-training-page .cc-brand,.cc-training-page .cc-brand span{font-size:24px}
+.cc-training-page .cc-top-button{font-size:12px}
+.cc-training-page .cc-member-name,.cc-training-page .cc-shell-message{font-size:12px}
+.cc-training-page .cc-menu-heading,.cc-training-page .cc-menu-heading span{font-size:18px}
+.cc-training-page .cc-menu-label{font-size:10px}
+.cc-training-page .cc-menu-item{font-size:14px}
+
+.cc-training-page .cc-soon{font-size:9px}
+.cc-training-page .cc-menu-note{font-size:11px}
+.cc-training-page .cc-service-dialog h2{font-size:20px}
+.cc-training-page .cc-service-dialog p{font-size:13px}
+.cc-training-page .cc-dialog-confirm{font-size:12px}
+.cc-training-page .cc-page-heading .eyebrow{font-size:10px}
+.cc-training-page .cc-page-heading h1{font-size:29px}
+.cc-training-page .cc-page-heading>p:last-child{font-size:13px}
+.cc-training-page :is(.results-head h2,.rec-heading h2,.rec-certificates h2){font-size:20px}
+.cc-training-page :is(.sidebar h2,.rec-panel h2){font-size:17px}
+.cc-training-page :is(.card h3,.rec-card h3,.certificate-card h3){font-size:15px}
+.cc-training-page :is(.provider,.card-meta,.rec-meta){font-size:10px}
+.cc-training-page :is(.badge,.chip,.tags,.learning-badge,.certificate-label){font-size:9px}
+.cc-training-page :is(.details,.rec-detail){font-size:10px}
+.cc-training-page :is(.field>span,.ai-form label){font-size:12px}
+.cc-training-page :is(select,.search input,.ai-form input,.ai-form textarea){font-size:12px}
+.cc-training-page :is(.apply,.search button,.ai-submit){font-size:14px}
+.cc-training-page :is(.reset,.analysis-button){font-size:11px}
+.cc-training-page :is(.sort select,.rec-condition,.gap-line,.gap-pill){font-size:12px}
+.cc-training-page :is(.rec-reason,.certificate-card p,.analysis-summary,.gap-explanation){font-size:12px}
+.cc-training-page :is(.sidebar-note,.catalogue-note,.rec-footnote,.input-hint){font-size:10px}
+.cc-training-page .pagination button{font-size:12px}
+
+.cc-training-page footer{font-size:10px}
 .cc-training-page footer span:last-child{font-size:9px}
 @media(max-width:1100px){.cc-training-page :is(.card h3,.rec-card h3){font-size:16px}}
 @media(max-width:820px){
