@@ -13,6 +13,12 @@ class Profile(BaseModel):
     courses: list[dict[str, Any]]
     skills: list[str] = Field(default_factory=list)
 
+class SavedJobPosting(BaseModel):
+    id: UUID
+    title: str
+    company_name: str
+
+
 # 공고
 class JobPosting(BaseModel):
     model_config = ConfigDict(from_attributes=True)

@@ -6,8 +6,13 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from psycopg import Connection
 from uuid import UUID
 
-from modules.jd_match.model import JobPosting, Profile
-from modules.jd_match.service import get_jd_match_score, get_job_posting, get_profile
+from modules.jd_match.model import JobPosting, Profile, SavedJobPosting
+from modules.jd_match.service import (
+    get_jd_match_score,
+    get_job_posting,
+    get_profile,
+    get_saved_job_postings,
+)
 from modules.auth import auth_store
 from shared.components.compass import apply_member_shell
 from shared.auth_dependencies import CurrentUser
@@ -49,6 +54,14 @@ def profile(
     db: Annotated[Connection, Depends(get_db)],
 ):
     return get_profile(db, user.email, user.id)
+
+
+@router.get("/saved-job-postings", response_model=list[SavedJobPosting])
+def saved_job_postings(
+    user: CurrentUser,
+    db: Annotated[Connection, Depends(get_db)],
+):
+    return get_saved_job_postings(db, user.id)
 
 
 @router.get("/job-postings/{job_posting_id}", response_model=JobPosting)
