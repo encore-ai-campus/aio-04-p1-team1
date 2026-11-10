@@ -4,7 +4,24 @@ from uuid import UUID
 from psycopg import Connection
 import requests
 
-from modules.jd_match.model import JobPosting, Profile
+from modules.jd_match.model import JobPosting, Profile, SavedJobPosting
+
+
+def get_saved_job_postings(db: Connection, user_id: UUID) -> list[SavedJobPosting]:
+    with db.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT j.id, j.title, j.company_name
+            FROM public.saved_jobs AS s
+            JOIN public.job_posting_mj AS j ON j.id = s.job_id
+            WHERE s.user_id = %s AND s.use_yn = 'Y'
+            ORDER BY s.created_at DESC NULLS LAST, j.id
+            """,
+            (user_id,),
+        )
+        rows = cursor.fetchall()
+
+    return [SavedJobPosting.model_validate(row) for row in rows]
 
 # 프로필 정보(역량) 가져오기
 def get_profile(db: Connection, email: str, user_id: UUID) -> Profile | None:

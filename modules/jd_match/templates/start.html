@@ -33,18 +33,17 @@
         const button = document.querySelector('#match-start-button');
         const status = document.querySelector('#match-start-status');
 
-        fetch('/api/bookmarks?item_type=job&size=100')
+        fetch('/jd_match/saved-job-postings')
           .then(response => {
             if (!response.ok) throw new Error();
             return response.json();
           })
-          .then(data => {
-            const items = data.items || [];
+          .then(items => {
             select.innerHTML = '<option value="">공고를 선택해 주세요</option>';
             items.forEach(item => {
               const option = document.createElement('option');
-              option.value = item.source_id;
-              option.textContent = `${item.organization} · ${item.title}`;
+              option.value = item.id;
+              option.textContent = `${item.company_name} · ${item.title}`;
               select.appendChild(option);
             });
             select.disabled = items.length === 0;
