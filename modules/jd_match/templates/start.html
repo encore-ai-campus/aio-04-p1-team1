@@ -16,9 +16,9 @@
         <h1 id="match-start-title">내 이력서, 이 공고와 잘 맞을까요?</h1>
         <p class="match-start-copy">저장해 둔 채용공고를 선택하면 내 프로필과 공고의 적합도를 분석해 드려요.</p>
         <label class="job-select-label" for="saved-job-select">분석할 공고를 선택해 주세요</label>
-        <div class="job-select-wrap"><select id="saved-job-select"><option value="00000000-0000-4000-8000-000000000001">나침데이터 · 테스트 공고 · 주니어 데이터 분석가</option></select></div>
+        <div class="job-select-wrap"><select id="saved-job-select" disabled><option value="">저장한 공고를 불러오는 중입니다</option></select></div>
         <p class="match-start-status" id="match-start-status" role="status" aria-live="polite"></p>
-        <button class="match-start-button" id="match-start-button" type="button" onclick="location.href='/jd_match/00000000-0000-4000-8000-000000000001'">🚀 분석 시작!</button>
+        <button class="match-start-button" id="match-start-button" type="button" disabled>🚀 분석 시작!</button>
       </section>
     </main>
     <footer><span>취준나침반 · 한 번에 찾고, 한 걸음씩 준비해요.</span><span>YOUR NEXT DIRECTION ↗</span></footer>
@@ -28,7 +28,44 @@
       @media(max-width:700px){.match-start{margin:35px auto 60px;padding:42px 22px}.match-start h1{font-size:27px}.match-start-copy{font-size:15px;margin-bottom:38px}}
     </style>
     <script>
-      (()=>{const select=document.querySelector('#saved-job-select'),button=document.querySelector('#match-start-button'),status=document.querySelector('#match-start-status');const sample={source_id:'00000000-0000-4000-8000-000000000001',organization:'나침데이터 · 테스트 공고',title:'주니어 데이터 분석가'};button.disabled=false;fetch('/api/bookmarks?item_type=job&size=100').then(r=>{if(!r.ok)throw new Error();return r.json()}).then(data=>{const items=[sample,...(data.items||[])];select.innerHTML='<option value="">공고를 선택해 주세요</option>';items.forEach(item=>{const option=document.createElement('option');option.value=item.source_id;option.textContent=`${item.organization} · ${item.title}`;select.appendChild(option)});select.value=sample.source_id;select.disabled=false}).catch(()=>{select.innerHTML=`<option value="${sample.source_id}">${sample.organization} · ${sample.title}</option>`;select.value=sample.source_id;select.disabled=false;status.textContent='테스트 공고를 불러왔어요.'});select.addEventListener('change',()=>button.disabled=false);button.addEventListener('click',()=>{if(select.value)location.href=`/jd_match/${encodeURIComponent(select.value)}`)})})();
+      (() => {
+        const select = document.querySelector('#saved-job-select');
+        const button = document.querySelector('#match-start-button');
+        const status = document.querySelector('#match-start-status');
+
+        fetch('/api/bookmarks?item_type=job&size=100')
+          .then(response => {
+            if (!response.ok) throw new Error();
+            return response.json();
+          })
+          .then(data => {
+            const items = data.items || [];
+            select.innerHTML = '<option value="">공고를 선택해 주세요</option>';
+            items.forEach(item => {
+              const option = document.createElement('option');
+              option.value = item.source_id;
+              option.textContent = `${item.organization} · ${item.title}`;
+              select.appendChild(option);
+            });
+            select.disabled = items.length === 0;
+            if (!items.length) status.textContent = '저장한 채용공고가 없습니다. 먼저 채용공고를 저장해 주세요.';
+          })
+          .catch(() => {
+            select.innerHTML = '<option value="">공고를 불러오지 못했습니다</option>';
+            select.disabled = true;
+            button.disabled = true;
+            status.textContent = '저장한 공고를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+          });
+
+        select.addEventListener('change', () => {
+          button.disabled = !select.value;
+        });
+        button.addEventListener('click', () => {
+          if (!button.disabled && select.value) {
+            location.href = `/jd_match/${encodeURIComponent(select.value)}`;
+          }
+        });
+      })();
     </script>
     __CC_SCRIPT__
   </body>
