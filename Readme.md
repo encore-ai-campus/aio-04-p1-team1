@@ -6,7 +6,8 @@
 pip install -r requirements.txt
 
 # 실행(백엔드, 프론트)
-uvicorn app:app --reload
+# uvicorn app:app --reload
+uvicorn app:app --reload --env-file .env 
 ```
 
 ## 프로젝트 구조

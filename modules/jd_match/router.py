@@ -1,14 +1,15 @@
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
 from psycopg import Connection
 from uuid import UUID
 
 from modules.jd_match.model import JobPosting, Profile
 from modules.jd_match.service import get_jd_match_score, get_job_posting, get_profile
-from shared.components.header import render_header
+from modules.auth import auth_store
+from shared.components.compass import apply_member_shell
 from shared.auth_dependencies import CurrentUser
 from shared.database import get_db
 
@@ -16,14 +17,24 @@ router = APIRouter(prefix="/jd_match", tags=["jd_match"])
 TEMPLATE_PATH = Path(__file__).with_name("templates") / "match.html"
 
 
-def render_match_page():
+def page_user(request: Request):
+    try:
+        return auth_store.me(request)
+    except HTTPException as exc:
+        if exc.status_code == 401:
+            return RedirectResponse("/signin", status_code=303)
+        raise
+
+
+def render_match_page(user):
     page = TEMPLATE_PATH.read_text(encoding="utf-8")
-    return page.replace("__HEADER__", render_header(member=True))
+    return apply_member_shell(page, user, current="jd_match")
 
 
 @router.get("", response_class=HTMLResponse)
-def match_page():
-    return HTMLResponse(render_match_page())
+def match_page(request: Request):
+    user = page_user(request)
+    return user if isinstance(user, RedirectResponse) else HTMLResponse(render_match_page(user))
 
 
 @router.get("/profile", response_model=Profile | None)
@@ -60,7 +71,8 @@ def get_my_data(user: CurrentUser):
 
 
 @router.get("/{job_posting_id}", response_class=HTMLResponse)
-def match_page_for_job(job_posting_id: UUID):
-    return HTMLResponse(render_match_page())
+def match_page_for_job(job_posting_id: UUID, request: Request):
+    user = page_user(request)
+    return user if isinstance(user, RedirectResponse) else HTMLResponse(render_match_page(user))
 
 # 공고 상세 라우팅

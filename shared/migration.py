@@ -1,8 +1,8 @@
 """사용자/프로필/북마크 테이블 생성 및 Auth 사용자 정보 동기화.
 
 프로젝트 루트에서 실행:
-    python -m modules.database.table
-    python -m modules.database.table --print-sql
+    python -m shared.migration
+    python -m shared.migration --print-sql
 
 공고 FK는 현재 데이터가 있는 *_mj 테이블을 기본으로 사용합니다.
 정식 테이블로 연결하려면 --job-table job_postings --training-table training_postings.
