@@ -14,7 +14,7 @@ uvicorn app:app --reload --env-file .env
 career-compass/
 ├── app.py                         # FastAPI 앱 및 기능별 라우터 연결
 ├── requirements.txt               # Python 의존성
-├── docs/                          # 프로젝트 문서
+├── docs/                          # 프로젝트 문서(산출물)
 ├── modules/                       # 기능 및 데이터 처리 모듈
 │   ├── auth/                      # 로그인·회원가입·인증
 │   ├── job_posts/                 # 채용 공고 조회
