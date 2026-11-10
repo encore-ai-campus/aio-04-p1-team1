@@ -2,7 +2,7 @@ from typing import Optional
 from datetime import date, datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Any
 
 # 내 프로필
@@ -11,6 +11,7 @@ class Profile(BaseModel):
     target_role: str
     certificates: list[dict[str, Any]]
     courses: list[dict[str, Any]]
+    skills: list[str] = Field(default_factory=list)
 
 # 공고
 class JobPosting(BaseModel):

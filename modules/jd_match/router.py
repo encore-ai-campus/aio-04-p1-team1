@@ -48,7 +48,7 @@ def profile(
     user: CurrentUser,
     db: Annotated[Connection, Depends(get_db)],
 ):
-    return get_profile(db, user.id)
+    return get_profile(db, user.email, user.id)
 
 
 @router.get("/job-postings/{job_posting_id}", response_model=JobPosting)
@@ -68,7 +68,7 @@ def job_posting_score(
     user: CurrentUser,
     db: Annotated[Connection, Depends(get_db)],
 ):
-    return get_jd_match_score(db, user.id, job_posting_id)
+    return get_jd_match_score(db, user.id, job_posting_id, user.email)
 
 
 @router.get("/my-data")

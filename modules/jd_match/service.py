@@ -7,19 +7,41 @@ import requests
 from modules.jd_match.model import JobPosting, Profile
 
 # 프로필 정보(역량) 가져오기
-def get_profile(db: Connection, user_id: UUID) -> Profile | None:
+def get_profile(db: Connection, email: str, user_id: UUID) -> Profile | None:
     with db.cursor() as cursor:
         cursor.execute(
             """
-            SELECT user_id, target_role, certificates, courses
-            FROM "profiles_LYR"
-            WHERE user_id = %s
+            SELECT p.user_id, p.desired_job, p.certification_name,
+                   p.certification_issuer, p.certification_acquired_date,
+                   p.training_name, p.training_provider,
+                   p.training_completed_date, p.skills
+            FROM public.users AS u
+            JOIN public.profiles AS p ON p.user_id = u.user_id
+            WHERE lower(u.email) = %s AND u.user_id = %s
+              AND u.use_yn = 'Y' AND p.use_yn = 'Y'
             """,
-            (user_id,),
+            (email.strip().lower(), user_id),
         )
         row = cursor.fetchone()
 
-    return Profile.model_validate(row) if row else None
+    if row is None:
+        return None
+
+    return Profile(
+        user_id=row["user_id"],
+        target_role=row["desired_job"] or "",
+        certificates=[{
+            "name": row["certification_name"],
+            "organization": row["certification_issuer"] or "",
+            "completed_on": row["certification_acquired_date"],
+        }] if row["certification_name"] else [],
+        courses=[{
+            "name": row["training_name"],
+            "organization": row["training_provider"] or "",
+            "completed_on": row["training_completed_date"],
+        }] if row["training_name"] else [],
+        skills=row["skills"] or [],
+    )
 
 # 공고 상세 내용 가져오기
 # job_post_id = '0183a987-1cdf-5048-a9e8-d5eedce2e177'
@@ -46,8 +68,9 @@ def get_jd_match_score(
     db: Connection,
     user_id: UUID,
     job_posting_id: UUID,
+    email: str,
 ) -> dict:
-    profile = get_profile(db, user_id)
+    profile = get_profile(db, email, user_id)
     job_posting = get_job_posting(db, job_posting_id)
 
     if profile is None or job_posting is None:
@@ -57,6 +80,7 @@ def get_jd_match_score(
     if not api_key:
         raise RuntimeError("JEV_API_KEY 환경변수를 설정해주세요.")
 
+    candidate_profile = profile.model_dump(mode="json", exclude={"user_id"})
     payload = {
         "model": "jev-1.13.0",
         "state": {
@@ -64,11 +88,7 @@ def get_jd_match_score(
                 "qualifications": job_posting.qualifications or "",
                 "preferred_qualifications": job_posting.preferred_qualifications or "",
             },
-            "candidate_profile": {
-                "target_role": profile.target_role,
-                "certificates": profile.certificates,
-                "courses": profile.courses,
-            },
+            "candidate_profile": candidate_profile,
         },
         "questions": {
             "qualification_fit": {
