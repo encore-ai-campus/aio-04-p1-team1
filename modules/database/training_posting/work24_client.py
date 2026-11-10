@@ -2,15 +2,14 @@
 # https://www.work24.go.kr/cm/e/a/0110/selectOpenApiSvcInfo.do?fullApiSvcId=000000000000000000000000000004
 # -> API 조회 가능 목록 확인 
 
-# ※ API 인증키
-# hd081f001-cadb-4b4c-914b-e76157bbf9b0
+# API 인증키는 프로젝트 루트 .env에서 읽습니다.
 
 # 개발자, 데이터 분석가, 인사, 총무, 회계, 생산관리, 마케팅, 기획자 별 맞춤 교육?
 
 
 """고용24 목록 API를 검색해 원본 XML과 항목별 JSON을 저장합니다.
 
-python -m modules.training_posts.service --keyword 파이썬 --start 20261109 --end 20261231
+python -m modules.database.training_posting.work24_client --keyword 파이썬 --start 20261109 --end 20261231
 """
 
 import argparse
@@ -24,7 +23,7 @@ from urllib.request import Request, urlopen
 from xml.etree import ElementTree as ET
 from zoneinfo import ZoneInfo
 
-from modules.training_posts.model import FIELD_DESCRIPTIONS, TrainingSearchResult
+from modules.database.training_posting.schemas import FIELD_DESCRIPTIONS, TrainingSearchResult
 
 
 API_URL = "https://www.work24.go.kr/cm/openApi/call/hr/callOpenApiSvcInfo310L01.do"
@@ -104,7 +103,7 @@ def search_training_courses(api_key: str, **conditions):
 
 def load_api_key():
     from dotenv import load_dotenv
-    load_dotenv(MODULE_DIR.parents[1] / ".env", override=False)
+    load_dotenv(MODULE_DIR.parents[2] / ".env", override=False)
     key = next((os.environ[name].strip() for name in (
         "WORK24_API_KEY", "TRAININING_API_KEY", "TRAINING_API_KEY"
     ) if os.environ.get(name, "").strip()), "")

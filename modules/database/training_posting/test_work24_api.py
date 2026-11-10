@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 from urllib.error import URLError
 
-from modules.training_posts.service import (
+from modules.database.training_posting.work24_client import (
     Work24APIError, build_search_params, parse_training_xml, search_training_courses,
 )
 
@@ -67,7 +67,7 @@ class Work24APITests(unittest.TestCase):
                 search_training_courses(key, keyword='', start='20261109', end='20261231')
 
     def test_network_errors_do_not_expose_key(self):
-        with patch('modules.training_posts.service.urlopen', side_effect=URLError('secret-test-key')):
+        with patch('modules.database.training_posting.work24_client.urlopen', side_effect=URLError('secret-test-key')):
             with self.assertRaises(Work24APIError) as context:
                 search_training_courses('secret-test-key', keyword='', start='20261109', end='20261231')
         self.assertNotIn('secret-test-key', str(context.exception))

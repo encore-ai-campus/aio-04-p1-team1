@@ -2,20 +2,19 @@
 
 현재 위치는 `modules/database/training_posting/`입니다. 이전 `modules/training_posts/`의 데이터 수집·저장 코드를 이 폴더로 옮겼습니다. 상위 구성과 `table.py` 설명은 [database README](../README.md)를 참고하세요.
 
-교육 모델은 현재 [modules/training_posts/model.py](../../training_posts/model.py)에 남아 있습니다. 이 폴더 내부의 `model.py`가 아니라 해당 파일을 공통으로 참조합니다.
+교육 모델은 [schemas.py](schemas.py)로 이동했습니다. 수집·저장·테스트의 참조와 실행 명령은 `modules.database.training_posting.*`를 사용합니다.
 
-### 이동 후 실행 경로 점검
+### 이동 후 경로
 
-아래 실행 명령은 새 폴더 기준입니다. 현재 Python 코드에 남아 있는 이전 참조는 실행 전에 다음과 같이 정리해야 합니다.
-
-| 점검할 코드 | 이동 후 기준 |
+| 대상 | 현재 기준 |
 |---|---|
-| `collect.py`의 서비스·저장 코드 import | `modules.database.training_posting.service`, `modules.database.training_posting.save_to_supabase` |
-| 테스트의 서비스·수집 코드 import 및 `patch()` 대상 | `modules.database.training_posting.service`, `modules.database.training_posting.collect` |
-| `service.py`, `save_to_supabase.py`의 `.env` 탐색 | 이 폴더의 `MODULE_DIR` 기준 프로젝트 루트는 `MODULE_DIR.parents[2]` |
-| 모델 import | 현재 실제 위치인 `modules.training_posts.model` 유지 |
+| 모델·서비스·저장 코드 import | `modules.database.training_posting.schemas`, `.work24_client`, `.save_to_supabase` |
+| 테스트 import 및 `patch()` 대상 | 동일한 `modules.database.training_posting.*` 경로 |
+| `work24_client.py`, `save_to_supabase.py`의 `.env` 탐색 | `MODULE_DIR.parents[2] / ".env"`: 프로젝트 루트 |
+| 수집 결과·응답 캐시 | 이 폴더의 `results/` |
+| DB 테이블 정의 | 이 폴더의 `training_posting_mj.sql` |
 
-특히 `collect.py`는 import한 서비스의 `MODULE_DIR`를 결과 위치로 사용하므로, 서비스 import도 새 위치로 맞춰야 결과가 `modules/database/training_posting/results/`에 저장됩니다. 이 문서 수정 과정에서는 Python 코드를 변경하지 않았습니다.
+`collect.py`가 가져오는 서비스의 `MODULE_DIR`도 새 위치이므로 기본 결과 경로는 `modules/database/training_posting/results/`입니다.
 
 고용24의 **국민내일배움카드 훈련과정 API - 목록**을 사용해 8개 직무와 관련된 교육을 수집합니다. 직무별 최대 125개를 선정하고, JSON 파일과 Supabase의 `public.training_posting_mj` 테이블에 저장합니다.
 
@@ -25,8 +24,8 @@
 
 | 파일 | 구현한 기능 | 언제 필요한가 |
 |---|---|---|
-| [공통 model.py](../../training_posts/model.py) | API 응답 항목 설명(`FIELD_DESCRIPTIONS`), 검색 결과 모델(`TrainingSearchResult`), DB 저장 모델(`TrainingPosting`) 정의 | `service.py`, `collect.py`, `save_to_supabase.py`가 공통으로 사용하므로 필수 |
-| [service.py](service.py) | 인증키 로딩, 검색 조건 검증, API 요청, XML 파싱, 오류 처리, 원본 항목 확인 | API를 조회할 때 필수. 단독 실행하면 과정명·기관·지역·NCS 조건으로 한 페이지를 검색할 수 있음 |
+| [schemas.py](schemas.py) | API 응답 항목 설명(`FIELD_DESCRIPTIONS`), 검색 결과 모델(`TrainingSearchResult`), DB 저장 모델(`TrainingPosting`) 정의 | `work24_client.py`, `collect.py`, `save_to_supabase.py`가 공통으로 사용하므로 필수 |
+| [work24_client.py](work24_client.py) | 인증키 로딩, 검색 조건 검증, API 요청, XML 파싱, 오류 처리, 원본 항목 확인 | API를 조회할 때 필수. 단독 실행하면 과정명·기관·지역·NCS 조건으로 한 페이지를 검색할 수 있음 |
 | [collect.py](collect.py) | 8개 직무 검색, 제목 기반 관련성 판별, 중복 제거, 직무별 수량 배정, 캐시 재사용, 결과·보고서 생성 | 여러 직무를 모아 수집할 때 사용하는 실행 진입점 |
 | [save_to_supabase.py](save_to_supabase.py) | JSON 검증, PostgreSQL 연결, 테이블 준비, 데이터 추가·갱신, 저장 후 조회 비교 | Supabase에 저장할 때 필요. 수집 없이 기존 JSON만 저장할 수도 있음 |
 | [training_posting_mj.sql](training_posting_mj.sql) | 테이블의 컬럼·타입·기본값·제약조건 정의 | 저장 코드가 읽어 실행하므로 DB 저장 시 필수. 별도로 직접 실행할 필요는 없음 |
@@ -35,7 +34,7 @@
 | [.gitignore](.gitignore) | 대용량 응답 캐시와 임시 JSON 파일을 Git 관리에서 제외 | 실행 기능에는 영향이 없지만 생성 파일 관리에 사용 |
 | `README.md` | 파일 역할, 실행법, 수집 기준과 결과 설명 | 사용·유지보수 안내용 |
 
-[공통 모델](../../training_posts/model.py)의 `NCS_CATEGORIES`는 NCS 대분류 코드 설명입니다. **현재 8개 직무 수집기는 이 코드로 분류하지 않고 제목 키워드로 분류**합니다. NCS 조건 검색은 `service.py --ncs`에서 별도로 지원합니다.
+[공통 모델](schemas.py)의 `NCS_CATEGORIES`는 NCS 대분류 코드 설명입니다. **현재 8개 직무 수집기는 이 코드로 분류하지 않고 제목 키워드로 분류**합니다. NCS 조건 검색은 `work24_client.py --ncs`에서 별도로 지원합니다.
 
 ### results/ 아래 파일
 
@@ -43,7 +42,7 @@
 |---|---|---|
 | [training_postings.json](results/training_postings.json) | 최종 선정된 교육을 DB의 9개 컬럼 형태로 정리한 목록 | 실제 저장 데이터 확인. DB 저장 후 발급된 UUID도 반영됨 |
 | [validation_report.json](results/validation_report.json) | 직무별 건수, 부족 수량, 검색 이력, 제외 사유, 선정 근거, 기관 분포, 호출 수, DB 저장 결과 | 수집·분류·저장 과정을 검토할 때 사용 |
-| [training_response.xml](results/training_response.xml) | `service.py`로 마지막에 검색한 한 페이지의 원본 XML | API가 어떤 필드를 주는지 확인. 최종 전체 선정 목록은 아님 |
+| [training_response.xml](results/training_response.xml) | `work24_client.py`로 마지막에 검색한 한 페이지의 원본 XML | API가 어떤 필드를 주는지 확인. 최종 전체 선정 목록은 아님 |
 | [training_inspection.json](results/training_inspection.json) | 위 페이지의 원본 값과 필드별 존재·누락·빈 값 구분 | API 항목 점검용. 전체 992개의 선정 보고서는 아님 |
 | `api_cache/` | 배치 검색 조건별 성공 응답 XML. 수집 시 자동 생성 | `--resume`으로 재개할 때 API 재호출을 줄임. Git에는 포함하지 않음 |
 | `training_error.xml` | API가 오류 XML을 보낸 경우의 응답. 오류가 있을 때 생성 | 인증·서비스 오류 확인용 |
@@ -55,7 +54,7 @@
 
 ```text
 프로젝트 루트의 .env
-  ├─ 훈련 API 키 → service.py → 고용24 목록 API → XML 파싱
+  ├─ 훈련 API 키 → work24_client.py → 고용24 목록 API → XML 파싱
   │                               ↓
   │                          collect.py
   │                관련성 판별 → 중복 제거 → 직무 배정
@@ -69,7 +68,7 @@
                         └─ public.training_posting_mj
 ```
 
-[공통 모델](../../training_posts/model.py)은 이 흐름에서 사용하는 데이터 구조를 정의합니다. 웹 기능용 [router.py](../../training_posts/router.py)와 [page.py](../../training_posts/page.py)는 `modules/training_posts/`에 남아 있으며, 이 폴더의 CLI 수집 흐름에는 연결되어 있지 않습니다.
+[공통 모델](schemas.py)은 이 흐름에서 사용하는 데이터 구조를 정의합니다. 웹 기능용 [router.py](../../training_posts/router.py)와 [page.py](../../training_posts/page.py)는 `modules/training_posts/`에 남아 있으며, 이 폴더의 CLI 수집 흐름에는 연결되어 있지 않습니다.
 
 ## 3. 실제 API 수집 기준
 
@@ -198,7 +197,7 @@ DATABASE_URL=PostgreSQL연결문자열
 ### API 한 페이지 조회·항목 확인
 
 ```bash
-python -m modules.database.training_posting.service \
+python -m modules.database.training_posting.work24_client \
   --keyword 파이썬 --start 20261109 --end 20270509 --page-size 1
 ```
 
@@ -207,7 +206,7 @@ python -m modules.database.training_posting.service \
 API를 호출하지 않고 응답 항목 설명만 확인하려면:
 
 ```bash
-python -m modules.database.training_posting.service --list-fields
+python -m modules.database.training_posting.work24_client --list-fields
 ```
 
 ### 직무별 수집과 DB 저장
@@ -284,7 +283,7 @@ python -m unittest modules.database.training_posting.test_work24_api modules.dat
 | 제목에서 관련 교육으로 인정할 표현 | `MATCH_ALIASES`, `match_jobs()` |
 | 오탐 제외 규칙 | `match_jobs()` |
 | 직무별 목표 수·조회 기간·호출 상한 | `--quota`, `--start`, `--end`, `--max-calls` |
-| API 요청·응답 구조 | `service.py`, `TrainingSearchResult` |
+| API 요청·응답 구조 | `work24_client.py`, `TrainingSearchResult` |
 | 저장 컬럼 | `TrainingPosting`, `normalize_course()`, SQL 파일, 저장 검증 코드와 관련 테스트를 함께 수정 |
 | 웹 검색 API·화면 | `modules/training_posts/router.py`, `modules/training_posts/page.py`에 별도 구현 필요 |
 

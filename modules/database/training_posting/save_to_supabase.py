@@ -8,7 +8,7 @@ from datetime import date
 from pathlib import Path
 from uuid import UUID
 
-from modules.training_posts.model import TrainingPosting
+from modules.database.training_posting.schemas import TrainingPosting
 
 
 MODULE_DIR = Path(__file__).resolve().parent
@@ -78,7 +78,7 @@ def save_records(records, database_url):
 
 def load_database_url():
     from dotenv import load_dotenv
-    load_dotenv(MODULE_DIR.parents[1] / '.env', override=False)
+    load_dotenv(MODULE_DIR.parents[2] / '.env', override=False)
     value = os.environ.get('DATABASE_URL', '').strip()
     if not value:
         raise ValueError('.env에 DATABASE_URL을 설정하세요.')

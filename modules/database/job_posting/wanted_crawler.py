@@ -1,7 +1,7 @@
 """원티드 상세 HTML의 __NEXT_DATA__에서 공고를 추출합니다.
 
-실행: python3 -m modules.job_posts.service https://www.wanted.co.kr/wd/391602
-저장된 HTML 사용: python3 -m modules.job_posts.service --html /tmp/wanted.html
+실행: python3 -m modules.database.job_posting.wanted_crawler https://www.wanted.co.kr/wd/391602
+저장된 HTML 사용: python3 -m modules.database.job_posting.wanted_crawler --html /tmp/wanted.html
 """
 
 import argparse
@@ -17,7 +17,7 @@ from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 from uuid import NAMESPACE_URL, UUID, uuid5
 
-from modules.job_posts.model import WantedJobPost
+from modules.database.job_posting.schemas import WantedJobPost
 
 
 DEFAULT_URL = "https://www.wanted.co.kr/wd/391602"

@@ -10,8 +10,8 @@ modules/database/
 ├── table.py
 ├── job_posting/
 │   ├── Readme.md
-│   ├── model.py
-│   ├── service.py
+│   ├── schemas.py
+│   ├── wanted_crawler.py
 │   ├── source.txt
 │   ├── save_to_supabase.py
 │   ├── job_posting_mj.sql
@@ -19,7 +19,8 @@ modules/database/
 │   └── results/
 └── training_posting/
     ├── README.md
-    ├── service.py
+    ├── schemas.py
+    ├── work24_client.py
     ├── collect.py
     ├── save_to_supabase.py
     ├── training_posting_mj.sql
@@ -40,9 +41,11 @@ modules/database/
 
 채용 수집 코드는 `modules/job_posts/`에서 `modules/database/job_posting/`로, 교육 수집 코드는 `modules/training_posts/`에서 `modules/database/training_posting/`로 이동했습니다.
 
-일부 수집·저장 코드와 테스트는 아직 이전 Python 모듈 경로를 참조합니다. 또한 이동된 파일의 `.env` 탐색은 프로젝트 루트에 맞춰 다시 계산해야 합니다. **하위 리드미의 실행 명령은 새 위치 기준이며, 각 문서의 ‘이동 후 실행 경로’ 점검 사항을 먼저 반영해야 합니다.** 이번 문서 변경에서는 Python 코드를 수정하지 않았습니다.
+수집·저장 코드와 테스트의 import는 `modules.database.job_posting.*`, `modules.database.training_posting.*`를 사용합니다. 아래와 하위 리드미의 명령은 모두 이 새 경로를 기준으로 합니다.
 
-교육 공통 모델은 현재 [modules/training_posts/model.py](../training_posts/model.py)에 남아 있습니다. 수집 폴더 내부에 `model.py`가 있다고 가정하면 안 됩니다. 웹 화면·라우터용 코드는 기존 기능 폴더에 남아 있으며 DB 수집 코드와 구분합니다.
+교육 모델도 [training_posting/schemas.py](training_posting/schemas.py)로 이동했습니다. 두 수집 폴더의 `.env` 탐색은 `MODULE_DIR.parents[2]`를 통해 프로젝트 루트를 가리키고, 결과 파일·SQL·입력 목록은 각 수집 폴더를 기준으로 찾습니다. `table.py`의 프로젝트 루트 탐색은 파일 자체 기준 `Path(__file__).resolve().parents[2]`입니다.
+
+웹 화면·라우터용 코드는 `modules/job_posts/`, `modules/training_posts/`에 남아 있으며 DB 수집 코드와 구분합니다.
 
 ## table.py의 기능
 
