@@ -6,38 +6,32 @@
 pip install -r requirements.txt
 
 # 실행(백엔드, 프론트)
-# uvicorn app:app --reload
 uvicorn app:app --reload --env-file .env 
 ```
 
 ## 프로젝트 구조
 ```text
 career-compass/
-├── app.py                      # FastAPI 앱 · 화면 및 API 라우터 연결
-├── modules/                    # 기능별 작업 폴더
-│   ├── auth/                   # 로그인 · 회원가입(임이레)
-│   │   ├── 기존 소스
-│   ├── job_posts/              # 공고 조회 (이미정)
-│   │   ├── ...    
-│   ├── jd_match/               # 준비 상황 비교 (조상은)
-│   │   ├── page.py                 # 화면용 파일
-│   │   ├── router.py               # API 라우터
-│   │   ├── service.py              # 처리 로직용 파일
-│   │   └── model.py                # 모델용 파일
-│   ├── training_match/         # 교육 추천 (서민석)
-│   │   ├── ...
-│   └── mypage/                 # 임시 홈 · 마이페이지 · 관심목록 · 내 정보 (임이레)
-│       ├── 기존소스
-├── shared/                     # 함께 사용하는 코드
-│   ├── config.py                   # 공통 설정용 파일
-│   ├── database.py                 # DB 연결용 파일
-│   └── components/                 # 공통 UI(기존소스)
-│       ├── header.py
-│       └── menu.py
-├── .env                            # 환경변수 값 (Git 제외)
-├── .env.example                    # 팀 공유용 환경변수 예시
+├── app.py                         # FastAPI 앱 및 기능별 라우터 연결
+├── requirements.txt               # Python 의존성
+├── docs/                          # 프로젝트 문서
+├── modules/                       # 기능 및 데이터 처리 모듈
+│   ├── auth/                      # 로그인·회원가입·인증
+│   ├── job_posts/                 # 채용 공고 조회
+│   ├── jd_match/                  # 채용 공고와 역량 매칭
+│   │   └── templates/             # 매칭 화면 템플릿
+│   ├── training_posts/            # 교육 공고 조회
+│   ├── mypage/                    # 메인·마이페이지·관심 목록
+│   ├── main/                      # 메인 화면
+│   └── database/                 # 공고 수집 및 DB 저장
+│       ├── job_posting/           # 채용 공고 데이터 처리
+│       └── training_posting/      # 교육 공고 데이터 처리
+├── shared/                        # 공통 설정·DB·UI 컴포넌트
+│   ├── config.py                  # 환경 설정
+│   ├── database.py                # DB 연결
+│   └── components/                # 공통 UI, 스타일, 스크립트, 폰트
+├── .env                           # 환경변수 값 (Git 제외)
+├── .env.example                   # 팀 공유용 환경변수 예시
 ├── .gitignore
-├── Readme.md
-└── requirements.txt
+└── Readme.md
 ```
-'''
