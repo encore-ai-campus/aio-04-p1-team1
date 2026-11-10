@@ -32,10 +32,24 @@ def render_member_page(page, user):
               "bookmarks": ("다시 보고 싶은 기회를 모았어요", "관심목록"),
               "profile": ("나를 소개하는 기본 정보", "내 정보")}
     subtitle, title = titles[page]
-    if page == "main":
-        content = '''<section class="panel placeholder"><span class="badge">메인 연결 확인용</span><h2>반가워요, __NAME__님.</h2><p>이 영역은 팀원이 구현한 메인 화면으로 교체할 예정입니다.<br>위쪽 마이페이지 버튼으로 회원 기능을 확인할 수 있어요.</p><a class="button primary" href="/mypage">마이페이지로 이동 →</a> <a class="button" href="/training_posts">교육목록 보기 →</a> <a class="button" href="/training_match">AI 교육추천 →</a></section>'''
-    elif page == "profile":
-        content = '''<section class="panel profile"><h2>기본 정보</h2><p class="muted">계정에 등록된 정보를 확인하고 이름을 수정할 수 있어요.</p><form id="profile-form"><label for="profile-name">이름</label><input id="profile-name" name="name" minlength="2" maxlength="30" value="__NAME__" required><label for="profile-email">이메일</label><input id="profile-email" type="email" value="__EMAIL__" readonly><p class="hint">가입 이메일은 이 화면에서 변경할 수 없어요.</p><button class="button primary" id="profile-save" type="submit">변경 내용 저장</button></form><p id="profile-message" role="status" aria-live="polite"></p></section>'''
+    if page == "profile":
+        content = '''<section class="panel profile"><h2>기본 정보</h2><p class="muted">계정에 등록된 정보를 확인하고 이름을 수정할 수 있어요.</p><form id="profile-form"><label for="profile-name">이름</label><input id="profile-name" name="name" minlength="2" maxlength="30" value="__NAME__" required><label for="profile-email">이메일</label><input id="profile-email" type="email" value="__EMAIL__" readonly><p class="hint">가입 이메일은 이 화면에서 변경할 수 없어요.</p><div class="profile-button-bar"><div class="password-change-row"><button class="button" id="password-change-open" type="button">비밀번호 변경</button></div><div class="profile-actions"><button class="button withdraw-trigger" id="withdraw-open" type="button">탈퇴하기</button><button class="button primary" id="profile-save" type="submit">변경 내용 저장</button></div></div></form><p id="profile-message" role="status" aria-live="polite"></p></section>
+
+<dialog class="password-dialog" id="password-dialog" aria-labelledby="password-dialog-title" aria-describedby="password-dialog-note">
+<h2 id="password-dialog-title">비밀번호 변경</h2><p id="password-dialog-note">이전 비밀번호를 확인한 뒤 새 비밀번호로 변경합니다. 변경 후에는 다시 로그인해 주세요.</p>
+<form id="password-change-form"><label for="password-current">이전 비밀번호</label><input id="password-current" name="current_password" type="password" autocomplete="current-password" maxlength="128" required autofocus>
+<label for="password-new">새 비밀번호</label><input id="password-new" name="new_password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required aria-describedby="password-strength-note"><p class="password-help" id="password-strength-note">영문과 숫자를 포함해 8~128자로 입력해 주세요.</p>
+<label for="password-confirm">새 비밀번호 확인</label><input id="password-confirm" name="password_confirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+<p id="password-change-message" class="password-change-message" role="status" aria-live="polite" tabindex="-1"></p><div class="password-dialog-actions"><button class="button" id="password-change-cancel" type="button">취소</button><button class="button primary" id="password-change-submit" type="submit">비밀번호 변경</button></div></form></dialog>
+<dialog class="withdraw-dialog" id="withdraw-dialog" aria-labelledby="withdraw-title" aria-describedby="withdraw-note">
+<div class="withdraw-icon" aria-hidden="true">!</div><h2 id="withdraw-title">회원 탈퇴</h2>
+<p class="withdraw-intro">보안을 위해 현재 사용 중인 비밀번호를 확인해 주세요.</p>
+<p class="withdraw-note" id="withdraw-note"><strong>탈퇴 기능 준비 중</strong><br>현재는 비밀번호 확인만 가능하며, 계정과 데이터는 삭제되지 않습니다.</p>
+<form id="withdraw-form"><label for="withdraw-password">비밀번호</label><input id="withdraw-password" name="password" type="password" autocomplete="current-password" maxlength="128" required autofocus>
+<label for="withdraw-password-confirm">비밀번호 확인</label><input id="withdraw-password-confirm" name="password_confirm" type="password" autocomplete="current-password" maxlength="128" required>
+<p class="withdraw-message" id="withdraw-message" role="status" aria-live="polite" tabindex="-1"></p>
+<div class="withdraw-actions"><button class="button" id="withdraw-cancel" type="button">취소</button><button class="button withdraw-trigger" id="withdraw-submit" type="submit">탈퇴하기</button></div>
+</form></dialog>'''
     else:
         content = BOOKMARKS_CONTENT
     html = TEMPLATE.replace("__CONTENT__", content).replace("__PAGE__", page)
