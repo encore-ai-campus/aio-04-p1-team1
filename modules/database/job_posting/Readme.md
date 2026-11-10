@@ -1,18 +1,47 @@
-# 원티드 공고 수집
+# job_posting — 원티드 채용공고 수집 및 저장
+
+현재 위치는 `modules/database/job_posting/`입니다. 이전 `modules/job_posts/`의 데이터 수집·저장 관련 파일을 이 폴더로 옮겼습니다. 상위 역할과 사용자 테이블 생성 코드는 [database README](../README.md)를 참고하세요.
+
+## 파일 역할
+
+| 파일·폴더 | 역할 |
+|---|---|
+| [service.py](service.py) | 공고 HTML 요청, `__NEXT_DATA__` 파싱, 컬럼 변환, 목록 수집·검증 보고서 생성 |
+| [model.py](model.py) | 저장할 채용공고 컬럼을 `WantedJobPost` 모델로 정의 |
+| [source.txt](source.txt) | 수집할 원티드 공고 URL 목록 |
+| [save_to_supabase.py](save_to_supabase.py) | 결과 JSON 검증, Supabase 테이블 준비, upsert 및 저장 후 검증 |
+| [job_posting_mj.sql](job_posting_mj.sql) | `public.job_posting_mj` 테이블 정의 |
+| [test_wanted_crawler.py](test_wanted_crawler.py) | 파싱·변환·예외 처리 및 저장 입력 검증. HTML 캐시가 있으면 실제 화면 헤더 대조 |
+| [results/job_postings.json](results/job_postings.json) | 수집한 공고 데이터 |
+| [results/validation_report.json](results/validation_report.json) | 성공·실패, 누락 필드, 경고, 원본 보조 정보 |
+
+## 이동 후 실행 경로
+
+아래 명령은 이동된 위치를 기준으로 작성했습니다. 현재 코드의 이전 경로 참조를 먼저 정리해야 실행할 수 있습니다.
+
+| 점검할 코드 | 이동 후 기준 |
+|---|---|
+| `service.py`, `save_to_supabase.py`의 `modules.job_posts.model` import | `modules.database.job_posting.model` |
+| 저장 코드·테스트의 `modules.job_posts.service`, `modules.job_posts.save_to_supabase` 참조 | `modules.database.job_posting.service`, `modules.database.job_posting.save_to_supabase` |
+| `save_to_supabase.py`의 `.env` 탐색 | 이 폴더의 `MODULE_DIR` 기준 프로젝트 루트는 `MODULE_DIR.parents[2]` |
+
+문서 경로 변경과 실행 코드 경로 변경은 별개입니다. 이 문서 수정 과정에서는 Python 코드를 변경하지 않았습니다.
+
+## 수집 실행
 
 프로젝트 루트에서 실행합니다. 파이썬 표준 라이브러리만 사용합니다.
 
 ```bash
-python -m modules.job_posts.service https://www.wanted.co.kr/wd/395333
+python -m modules.database.job_posting.service https://www.wanted.co.kr/wd/395333
 ```
 
 목록 전체를 수집하고 결과와 검증 보고서를 저장합니다. `source.txt`의 주석과 빈 줄은 무시하며 중복 URL은 한 번만 수집합니다. 한 공고가 실패해도 나머지는 계속 처리하고, 실패가 있으면 종료 코드는 1입니다.
 
 ```bash
-python -m modules.job_posts.service \
-  --source modules/job_posts/source.txt \
-  --output modules/job_posts/results/job_postings.json \
-  --report modules/job_posts/results/validation_report.json
+python -m modules.database.job_posting.service \
+  --source modules/database/job_posting/source.txt \
+  --output modules/database/job_posting/results/job_postings.json \
+  --report modules/database/job_posting/results/validation_report.json
 ```
 
 ## 컬럼 매핑
@@ -66,14 +95,14 @@ python -m modules.job_posts.service \
 14개의 단위 테스트와 35개 실제 HTML의 화면 헤더 대조 테스트를 통과했습니다. 이번 목록에는 인턴, 마감 공고, 확정 마감 시각 사례가 없어 이 경우는 합성 데이터로 검증했습니다. 향후 변경되는 공고 상태나 사이트 구조까지 보장하지는 않습니다.
 
 ```bash
-python -m unittest modules.job_posts.test_wanted_crawler -v
+python -m unittest modules.database.job_posting.test_wanted_crawler -v
 ```
 
 화면 헤더 대조 테스트는 `공고번호.html` 파일을 모은 폴더가 필요합니다. 이번 다운로드 파일이 남아 있는 환경에서는 다음과 같이 재실행할 수 있습니다.
 
 ```bash
 WANTED_HTML_DIR=/tmp/career_wanted_batch \
-python -m unittest modules.job_posts.test_wanted_crawler -v
+python -m unittest modules.database.job_posting.test_wanted_crawler -v
 ```
 
 저장한 HTML만으로 배치 수집을 재현하려면 수집 명령어에 `--html-dir /tmp/career_wanted_batch`를 추가합니다. 실제 HTML과 결과에는 공고 작성자의 원문이 포함되어 있습니다.
@@ -85,7 +114,7 @@ python -m unittest modules.job_posts.test_wanted_crawler -v
 
 ```bash
 python -m pip install -r requirements.txt
-python -m modules.job_posts.save_to_supabase
+python -m modules.database.job_posting.save_to_supabase
 ```
 
 `public.job_posting_mj`가 없으면 `job_posting_mj.sql`의 스키마로 생성합니다. `deadline_date`의 DB 타입은 `date`입니다. 지역 테이블이 정해지지 않아 `region_id`는 UUID 컬럼만 선언하고 외래키 제약은 아직 연결하지 않았습니다.
