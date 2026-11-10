@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from modules.auth import auth_store
+from modules.main.member_shell import apply_member_shell
 from modules.mypage.bookmarks_ui import CONTENT as BOOKMARKS_CONTENT, SCRIPT as BOOKMARKS_SCRIPT
 
 router = APIRouter(tags=["마이페이지"])
@@ -20,6 +21,9 @@ def page_user(request):
 
 
 def render_member_page(page, user):
+    if page == "main":
+        from modules.main.page import render_main
+        return render_main(user)
     if page == "home":
         from modules.mypage.dashboard_ui import render_dashboard
         return render_dashboard(user)
@@ -38,7 +42,7 @@ def render_member_page(page, user):
     html = html.replace("__BOOKMARKS_SCRIPT__", BOOKMARKS_SCRIPT if page == "bookmarks" else "")
     html = html.replace("__TITLE__", title).replace("__SUBTITLE__", subtitle)
     html = html.replace("__NAME__", escape(user["name"], quote=True)).replace("__EMAIL__", escape(user["email"], quote=True))
-    return HTMLResponse(html)
+    return HTMLResponse(apply_member_shell(html, user, 'mypage'))
 
 
 @router.get("/mypage", response_class=HTMLResponse, summary="마이페이지 홈")
@@ -65,14 +69,59 @@ TEMPLATE = r'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta 
 header{border-bottom:1px solid var(--line);background:white}.header-inner{max-width:1180px;margin:auto;min-height:80px;padding:15px 30px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px;letter-spacing:-1px}.brand-icon{width:32px;height:32px;background:var(--yellow);border:1px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-size:22px}.nav{display:flex;gap:22px;align-items:center;font-size:12px}.nav a:hover{text-decoration:underline;text-underline-offset:5px}.logout{background:none;border:0;color:var(--muted);font-size:12px;padding:8px 0}
 .layout{max-width:1120px;margin:44px auto 60px;padding:0 24px;display:grid;grid-template-columns:200px 1fr;gap:38px}.sidebar{padding-top:4px}.user-label{font-size:11px;color:var(--muted);margin-bottom:8px}.user-name{font-size:22px;font-weight:800;margin-bottom:28px;overflow-wrap:anywhere}.side-nav{display:grid;gap:6px}.side-nav a{padding:13px 15px;border-radius:10px;color:#737968;font-size:13px}.side-nav a.active{background:#f8e8a6;color:var(--ink);font-weight:700}.side-nav a:hover{background:#f4f0df}.side-note{border-top:1px solid var(--line);margin-top:26px;padding-top:20px;font-size:11px;color:var(--muted);line-height:1.8}.eyebrow{font-size:10px;color:#8a8d7b;letter-spacing:2px;font-weight:700;margin:0 0 9px}.page-title{font-size:29px;letter-spacing:-1.2px;margin:0 0 10px}.page-subtitle{font-size:13px;color:var(--muted);margin:0 0 27px}.panel{padding:28px;background:white;border:1px solid var(--line);border-radius:18px}.panel h2{font-size:21px;line-height:1.6;margin:16px 0 10px;letter-spacing:-.7px}.panel p{font-size:13px;line-height:1.9}.welcome{background:#f7f0d2}.badge{font-size:10px;display:inline-block;padding:6px 10px;background:#fff9e5;border:1px solid #e9ddb0;border-radius:20px;color:#7f7449;letter-spacing:.4px}.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}.menu-card{background:white;border:1px solid var(--line);border-radius:18px;padding:25px;transition:transform .2s,border-color .2s}.menu-card:hover{transform:translateY(-3px);border-color:#ccba6f}.tile-icon{display:grid;place-items:center;width:40px;height:40px;background:#fcf5d9;border-radius:12px;font-size:25px;margin-bottom:21px}.card-label{font-size:18px;font-weight:800}.menu-card p{font-size:12px;color:var(--muted);line-height:1.9}.card-foot{font-size:12px;display:block;margin-top:25px}.button{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 16px;background:white;color:var(--ink);border:1px solid var(--line);border-radius:9px;font-size:12px;white-space:nowrap}.button.primary{background:var(--yellow);border-color:var(--yellow);font-weight:700}.button:hover{border-color:#bcab63}.placeholder{padding:36px}.placeholder .button{margin-top:12px}.muted{color:var(--muted)}.profile{max-width:590px}.profile h2{margin-top:0}.profile form{margin-top:26px}.profile label{display:block;font-size:12px;font-weight:700;margin:20px 0 9px}input{height:45px;border:1px solid #dfe2d8;border-radius:9px;padding:0 13px;font-size:12px;min-width:0;color:var(--ink);background:white}.profile input{width:100%}input[readonly]{background:#f7f8f3;color:#7f8576}.hint{font-size:11px!important;color:var(--muted)}.profile .button{margin-top:18px}.error{color:#aa382a!important}.success{color:#426032!important}.list-tools{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center}.filters{display:flex;gap:5px;flex-wrap:wrap}.filter{padding:10px 12px;background:white;border:1px solid transparent;border-radius:8px;font-size:12px;color:var(--muted)}.filter.active{background:#fff2c4;color:var(--ink);border-color:#f1df9c}.filter span{margin-left:4px;font-size:11px}.search{display:flex;gap:8px;width:100%;margin-top:3px}.search input{flex:1}.bookmark-list{display:grid;gap:14px;margin-top:20px}.bookmark-card{border:1px solid var(--line);border-radius:13px;padding:21px}.bookmark-card h2{font-size:16px;margin:12px 0 6px;overflow-wrap:anywhere}.bookmark-card p{font-size:12px;margin:6px 0;color:var(--muted)}.card-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}.remove{color:#8f5946}.empty{text-align:center;padding:48px 12px}.empty>span{display:block;font-size:38px;color:#bca76a}.empty h2{font-size:19px}.empty p{color:var(--muted);font-size:12px}.empty .button{margin-top:12px}.pagination{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:24px;font-size:12px}.flash{min-height:18px;font-size:12px;color:#8d543e;line-height:1.7;margin-top:18px}footer{padding:20px;text-align:center;font-size:10px;color:#999e91}
 @media(max-width:760px){.header-inner{padding:15px 20px;gap:10px}.brand{font-size:17px}.nav{gap:12px;font-size:11px}.nav .username{display:none}.layout{display:block;margin-top:24px;padding:0 16px}.sidebar{margin-bottom:28px}.user-label,.user-name,.side-note{display:none}.side-nav{display:flex;gap:6px;flex-wrap:wrap}.side-nav a{padding:10px 13px;font-size:12px}.page-title{font-size:26px}.page-subtitle{font-size:12px;line-height:1.8}.panel{padding:21px}.menu-grid{grid-template-columns:1fr}.menu-card{padding:22px}.tile-icon{margin-bottom:14px}.card-foot{margin-top:16px}.filters{gap:0}.filter{padding:10px}.card-actions{justify-content:flex-start;flex-wrap:wrap}}
-</style></head><body data-page="__PAGE__"><header><div class="header-inner"><a class="brand" href="/main"><span class="brand-icon" aria-hidden="true">⤢</span>취준나침반</a><nav class="nav" aria-label="상단 메뉴"><span class="username">__NAME__님</span><a href="/main">메인</a><a href="/mypage">마이페이지</a><button class="logout" id="logout" type="button">로그아웃</button></nav></div></header>
-<div class="layout"><aside class="sidebar"><div class="user-label">MY COMPASS</div><div class="user-name">__NAME__님</div><nav class="side-nav" aria-label="마이페이지 메뉴"><a href="/mypage" data-menu="home">마이페이지 홈</a><a href="/mypage#bookmarks" data-menu="bookmarks">관심목록</a></nav><p class="side-note">각자의 속도로,<br>더 선명한 내일을 향해.</p></aside><main><p class="eyebrow">YOUR NEXT DIRECTION</p><h1 class="page-title">__TITLE__</h1><p class="page-subtitle">__SUBTITLE__</p>__CONTENT__<p id="flash" class="flash" role="status" aria-live="polite"></p></main></div><footer>© 2026 취준나침반 · 한 번에 찾고, 한 걸음씩 준비해요.</footer>
+
+.profile-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:18px}.profile .profile-actions .button{margin-top:0}.button.withdraw-trigger{background:#c8463c;border-color:#c8463c;color:white;font-weight:700}.button.withdraw-trigger:hover{background:#b63b32;border-color:#b63b32}
+.withdraw-dialog{width:calc(100% - 32px);max-width:460px;max-height:88vh;overflow:auto;border:1px solid var(--line);border-radius:20px;padding:29px;color:var(--ink);box-shadow:0 18px 70px #26312725}.withdraw-dialog::backdrop{background:#26312766}.withdraw-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#fff0ed;color:#b63b32;font-size:23px;font-weight:800;margin-bottom:14px}.withdraw-dialog h2{font-size:23px;margin:0 0 10px;letter-spacing:-.7px}.withdraw-intro{font-size:12px;line-height:1.9;color:var(--muted);margin:0 0 16px}.withdraw-note{font-size:12px;line-height:1.9;background:#fff6ef;color:#8b6249;border:1px solid #f0dfd3;border-radius:10px;padding:12px 14px;margin:0 0 21px}.withdraw-dialog label{display:block;font-size:12px;font-weight:700;margin:16px 0 8px}.withdraw-dialog input{width:100%;font-size:14px}.withdraw-message{font-size:12px;line-height:1.9;min-height:20px;margin:14px 0;outline:none}.withdraw-actions{display:flex;justify-content:flex-end;gap:9px}.withdraw-actions .button{margin:0;min-width:76px}.withdraw-dialog button:disabled{cursor:wait}.withdraw-message:focus-visible{outline:2px solid #bcb48b;outline-offset:4px}
+
+.profile-button-bar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px}.profile-button-bar .password-change-row,.profile-button-bar .profile-actions{margin-top:0}.profile-button-bar .profile-actions{margin-left:auto}.password-change-row{display:flex;justify-content:flex-start;margin-top:16px}.profile .password-change-row .button{margin:0}.password-dialog{width:calc(100% - 32px);max-width:460px;max-height:88vh;overflow:auto;border:1px solid var(--line);border-radius:20px;padding:29px;color:var(--ink);box-shadow:0 18px 70px #26312725}.password-dialog::backdrop{background:#26312766}.password-dialog h2{font-size:23px;margin:0 0 10px;letter-spacing:-.7px}.password-dialog>p{font-size:12px;line-height:1.9;color:var(--muted);margin:0 0 20px}.password-dialog label{display:block;font-size:12px;font-weight:700;margin:16px 0 8px}.password-dialog input{width:100%;font-size:14px}.password-dialog .password-help{font-size:10px;line-height:1.8;color:var(--muted);margin:7px 0 0}.password-change-message{font-size:12px;line-height:1.9;min-height:20px;margin:14px 0;outline:none}.password-dialog-actions{display:flex;justify-content:flex-end;gap:9px}.password-dialog-actions .button{margin:0;min-width:76px}
+
+__CC_CSS__
+</style></head><body class="cc-member-page" data-page="__PAGE__">__CC_HEADER__
+__CC_MENU__
+<div class="cc-page" data-member-content><section class="cc-page-heading"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1 class="page-title">__TITLE__</h1><p class="page-subtitle">__SUBTITLE__</p></section><div class="layout cc-account-grid"><aside class="sidebar"><div class="user-label">MY COMPASS</div><div class="user-name">__NAME__님</div><nav class="side-nav" aria-label="마이페이지 메뉴"><a href="/mypage" data-menu="home">마이페이지 홈</a><a href="/mypage#bookmarks" data-menu="bookmarks">관심목록</a></nav><p class="side-note">각자의 속도로,<br>더 선명한 내일을 향해.</p></aside><main>__CONTENT__<p id="flash" class="flash" role="status" aria-live="polite"></p></main></div></div><footer>© 2026 취준나침반 · 한 번에 찾고, 한 걸음씩 준비해요.</footer>
 <script>
 const page=document.body.dataset.page;
 const selected=document.querySelector(`[data-menu="${page}"]`);if(selected){selected.classList.add('active');selected.setAttribute('aria-current','page');}
 async function api(url,options={}){const response=await fetch(url,options);if(response.status===401){location.assign('/signin');throw new Error('로그인이 필요합니다.');}if(response.status===204)return null;const data=await response.json();if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:data.error?.message||'요청을 처리하지 못했습니다.');return data;}
-document.getElementById('logout').addEventListener('click',async()=>{const button=document.getElementById('logout');button.disabled=true;try{await api('/api/auth/signout',{method:'POST'});location.assign('/signin');}catch(error){document.getElementById('flash').textContent=error.message;button.disabled=false;}});
+
 if(page==='home'){api('/api/bookmarks?size=1').then(data=>document.getElementById('saved-count').textContent=`저장한 정보 ${data.counts.all}개 →`).catch(error=>document.getElementById('flash').textContent=error.message);}
 if(page==='profile'){document.getElementById('profile-form').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('profile-save'),message=document.getElementById('profile-message');button.disabled=true;message.textContent='저장 중…';try{const data=await api('/api/auth/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('profile-name').value})});document.querySelectorAll('.user-name,.username').forEach(node=>node.textContent=data.name+'님');message.className='success';message.textContent='변경 내용을 저장했습니다.';}catch(error){message.className='error';message.textContent=error.message;}finally{button.disabled=false;}});}
+
+if(page==='profile'){
+ const dialog=document.getElementById('withdraw-dialog'),form=document.getElementById('withdraw-form'),open=document.getElementById('withdraw-open'),cancel=document.getElementById('withdraw-cancel'),submit=document.getElementById('withdraw-submit'),message=document.getElementById('withdraw-message');
+ open.addEventListener('click',()=>{form.reset();message.textContent='';message.className='withdraw-message';dialog.showModal();});
+ cancel.addEventListener('click',()=>dialog.close());
+ dialog.addEventListener('cancel',event=>{if(submit.disabled)event.preventDefault();});
+ dialog.addEventListener('close',()=>{form.reset();message.textContent='';open.focus();});
+ form.addEventListener('submit',async event=>{
+  event.preventDefault();if(submit.disabled)return;
+  const password=document.getElementById('withdraw-password').value,confirmation=document.getElementById('withdraw-password-confirm').value;
+  message.className='withdraw-message';message.textContent='';
+  if(password!==confirmation){message.className='withdraw-message error';message.textContent='비밀번호 확인이 일치하지 않습니다.';document.getElementById('withdraw-password-confirm').focus();return;}
+  submit.disabled=true;cancel.disabled=true;submit.textContent='확인 중…';message.textContent='비밀번호를 확인하고 있어요.';
+  try{const data=await api('/api/auth/withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password,password_confirm:confirmation})});form.reset();if(data.withdrawal_completed){location.replace('/signin');return;}message.className='withdraw-message success';message.textContent=data.message;message.focus();}
+  catch(error){form.reset();message.className='withdraw-message error';message.textContent=error.message;message.focus();}
+  finally{submit.disabled=false;cancel.disabled=false;submit.textContent='탈퇴하기';}
+ });
+}
+
+
+if(page==='profile'){
+ const dialog=document.getElementById('password-dialog'),form=document.getElementById('password-change-form'),open=document.getElementById('password-change-open'),cancel=document.getElementById('password-change-cancel'),submit=document.getElementById('password-change-submit'),message=document.getElementById('password-change-message');let changed=false;
+ open.addEventListener('click',()=>{changed=false;form.reset();form.querySelectorAll('input').forEach(node=>node.disabled=false);cancel.textContent='취소';submit.textContent='비밀번호 변경';message.textContent='';message.className='password-change-message';dialog.showModal();});
+ cancel.addEventListener('click',()=>dialog.close());dialog.addEventListener('cancel',event=>{if(submit.disabled)event.preventDefault();});
+ dialog.addEventListener('close',()=>{form.reset();if(changed){location.replace('/signin');return;}open.focus();});
+ form.addEventListener('submit',async event=>{event.preventDefault();if(submit.disabled)return;if(changed){location.replace('/signin');return;}const previous=document.getElementById('password-current'),next=document.getElementById('password-new'),confirm=document.getElementById('password-confirm');message.className='password-change-message';message.textContent='';
+  if(next.value!==confirm.value){message.className='password-change-message error';message.textContent='새 비밀번호 확인이 일치하지 않습니다.';confirm.focus();return;}
+  if(!/[A-Za-z]/.test(next.value)||!/[0-9]/.test(next.value)){message.className='password-change-message error';message.textContent='새 비밀번호는 영문과 숫자를 모두 포함해 주세요.';next.focus();return;}
+  if(previous.value===next.value){message.className='password-change-message error';message.textContent='새 비밀번호는 이전 비밀번호와 다르게 입력해 주세요.';next.focus();return;}
+  submit.disabled=true;cancel.disabled=true;submit.textContent='변경 중…';message.textContent='비밀번호를 확인하고 변경하고 있어요.';
+  try{const data=await api('/api/auth/password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({current_password:previous.value,new_password:next.value,password_confirm:confirm.value})});form.reset();changed=data.password_changed===true;message.className='password-change-message success';message.textContent=data.message;message.focus();if(changed){form.querySelectorAll('input').forEach(node=>node.disabled=true);cancel.textContent='닫기';}}
+  catch(error){form.reset();message.className='password-change-message error';message.textContent=error.message;message.focus();}
+  finally{submit.disabled=false;cancel.disabled=false;submit.textContent=changed?'로그인하기':'비밀번호 변경';}
+ });
+}
+
 __BOOKMARKS_SCRIPT__
-</script></body></html>'''
+</script>__CC_SCRIPT__
+</body></html>'''

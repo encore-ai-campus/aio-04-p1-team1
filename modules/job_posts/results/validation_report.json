@@ -1,0 +1,596 @@
+{
+  "source_count": 35,
+  "unique_count": 35,
+  "duplicates": {},
+  "success_count": 35,
+  "failure_count": 0,
+  "null_field_counts": {
+    "region_id": 35,
+    "max_experience_months": 15,
+    "deadline_date": 30,
+    "preferred_qualifications": 4
+  },
+  "checks": [
+    {
+      "source_url": "https://www.wanted.co.kr/wd/379667",
+      "title": "인사 담당자(시니어)",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 영등포구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/389358",
+      "title": "인사 기획 담당자",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "서울 금천구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/275453",
+      "title": "HR Manager(인사, 평가보상)",
+      "null_fields": [
+        "region_id",
+        "preferred_qualifications",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요",
+        "우대사항 원문 없음"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/296329",
+      "title": "HR Manager(인사, 평가보상)",
+      "null_fields": [
+        "region_id",
+        "preferred_qualifications",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요",
+        "우대사항 원문 없음"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/393319",
+      "title": "[올록담] 인사 담당자(5년 이상)",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/298034",
+      "title": "Senior HR Manager (시니어 인사 담당자)",
+      "null_fields": [
+        "region_id",
+        "preferred_qualifications",
+        "deadline_date"
+      ],
+      "source_region": "서울 마포구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": "2026-03-24",
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요",
+        "close_time 값이 있으나 status=active: 모집 상태는 원본 status 기준",
+        "우대사항 원문 없음"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/391773",
+      "title": "인사팀장",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 영등포구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/396190",
+      "title": "HR Manager (신입)",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/389373",
+      "title": "인사팀 인사시니어",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "경기 부천시",
+      "source_due_time": null,
+      "source_employment_type": "contract",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/378086",
+      "title": "HRM Manager",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/384303",
+      "title": "인사기획 담당자",
+      "null_fields": [
+        "region_id",
+        "max_experience_months"
+      ],
+      "source_region": "경기 성남시",
+      "source_due_time": "2026-11-15T00:00:00",
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/395626",
+      "title": "HR 담당자",
+      "null_fields": [
+        "region_id"
+      ],
+      "source_region": "서울 성동구",
+      "source_due_time": "2026-11-30T00:00:00",
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/280517",
+      "title": "데이터 분석가 (Data Analyst)",
+      "null_fields": [
+        "region_id"
+      ],
+      "source_region": "서울 구로구",
+      "source_due_time": "2026-12-02T00:00:00",
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/387053",
+      "title": "데이터 분석가",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 성동구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/393303",
+      "title": "비즈니스 데이터 분석가",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/396069",
+      "title": "게임 데이터 분석",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "경기 성남시",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/381241",
+      "title": "비즈니스 데이터 분석",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/396946",
+      "title": "[쿠팡] 카탈로그 운영 개선 비즈니스 분석가",
+      "null_fields": [
+        "region_id"
+      ],
+      "source_region": "서울 광진구",
+      "source_due_time": "2026-12-04T00:00:00",
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/386902",
+      "title": "Data Analyst [User Behavior]",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/358218",
+      "title": "[채널톡] Data Analyst",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/392091",
+      "title": "Data Analyst",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 서초구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/394542",
+      "title": "데이터 분석 파트 리드 (Business Analytics)",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/392079",
+      "title": "Data Analyst",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 서초구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/392291",
+      "title": "Business Data Analyst (2~7년)",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/392968",
+      "title": "개발자",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "preferred_qualifications",
+        "deadline_date"
+      ],
+      "source_region": "서울 용산구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요",
+        "우대사항 원문 없음"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/367839",
+      "title": "개발자",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "서울 관악구",
+      "source_due_time": null,
+      "source_employment_type": "contract",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/317126",
+      "title": "백엔드 개발자",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/396768",
+      "title": "백엔드 개발자",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "경기 성남시",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/378809",
+      "title": "풀스택 개발자 (AI 개발자)",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 관악구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/270970",
+      "title": "백엔드 개발자 (Python)",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/395562",
+      "title": "iOS 개발자",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/375746",
+      "title": "프론트엔트 개발자",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "경기 성남시",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/390319",
+      "title": "플랫폼 개발자",
+      "null_fields": [
+        "region_id",
+        "deadline_date"
+      ],
+      "source_region": "서울 중구",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/294971",
+      "title": "백엔드 개발자(Python)",
+      "null_fields": [
+        "region_id",
+        "max_experience_months",
+        "deadline_date"
+      ],
+      "source_region": "경기 성남시",
+      "source_due_time": null,
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": null,
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요"
+      ]
+    },
+    {
+      "source_url": "https://www.wanted.co.kr/wd/392837",
+      "title": "시니어 풀스택 개발자",
+      "null_fields": [
+        "region_id"
+      ],
+      "source_region": "서울 강남구",
+      "source_due_time": "2026-11-30T00:00:00",
+      "source_employment_type": "regular",
+      "source_status": "active",
+      "source_close_time": "2026-11-02",
+      "warnings": [
+        "지역 테이블 UUID 매핑 필요",
+        "close_time 값이 있으나 status=active: 모집 상태는 원본 status 기준"
+      ]
+    }
+  ],
+  "failures": []
+}
