@@ -25,9 +25,9 @@ def apply_member_shell(html,user,current):
     menu='''<div class="cc-menu-backdrop" id="cc-menu-backdrop" hidden></div><aside class="cc-menu" id="cc-menu" inert aria-label="주 메뉴"><div class="cc-menu-heading"><span>나의 취준나침반</span><button class="cc-icon-button" id="cc-menu-close" type="button" aria-label="메뉴 닫기">'''+_icon('close')+'''</button></div><p class="cc-menu-label">YOUR NEXT DIRECTION</p><nav class="cc-menu-list" aria-label="서비스 메뉴">
 <a class="cc-menu-item" href="/main"'''+main_current+'>'+_icon('home')+'''메인</a>
 <a class="cc-menu-item" href="/jd_match">'''+_icon('target')+'''적합도 분석</a>
-<button class="cc-menu-item" type="button" data-cc-pending="training">'''+_icon('book')+'''교육추천<span class="cc-soon">준비 중</span></button>
+<a class="cc-menu-item" href="/training_match">'''+_icon('book')+'''교육추천</a>
 <button class="cc-menu-item" type="button" data-cc-pending="jobs">'''+_icon('case')+'''공고모음<span class="cc-soon">준비 중</span></button>
-<button class="cc-menu-item" type="button" data-cc-pending="courses">'''+_icon('grid')+'''교육모음<span class="cc-soon">준비 중</span></button>
+<a class="cc-menu-item" href="/training_posts">'''+_icon('grid')+'''교육모음</a>
 <a class="cc-menu-item cc-menu-last" href="/mypage"'''+mypage_current+'>'+_icon('user')+'''마이페이지</a></nav><p class="cc-menu-note">각자의 속도로,<br>더 선명한 내일을 향해.</p></aside>
 <dialog class="cc-service-dialog" id="cc-service-dialog" aria-labelledby="cc-service-title"><h2 id="cc-service-title"></h2><p id="cc-service-body"></p><form method="dialog"><button class="cc-dialog-confirm" value="close">확인</button></form></dialog>'''
     for key,value in [('__CC_CSS__',CSS),('__CC_HEADER__',header),('__CC_MENU__',menu),('__CC_SCRIPT__',SCRIPT)]:
