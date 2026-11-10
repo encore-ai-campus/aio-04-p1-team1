@@ -10,7 +10,7 @@ from modules.auth import auth_store
 from modules.job_posts.router import router as job_posts_router
 from modules.jd_match.router import router as jd_match_router
 from modules.training_posts.router import router as training_posts_router
-from modules.Training_match.router import router as training_match_router
+from modules.training_match.router import router as training_match_router
 from modules.mypage.router import router as mypage_router
 
 # 로그인, 회원가입 후 이동할 주소

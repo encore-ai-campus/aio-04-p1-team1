@@ -9,7 +9,7 @@ from urllib.request import Request, urlopen
 from dotenv import load_dotenv
 from pathlib import Path
 from modules.training_posts.service import catalogue_data
-from modules.Training_match.model import RecommendationInput
+from modules.training_match.model import RecommendationInput
 
 load_dotenv(Path(__file__).resolve().parent / ".env", override=False)
 

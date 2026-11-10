@@ -45,7 +45,7 @@ career-compass/
 ## 교육 기능 통합 (복사본)
 이 폴더는 C:\career-compass 원본을 유지하고 만든 통합 작업 복사본입니다.
 가상환경·캐시·Git 이력을 제외한 소스와 .env를 복사했습니다.
-training_posts와 Training_match는 별도 모듈이며, 기존 FastAPI 앱에 각각 라우터로 연결했습니다.
+training_posts와 training_match는 별도 모듈이며, 기존 FastAPI 앱에 각각 라우터로 연결했습니다.
 
 ### 실행
 ```powershell
@@ -63,7 +63,7 @@ python -m venv .venv
 ### 수정 범위
 - 루트 app.py: 루트 .env 로드와 교육추천 라우터 등록
 - 두 교육 모듈: router(경로), page(화면), service(API 처리), model(입력 검증) 구조로 변경
-- 모듈 app.py: 중복 처리 코드를 제거하고 호환용 진입점으로 변경
+- 교육목록·교육추천 모듈은 router.py로 연결하며, 서버 진입점은 루트 app.py 하나만 사용
 - 목록 재조회·추천 요청 URL을 통합 경로로 변경
 - 기존 회원 메인 화면에 교육목록/추천 진입 링크 추가
 - 기존 로그인·회원가입·마이페이지 및 적합도 라우터 유지
@@ -102,12 +102,12 @@ API 조회가 일부 실패하거나 DB 저장·건수 검증에 실패하면 �
 검색/조건 적용/초기화는 DB 재조회이며 고용24 API를 호출하지 않습니다.
 필요할 때만 프로젝트 루트에서 명시적으로 다음 명령을 실행할 수 있습니다.
 ```powershell
-.\.venv\Scripts\python.exe import_training_posts.py
+.\.venv\Scripts\python.exe -m modules.training_posts.import_training_posts
 ```
 조회 범위는 실행일 기준 전후 365일이며, 최신 기준은 등록일이 아닌 교육 시작일입니다.
 분야별 실제 조회 결과가 20개 미만이면 존재하는 자료만 저장합니다.
-DB 접속은 루트 .env의 DATABASE_URL과 TRAINING_DB_SSLROOTCERT를 사용합니다.
-인증서와 호스트 이름을 검증하며, Windows DLL 제한을 피하기 위해 pg8000==1.31.6을 requirements.txt에 추가했습니다.
+DB 접속은 shared.database.get_db()의 공통 DB 세션과 루트 .env의 DATABASE_URL을 사용합니다.
+공통 세션에서 SSL 연결과 트랜잭션을 관리하며 별도 인증서 파일은 사용하지 않습니다.
 교육추천도 저장된 교육을 후보로 사용하며 Groq로 공고와 본인 프로필을 비교합니다.
 
 ### DB 저장 검증 결과

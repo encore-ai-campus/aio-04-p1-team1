@@ -5,10 +5,10 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from modules.auth import auth_store
-from modules.Training_match.model import JobRecommendationRequest
-from modules.Training_match.page import RECOMMEND_PAGE
-from modules.Training_match.repository import get_job, get_own_profile, list_jobs, profile_summary
-from modules.Training_match.service import (
+from modules.training_match.model import JobRecommendationRequest
+from modules.training_match.page import RECOMMEND_PAGE
+from modules.training_match.repository import get_job, get_own_profile, list_jobs, profile_summary
+from modules.training_match.service import (
     catalogue_data, shortlist_courses, call_groq, validate_recommendations,
     RecommendationError, build_preferences,
 )

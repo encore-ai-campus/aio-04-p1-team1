@@ -1,4 +1,4 @@
-"""명시적으로 실행할 때에만 고용24 최신 목록을 저장합니다. 자동 실행되지 않습니다."""
+"""python -m modules.training_posts.import_training_posts로 명시적으로 실행할 때만 저장합니다."""
 from datetime import datetime, timedelta, timezone
 from modules.training_posts.repository import replace_snapshot
 from modules.training_posts.service import fetch_all

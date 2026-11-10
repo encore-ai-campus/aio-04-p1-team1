@@ -9,7 +9,7 @@
 
 루트에서 `python -m uvicorn app:app --host 127.0.0.1 --port 8000` 실행 후
 http://127.0.0.1:8000/training_posts 에 접속합니다.
-app.py는 중복 처리 코드가 없는 호환용 진입점입니다.
+서버 진입점은 프로젝트 루트 app.py 하나이며, 이 모듈은 router.py로 연결됩니다.
 교육 데이터 및 추천 결과는 DB에 저장하지 않습니다.
 
 
@@ -22,10 +22,10 @@ API 조회가 일부 실패하거나 DB 저장·건수 검증에 실패하면 �
 검색/조건 적용/초기화는 DB 재조회이며 고용24 API를 호출하지 않습니다.
 필요할 때만 프로젝트 루트에서 명시적으로 다음 명령을 실행할 수 있습니다.
 ```powershell
-.\.venv\Scripts\python.exe import_training_posts.py
+.\.venv\Scripts\python.exe -m modules.training_posts.import_training_posts
 ```
 조회 범위는 실행일 기준 전후 365일이며, 최신 기준은 등록일이 아닌 교육 시작일입니다.
 분야별 실제 조회 결과가 20개 미만이면 존재하는 자료만 저장합니다.
-DB 접속은 루트 .env의 DATABASE_URL과 TRAINING_DB_SSLROOTCERT를 사용합니다.
-인증서와 호스트 이름을 검증하며, Windows DLL 제한을 피하기 위해 pg8000==1.31.6을 requirements.txt에 추가했습니다.
+DB 접속은 shared.database.get_db()의 공통 DB 세션과 루트 .env의 DATABASE_URL을 사용합니다.
+공통 세션에서 SSL 연결과 트랜잭션을 관리하며 별도 인증서 파일은 사용하지 않습니다.
 교육추천은 이번 변경 대상이 아니며 기존대로 고용24/Groq API를 직접 사용합니다.

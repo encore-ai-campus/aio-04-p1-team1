@@ -3,16 +3,10 @@ from contextlib import contextmanager
 from datetime import datetime, timezone, timedelta
 import json
 import logging
-import os
-from pathlib import Path
-import ssl
-from urllib.parse import unquote, urlsplit
+from psycopg.rows import tuple_row
 
-from dotenv import load_dotenv
-import pg8000.dbapi
+from shared.database import get_db
 
-ROOT = Path(__file__).resolve().parents[2]
-load_dotenv(ROOT / '.env', override=False)
 LOGGER = logging.getLogger('uvicorn.error')
 KST = timezone(timedelta(hours=9))
 
@@ -23,42 +17,18 @@ class CatalogueStorageError(Exception):
 
 @contextmanager
 def database():
-    connection = None
     try:
-        url = urlsplit(os.getenv('DATABASE_URL', '').strip())
-        if url.scheme not in {'postgres', 'postgresql'} or not url.hostname or not url.username:
-            raise ValueError('Invalid DATABASE_URL')
-        context = ssl.create_default_context()
-        certificate = ROOT / os.getenv('TRAINING_DB_SSLROOTCERT', 'modules/training_posts/certs/supabase-prod-ca.crt')
-        context.load_verify_locations(str(certificate))
-        connection = pg8000.dbapi.connect(
-            user=unquote(url.username), password=unquote(url.password or ''),
-            host=url.hostname, port=url.port or 5432,
-            database=unquote(url.path.lstrip('/')) or 'postgres',
-            ssl_context=context, timeout=20,
-        )
-        cursor = connection.cursor()
-        cursor.execute("SET LOCAL statement_timeout = '30s'")
-        yield cursor
-        connection.commit()
+        # Reuse the shared session's commit, rollback and connection cleanup.
+        with contextmanager(get_db)() as connection:
+            # Existing catalogue and job readers consume positional rows.
+            with connection.cursor(row_factory=tuple_row) as cursor:
+                cursor.execute("SET LOCAL statement_timeout = '30s'")
+                yield cursor
     except CatalogueStorageError:
-        if connection is not None:
-            connection.rollback()
         raise
     except Exception as exc:
-        if connection is not None:
-            try:
-                connection.rollback()
-            except Exception:
-                pass
         LOGGER.warning('Training catalogue database operation failed (%s)', type(exc).__name__)
         raise CatalogueStorageError('교육 저장소에 연결하지 못했습니다. 잠시 후 다시 확인해 주세요.') from None
-    finally:
-        if connection is not None:
-            try:
-                connection.close()
-            except Exception:
-                pass
 
 
 def read_catalogue(start, end):

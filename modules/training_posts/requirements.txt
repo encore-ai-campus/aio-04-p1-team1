@@ -1,4 +1,0 @@
-fastapi
-uvicorn
-python-dotenv
-pg8000==1.31.6
