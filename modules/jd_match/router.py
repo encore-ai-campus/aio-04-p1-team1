@@ -1,12 +1,17 @@
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
+from psycopg import Connection
+from uuid import UUID
 
-# from modules.jd_match.model import TestSejo
-# from modules.jd_match.service import get_test_rows
-from shared.components.header import render_header
+from modules.jd_match.model import JobPosting, Profile
+from modules.jd_match.service import get_jd_match_score, get_job_posting, get_profile
+from modules.auth import auth_store
+from shared.components.compass import apply_member_shell
+from shared.auth_dependencies import CurrentUser
+from shared.database import get_db
 
 router = APIRouter(prefix="/jd_match", tags=["jd_match"])
 TEMPLATE_PATH = Path(__file__).with_name("templates") / "match.html"

@@ -1,36 +1,3 @@
-"""메인 FastAPI 앱에 포함되는 교육목록 라우터."""
-import json
-from datetime import date, datetime, timedelta, timezone
 from fastapi import APIRouter
-from fastapi.responses import HTMLResponse, JSONResponse
-from modules.training_posts.page import PAGE
-from modules.training_posts.repository import CatalogueStorageError
-from modules.training_posts.service import CATEGORIES, catalogue_data, escape
 
-router = APIRouter(prefix="/training_posts", tags=["교육목록"])
-
-@router.get("", response_class=HTMLResponse)
-@router.get("/", response_class=HTMLResponse, include_in_schema=False)
-def page(start: date | None = None, end: date | None = None, data: bool = False):
-    today = datetime.now(timezone(timedelta(hours=9))).date()
-    start = start or today - timedelta(days=365)
-    end = end or today + timedelta(days=365)
-    if start > end:
-        return HTMLResponse("조회 종료일은 시작일 이후여야 합니다.", status_code=400)
-    status = 200
-    try:
-        payload = catalogue_data(start, end)
-    except CatalogueStorageError as exc:
-        status = 503
-        payload = {"courses": [], "categories": [{"code": code, "name": name} for code, name in CATEGORIES.items()],
-                   "errors": [{"category": "저장소", "message": str(exc)}], "source": "supabase",
-                   "fetchedAt": "확인 불가", "start": start.isoformat(), "end": end.isoformat()}
-    headers = {"Cache-Control": "no-store"}
-    if data:
-        return JSONResponse(payload, headers=headers, status_code=status)
-    options = "".join(f'<option value="{code}">{code} {escape(name)}</option>'
-                      for code, name in CATEGORIES.items())
-    # Escape '<' so an external course title cannot terminate the JSON script.
-    serialized = json.dumps(payload, ensure_ascii=False).replace("<", "\\u003c")
-    rendered = PAGE.replace("__CATEGORY_OPTIONS__", options).replace("__INITIAL_DATA__", serialized)
-    return HTMLResponse(rendered, headers=headers, status_code=status)
+router = APIRouter(prefix="/training_posts", tags=["training_posts"])
