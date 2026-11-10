@@ -1,3 +1,8 @@
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parent / ".env", override=False)
+
 from fastapi.responses import RedirectResponse
 from modules.auth.Signin import router as signin_router
 from modules.auth.Signup import router as signup_router
@@ -5,6 +10,7 @@ from modules.auth import auth_store
 from modules.job_posts.router import router as job_posts_router
 from modules.jd_match.router import router as jd_match_router
 from modules.training_posts.router import router as training_posts_router
+from modules.training_match.router import router as training_match_router
 from modules.mypage.router import router as mypage_router
 
 # 로그인, 회원가입 후 이동할 주소
@@ -17,6 +23,7 @@ app.include_router(signup_router)
 app.include_router(job_posts_router)
 app.include_router(jd_match_router)
 app.include_router(training_posts_router)
+app.include_router(training_match_router)
 app.include_router(mypage_router)
 
 @app.get("/")
