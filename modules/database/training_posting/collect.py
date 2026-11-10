@@ -14,8 +14,8 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
-from modules.training_posts.model import TrainingPosting
-from modules.training_posts.service import (
+from modules.database.training_posting.schemas import TrainingPosting
+from modules.database.training_posting.work24_client import (
     MODULE_DIR, Work24APIError, build_search_params, load_api_key,
     parse_training_xml, search_training_courses,
 )
@@ -324,7 +324,7 @@ def main():
             resume=args.resume, progress=progress)
         write_outputs(args.output_dir, records, report)
         if args.save_db:
-            from modules.training_posts.save_to_supabase import save_records, load_database_url
+            from modules.database.training_posting.save_to_supabase import save_records, load_database_url
             try:
                 records, summary = save_records(records, load_database_url())
                 report['database'] = dict(status='saved', **summary)

@@ -8,10 +8,10 @@ from dataclasses import asdict
 from pathlib import Path
 from uuid import UUID
 
-from modules.job_posts.service import (
+from modules.database.job_posting.wanted_crawler import (
     WantedCrawlError, collect_source, parse_wanted_html,
 )
-from modules.job_posts.save_to_supabase import read_records
+from modules.database.job_posting.save_to_supabase import read_records
 
 URL = 'https://www.wanted.co.kr/wd/123'
 

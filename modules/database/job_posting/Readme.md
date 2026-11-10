@@ -6,8 +6,8 @@
 
 | 파일·폴더 | 역할 |
 |---|---|
-| [service.py](service.py) | 공고 HTML 요청, `__NEXT_DATA__` 파싱, 컬럼 변환, 목록 수집·검증 보고서 생성 |
-| [model.py](model.py) | 저장할 채용공고 컬럼을 `WantedJobPost` 모델로 정의 |
+| [wanted_crawler.py](wanted_crawler.py) | 공고 HTML 요청, `__NEXT_DATA__` 파싱, 컬럼 변환, 목록 수집·검증 보고서 생성 |
+| [schemas.py](schemas.py) | 저장할 채용공고 컬럼을 `WantedJobPost` 모델로 정의 |
 | [source.txt](source.txt) | 수집할 원티드 공고 URL 목록 |
 | [save_to_supabase.py](save_to_supabase.py) | 결과 JSON 검증, Supabase 테이블 준비, upsert 및 저장 후 검증 |
 | [job_posting_mj.sql](job_posting_mj.sql) | `public.job_posting_mj` 테이블 정의 |
@@ -17,28 +17,22 @@
 
 ## 이동 후 실행 경로
 
-아래 명령은 이동된 위치를 기준으로 작성했습니다. 현재 코드의 이전 경로 참조를 먼저 정리해야 실행할 수 있습니다.
+아래 명령과 소스 코드의 import는 `modules.database.job_posting.*`를 사용합니다. `schemas.py`, `wanted_crawler.py`, `save_to_supabase.py`, 테스트 참조도 이 위치로 통일했습니다.
 
-| 점검할 코드 | 이동 후 기준 |
-|---|---|
-| `service.py`, `save_to_supabase.py`의 `modules.job_posts.model` import | `modules.database.job_posting.model` |
-| 저장 코드·테스트의 `modules.job_posts.service`, `modules.job_posts.save_to_supabase` 참조 | `modules.database.job_posting.service`, `modules.database.job_posting.save_to_supabase` |
-| `save_to_supabase.py`의 `.env` 탐색 | 이 폴더의 `MODULE_DIR` 기준 프로젝트 루트는 `MODULE_DIR.parents[2]` |
-
-문서 경로 변경과 실행 코드 경로 변경은 별개입니다. 이 문서 수정 과정에서는 Python 코드를 변경하지 않았습니다.
+`save_to_supabase.py`는 `MODULE_DIR.parents[2] / ".env"`로 프로젝트 루트 설정을 읽습니다. 기본 저장 입력은 이 폴더의 `results/job_postings.json`이며, 테이블 정의는 같은 폴더의 `job_posting_mj.sql`을 읽습니다.
 
 ## 수집 실행
 
 프로젝트 루트에서 실행합니다. 파이썬 표준 라이브러리만 사용합니다.
 
 ```bash
-python -m modules.database.job_posting.service https://www.wanted.co.kr/wd/395333
+python -m modules.database.job_posting.wanted_crawler https://www.wanted.co.kr/wd/395333
 ```
 
 목록 전체를 수집하고 결과와 검증 보고서를 저장합니다. `source.txt`의 주석과 빈 줄은 무시하며 중복 URL은 한 번만 수집합니다. 한 공고가 실패해도 나머지는 계속 처리하고, 실패가 있으면 종료 코드는 1입니다.
 
 ```bash
-python -m modules.database.job_posting.service \
+python -m modules.database.job_posting.wanted_crawler \
   --source modules/database/job_posting/source.txt \
   --output modules/database/job_posting/results/job_postings.json \
   --report modules/database/job_posting/results/validation_report.json

@@ -3,10 +3,10 @@ import unittest
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-from modules.training_posts.collect import JOB_RULES, assign_jobs, collect, match_jobs, normalize_course, write_outputs
-from modules.training_posts.model import TrainingSearchResult
-from modules.training_posts.save_to_supabase import validate_records
-from modules.training_posts.service import Work24APIError
+from modules.database.training_posting.collect import JOB_RULES, assign_jobs, collect, match_jobs, normalize_course, write_outputs
+from modules.database.training_posting.schemas import TrainingSearchResult
+from modules.database.training_posting.save_to_supabase import validate_records
+from modules.database.training_posting.work24_client import Work24APIError
 
 
 def course(key, title, **extra):

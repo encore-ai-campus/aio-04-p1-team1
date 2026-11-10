@@ -1,6 +1,6 @@
 """수집 JSON을 public.job_posting_mj에 저장하고 같은 트랜잭션에서 검증합니다.
 
-python -m modules.job_posts.save_to_supabase
+python -m modules.database.job_posting.save_to_supabase
 """
 
 import argparse
@@ -11,8 +11,8 @@ from datetime import date
 from pathlib import Path
 from uuid import UUID
 
-from modules.job_posts.model import WantedJobPost
-from modules.job_posts.service import _canonical_url
+from modules.database.job_posting.schemas import WantedJobPost
+from modules.database.job_posting.wanted_crawler import _canonical_url
 
 
 MODULE_DIR = Path(__file__).resolve().parent
@@ -92,7 +92,7 @@ def main():
     try:
         records = read_records(args.input)
         from dotenv import load_dotenv
-        load_dotenv(MODULE_DIR.parents[1] / ".env", override=False)
+        load_dotenv(MODULE_DIR.parents[2] / ".env", override=False)
         database_url = os.environ.get("DATABASE_URL", "").strip()
         if not database_url:
             parser.exit(1, "저장 실패: .env에 DATABASE_URL을 설정하세요.\n")
