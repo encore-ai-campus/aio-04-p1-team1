@@ -58,7 +58,7 @@ def shortlist_courses(payload, preferences):
         if preferences.mode == "online_only" and course["mode"] != "online":
             continue
         # Different rounds of the same course should not occupy all three recommendations.
-        identity = (course["key"].split("|")[0], course["courseId"])
+        identity = course["courseId"] or course["key"]
         title = course["title"].casefold()
         relevance = sum(8 for term in terms if term in title)
         relevance += sum(4 for _, pattern in wanted if re.search(pattern, title, re.I))

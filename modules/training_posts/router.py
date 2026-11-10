@@ -28,8 +28,10 @@ def page(start: date | None = None, end: date | None = None, data: bool = False)
     headers = {"Cache-Control": "no-store"}
     if data:
         return JSONResponse(payload, headers=headers, status_code=status)
-    options = "".join(f'<option value="{code}">{code} {escape(name)}</option>'
-                      for code, name in CATEGORIES.items())
+    options = "".join(
+        f'<option value="{escape(item["code"])}">{escape(item["name"])}</option>'
+        for item in payload['categories']
+    )
     # Escape '<' so an external course title cannot terminate the JSON script.
     serialized = json.dumps(payload, ensure_ascii=False).replace("<", "\\u003c")
     rendered = PAGE.replace("__CATEGORY_OPTIONS__", options).replace("__INITIAL_DATA__", serialized)

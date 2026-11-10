@@ -46,12 +46,12 @@ dialog{border:1px solid #e0e5d7;background:var(--paper);border-radius:21px;box-s
 <aside class="sidebar" aria-label="검색 조건">
 <div class="sidebar-head"><h2>검색 조건</h2><button type="button" class="reset" id="resetButton">초기화</button></div>
 <form id="filterForm" class="filter-form">
-<label class="field"><span>직무 / 분야</span><div class="select-wrap"><select id="category" aria-label="직무 / 분야"><option value="">전체 분야</option><option value="hr" selected>인사·HR</option>__CATEGORY_OPTIONS__</select></div></label>
-<label class="field"><span>교육 방식</span><div class="select-wrap"><select id="mode" aria-label="교육 방식"><option value="all">전체 방식</option><option value="online" selected>온라인</option><option value="offline">오프라인</option><option value="mixed">혼합</option><option value="unknown">방식 확인 필요</option></select></div></label>
-<label class="field"><span>교육비</span><div class="select-wrap"><select id="budget" aria-label="교육비"><option value="">전체 금액</option><option value="0">무료</option><option value="100000" selected>무료·10만원 이하</option><option value="300000">30만원 이하</option><option value="500000">50만원 이하</option></select></div></label>
+<label class="field"><span>직무 / 분야</span><div class="select-wrap"><select id="category" aria-label="직무 / 분야"><option value="">전체 분야</option>__CATEGORY_OPTIONS__</select></div></label>
+<label class="field"><span>교육 방식</span><div class="select-wrap"><select id="mode" aria-label="교육 방식"><option value="all">전체 방식</option><option value="online">온라인</option><option value="offline">오프라인</option><option value="mixed">혼합</option><option value="unknown">방식 확인 필요</option></select></div></label>
+<label class="field"><span>교육비</span><div class="select-wrap"><select id="budget" aria-label="교육비"><option value="">전체 금액</option><option value="0">무료</option><option value="100000">무료·10만원 이하</option><option value="300000">30만원 이하</option><option value="500000">50만원 이하</option></select></div></label>
 <button type="submit" class="apply" id="applyButton">조건 적용</button>
 </form>
-<p class="sidebar-note">표시 금액은 API 수강비입니다.<br>본인부담금·지원 자격은 원문에서 확인해 주세요.</p>
+<p class="sidebar-note">분야·교육비·교육 방식은 미제공입니다.<br>비용·방식 조건을 지정하면 미확인 교육은 제외됩니다.</p>
 </aside>
 <section class="result-area" aria-label="교육 검색 결과">
 <form class="search" id="searchForm"><input id="searchInput" type="search" aria-label="교육 검색" placeholder="교육명, 교육기관 또는 기술 검색" maxlength="200"><button type="submit" id="searchButton">검색</button></form>
@@ -71,7 +71,7 @@ dialog{border:1px solid #e0e5d7;background:var(--paper);border-radius:21px;box-s
 "use strict";
 const el = (id) => document.getElementById(id);
 const PAGE_SIZE = 4;
-const state = {data:JSON.parse(el("initial-data").textContent),filtered:[],page:0,saved:[],filter:{category:"hr",mode:"online",budget:"100000",query:""},controller:null,generation:0};
+const state = {data:JSON.parse(el("initial-data").textContent),filtered:[],page:0,saved:[],filter:{category:"",mode:"all",budget:"",query:""},controller:null,generation:0};
 try { const saved=JSON.parse(localStorage.getItem("training-collection-favorites")||"[]"); if(Array.isArray(saved))state.saved=saved.filter(k=>typeof k==="string"); } catch {}
 const esc=(value)=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const modeName=(value)=>({online:"온라인",offline:"오프라인",mixed:"혼합",unknown:"방식 확인 필요",all:"전체 방식"}[value]||"방식 확인 필요");
@@ -114,7 +114,7 @@ function render(){
   el("chips").innerHTML=chips.map(text=>'<span class="chip">'+esc(text)+'</span>').join("");
   el("dataNote").textContent=state.data.errors.length?state.data.errors.map(item=>item.message).join(" "):"";
   el("dataNote").classList.toggle("error-note",state.data.errors.length>0);
-  el("sourceNote").textContent="고용24 · Supabase 저장 자료 · "+state.data.fetchedAt+" 저장";
+  el("sourceNote").textContent="고용24 · Supabase 저장 자료 · "+state.data.fetchedAt+" 조회";
   const visible=state.filtered.slice(state.page*PAGE_SIZE,(state.page+1)*PAGE_SIZE);
   el("cards").innerHTML=visible.length?visible.map(c=>{
     const saved=state.saved.includes(c.key);
@@ -156,8 +156,8 @@ async function reloadAndApply(){
 function reset(){el("category").value="";el("mode").value="all";el("budget").value="";el("searchInput").value="";el("sort").value="latest";reloadAndApply();}
 function showDetails(c){
   const url=safeUrl(c.url);
-  const fields=[["교육기관",c.provider],["분야",c.categoryName],["교육 방식",modeName(c.mode)+(c.modeEvidence?" · "+c.modeEvidence:"")],["교육 기간",(c.start||"미정")+" ~ "+(c.end||"미정")],["API 수강비",costText(c.cost)],["실제 훈련비",c.rawRealCost?c.rawRealCost+"원":"원문 확인"],["개인 본인부담금","고용24 원문에서 확인"],["지역",c.address||"원문 확인"],["과정 ID",c.courseId],["훈련 회차",c.round+"회차"],["NCS 코드",c.ncsCode||"미제공"]];
-  el("detailBody").innerHTML='<h2 class="modal-title" id="detailTitle">'+esc(c.title)+'</h2><dl class="detail-grid">'+fields.map(([label,value])=>'<dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd>').join("")+'</dl><p class="detail-note">교육 방식은 API에 명시된 근거로 분류하며, 확인되지 않은 경우 별도 표시합니다. 표시 금액은 개인별 본인부담금이 아니므로 원문에서 확인해 주세요.</p>'+(url?'<a class="primary-link" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">고용24 원문 보기 ↗</a>':'');
+  const fields=[["교육기관",c.provider],["분야",c.categoryName],["교육 방식",modeName(c.mode)+(c.modeEvidence?" · "+c.modeEvidence:"")],["교육 기간",(c.start||"미정")+" ~ "+(c.end||"미정")],["API 수강비",costText(c.cost)],["실제 훈련비",c.rawRealCost?c.rawRealCost+"원":"원문 확인"],["개인 본인부담금","고용24 원문에서 확인"],["지역",c.address||"원문 확인"],["과정 ID",c.courseId],["훈련 회차",c.round?c.round+"회차":"미제공"],["NCS 코드",c.ncsCode||"미제공"]];
+  el("detailBody").innerHTML='<h2 class="modal-title" id="detailTitle">'+esc(c.title)+'</h2><dl class="detail-grid">'+fields.map(([label,value])=>'<dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd>').join("")+'</dl><p class="detail-note">저장된 교육명·기관·주소·기간을 표시합니다. 분야·교육 방식·교육비·회차는 제공되지 않아 원문 확인이 필요합니다.</p>'+(url?'<a class="primary-link" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">고용24 원문 보기 ↗</a>':'');
   el("detailDialog").showModal();
 }
 el("filterForm").addEventListener("submit",e=>{e.preventDefault();reloadAndApply();});

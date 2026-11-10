@@ -154,11 +154,11 @@ def normalize_course(raw, code):
     elif "자격증" in tags:
         badge = "자격증 준비"
     else:
-        badge = CATEGORIES[code]
+        badge = CATEGORIES.get(code, "분야 미제공")
     return {
         "key": "|".join(raw.get(k, "") for k in ("trainstCstId", "trprId", "trprDegr")),
         "title": title, "provider": raw.get("subTitle", ""),
-        "category": code, "categoryName": CATEGORIES[code],
+        "category": code, "categoryName": CATEGORIES.get(code, "분야 미제공"),
         "start": start.isoformat() if start else "",
         "end": end.isoformat() if end else "",
         "weeks": weeks, "mode": mode, "modeEvidence": target,
@@ -170,6 +170,19 @@ def normalize_course(raw, code):
         "tags": tags[:3], "badge": badge,
     }
 
+
+
+def normalize_stored_course(row):
+    """Map the shared table's columns; unavailable facts stay unknown."""
+    record_id, training_id, url, title, center, address, start, end = row
+    course = normalize_course({
+        "title": title, "subTitle": center or "", "address": address or "",
+        "trprId": training_id, "titleLink": url,
+        "traStartDate": start.isoformat() if start else None,
+        "traEndDate": end.isoformat() if end else None,
+    }, "unknown")
+    course["key"] = str(record_id)
+    return course
 
 
 def catalogue_data(start, end):

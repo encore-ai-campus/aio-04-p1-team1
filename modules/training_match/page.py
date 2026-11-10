@@ -51,7 +51,7 @@ RECOMMEND_BODY = r"""
 <section class="hero"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1>지금 내게 필요한 다음 배움을 찾아요</h1><p class="subtitle">내 이력과 선택한 공고에서 확인한 보완 역량을 교육·자격증과 연결했어요.</p></section>
 <section class="rec-panel" aria-label="분석 기준"><div><h2 id="analysisTitle">분석 기준 &nbsp; 채용공고를 선택해 주세요</h2><div class="gap-line"><span class="gap-label">보완할 역량</span><span id="gapPills" style="display:contents"><span class="gap-pill">AI 분석 전</span></span></div></div><button class="analysis-button" id="analysisOpen" type="button">공고 선택·추천받기 <span>↗</span></button></section>
 <section aria-labelledby="recommendTitle">
-<div class="rec-heading"><h2 id="recommendTitle">맞춤 교육과정</h2><div class="rec-conditions"><button type="button" class="rec-condition" id="budgetChip">무료·10만원 이하</button><button type="button" class="rec-condition" id="modeChip">온라인 우선</button></div><div class="sort rec-sort"><select id="recommendSort" aria-label="추천 정렬"><option value="recommended">추천순</option><option value="cost">교육비순</option><option value="latest">최신순</option></select></div></div>
+<div class="rec-heading"><h2 id="recommendTitle">맞춤 교육과정</h2><div class="rec-conditions"><button type="button" class="rec-condition" id="budgetChip">교육비 제한 없음</button><button type="button" class="rec-condition" id="modeChip">전체 방식</button></div><div class="sort rec-sort"><select id="recommendSort" aria-label="추천 정렬"><option value="recommended">추천순</option><option value="cost">교육비순</option><option value="latest">최신순</option></select></div></div>
 <div class="rec-grid" id="recommendCards" aria-live="polite"></div>
 </section>
 <section class="rec-certificates"><h2>함께 살펴볼 자격증</h2><div class="certificate-grid" id="certificateCards"></div><p class="rec-footnote" id="recommendNote">선택한 공고와 내 프로필을 비교해 저장된 교육 중에서 Groq AI가 추천해요.</p></section>
@@ -63,7 +63,7 @@ RECOMMEND_BODY = r"""
 <p class="input-hint" id="jobPreview" style="white-space:pre-wrap"></p>
 <div class="analysis-source"><strong>마이페이지에 등록한 내 프로필</strong><p id="profilePreview" style="white-space:pre-wrap">로그인한 회원의 프로필을 불러오고 있어요.</p><a href="/mypage" style="text-decoration:underline">프로필 확인·수정 →</a></div>
 <label>보완하고 싶은 역량 (선택)<input name="goals" maxlength="300" placeholder="예: SQL, Excel 데이터 실무"></label>
-<div class="ai-row"><label>교육비 (API 수강비)<select name="budget"><option value="">제한 없음</option><option value="0">무료</option><option value="100000" selected>무료·10만원 이하</option><option value="300000">30만원 이하</option><option value="500000">50만원 이하</option></select></label><label>교육 방식<select name="mode"><option value="online_first">온라인 우선</option><option value="online_only">온라인만</option><option value="all">전체 방식</option></select></label></div>
+<p class="input-hint">저장 자료에는 교육비·교육 방식이 없습니다. 비용 제한이나 온라인만 조건을 선택하면 후보가 제외됩니다.</p><div class="ai-row"><label>교육비 (미제공)<select name="budget"><option value="">제한 없음</option><option value="0">무료</option><option value="100000">무료·10만원 이하</option><option value="300000">30만원 이하</option><option value="500000">50만원 이하</option></select></label><label>교육 방식<select name="mode"><option value="online_first">온라인 우선</option><option value="online_only">온라인만</option><option value="all" selected>전체 방식</option></select></label></div>
 <p class="input-hint">추천받기를 누르면 선택한 공고의 업무·자격요건과 내 자격증명·이수 교육명·희망 직무가 Groq로 전송됩니다. 회원 ID·이름·이메일은 보내지 않습니다. 프로필과 공고 원본은 수정하지 않고, 추천 결과는 DB에 저장하지 않습니다.</p>
 <div class="form-error" id="recommendError" role="alert"></div><button type="submit" class="ai-submit" id="runRecommendation">AI 교육 추천받기</button>
 </form></dialog>
@@ -111,7 +111,7 @@ function renderRecommendations(){
   if(!cards.length)cards=[placeholder(1,"조건과 연결되는 교육을 찾지 못했어요")];
   rEl("recommendCards").innerHTML=cards.join("");
   rEl("certificateCards").innerHTML=data.certificates.length?data.certificates.map(c=>'<button type="button" class="certificate-card" data-certificate="'+rEsc(c.id)+'"><span class="certificate-label">선택 준비</span><h3>'+rEsc(c.name)+'</h3><p>'+rEsc(c.ai_reason)+'</p></button>').join(""):'<article class="certificate-card"><h3>관련 자격증은 별도 확인이 필요해요</h3><p>현재 참고 목록에서 연결할 자격증을 선택하지 않았어요.</p></article>';
-  rEl("recommendNote").textContent="Groq AI 추천 · "+data.meta.fetched_count+"개 저장 교육 · "+data.meta.candidate_count+"개 후보 비교 · 표시 금액은 API 수강비이며 본인부담금은 원문 확인"+(data.meta.failed_categories?" · 일부 분야 조회 실패":"");
+  rEl("recommendNote").textContent="Groq AI 추천 · "+data.meta.fetched_count+"개 저장 교육 · "+data.meta.candidate_count+"개 후보 비교 · 교육비·교육 방식·분야는 미제공이며 원문 확인 필요"+(data.meta.failed_categories?" · 일부 분야 조회 실패":"");
   rEl("recommendSource").textContent="Supabase 저장 자료 · "+data.meta.fetchedAt+" · "+data.meta.model;
 }
 function showAnalysis(){
@@ -121,7 +121,7 @@ function showAnalysis(){
   rEl("analysisDialog").showModal();
 }
 function showRecommendedDetail(c){
-  const fields=[["교육기관",c.provider],["분야",c.categoryName],["교육 방식",rMode(c.mode)],["기간",(c.start||"미정")+" ~ "+(c.end||"미정")],["API 수강비",rCost(c.cost)],["개인 본인부담금","고용24 원문 확인"],["훈련 회차",c.round+"회차"],["추천 이유",c.ai_reason],["과정 ID",c.courseId]];
+  const fields=[["교육기관",c.provider],["분야",c.categoryName],["교육 방식",rMode(c.mode)],["기간",(c.start||"미정")+" ~ "+(c.end||"미정")],["API 수강비",rCost(c.cost)],["개인 본인부담금","고용24 원문 확인"],["훈련 회차",c.round?c.round+"회차":"미제공"],["추천 이유",c.ai_reason],["과정 ID",c.courseId]];
   rEl("recommendDetailBody").innerHTML='<h2 class="modal-title" id="recommendDetailTitle">'+rEsc(c.title)+'</h2><dl class="detail-grid">'+fields.map(([k,v])=>'<dt>'+rEsc(k)+'</dt><dd>'+rEsc(v)+'</dd>').join("")+'</dl><p class="detail-note">교육의 지원 자격·본인부담금과 상세 내용은 고용24 원문에서 확인해 주세요. AI 추천 이유는 입력 정보와 과정명에 근거한 학습 참고 의견입니다.</p>'+(c.url?'<a class="primary-link" href="'+rEsc(c.url)+'" target="_blank" rel="noopener noreferrer">고용24 원문 보기 ↗</a>':'');
   rEl("recommendDetailDialog").showModal();
 }

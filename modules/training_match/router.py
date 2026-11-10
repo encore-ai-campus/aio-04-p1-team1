@@ -76,7 +76,7 @@ def generate_recommendations(body: JobRecommendationRequest,
                      'fetched_count': len(payload['courses']), 'candidate_count': len(candidates),
                      'failed_categories': len(payload['errors']),
                      'job_source': 'public.job_posting_mj', 'profile_source': 'public.profiles_LYR',
-                     'course_source': 'public.training_posts_sms'},
+                     'course_source': 'public.training_posting_mj'},
         }, headers={'Cache-Control': 'no-store'})
     except RecommendationError as exc:
         return JSONResponse({'error': exc.message}, status_code=exc.status, headers={'Cache-Control': 'no-store'})
