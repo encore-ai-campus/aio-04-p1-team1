@@ -1,10 +1,11 @@
 """Authenticated, DB-backed job/profile-to-training recommendations."""
-import html
 import os
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from modules.auth import auth_store
+from shared.auth_dependencies import get_current_user
+from modules.training_posts.page import render_training_page
 from modules.training_match.model import JobRecommendationRequest
 from modules.training_match.page import RECOMMEND_PAGE
 from modules.training_match.repository import get_job, get_own_profile, list_jobs, profile_summary
@@ -21,12 +22,12 @@ router = APIRouter(prefix='/training_match', tags=['교육추천'])
 @router.get('/', response_class=HTMLResponse, include_in_schema=False)
 def recommendation_page(request: Request):
     try:
-        user, _token = auth_store.authenticated(request)
+        user = get_current_user(request)
     except HTTPException as exc:
         if exc.status_code == 401:
             return RedirectResponse('/signin', status_code=303)
         raise
-    page = RECOMMEND_PAGE.replace('김나침님', html.escape(user['name'], quote=True) + '님')
+    page = render_training_page(RECOMMEND_PAGE, user, current="training_match")
     return HTMLResponse(page, headers={'Cache-Control': 'no-store'})
 
 
