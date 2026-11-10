@@ -1,9 +1,11 @@
+import json
+from datetime import date, datetime, timedelta, timezone
+
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse, JSONResponse
 from modules.training_posts.page import PAGE
 from modules.training_posts.repository import CatalogueStorageError
 from modules.training_posts.service import CATEGORIES, catalogue_data, escape
-
 router = APIRouter(prefix="/training_posts", tags=["교육목록"])
 
 @router.get("", response_class=HTMLResponse)
