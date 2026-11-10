@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>
+      취준나침반 공통 컴포넌트
+    </title>
+    <link rel="stylesheet" href="compass.css">
+    <style>
+      .demo-card {
+        padding:24px;
+        background:white;
+        border:1px solid var(--cc-border);
+        border-radius:16px;
+        margin:24px 0
+      }
+      .demo-colors {
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap
+      }
+      .demo-color {
+        padding:20px;
+        border:1px solid var(--cc-border);
+        border-radius:10px
+      }
+      input {
+        padding:12px;
+        border:1px solid var(--cc-border);
+        border-radius:10px;
+        max-width:100%
+      }
+    </style>
+  </head>
+  <body class="cc-member-page">
+    <header class="cc-header">
+      <div class="cc-header-inner">
+        <div class="cc-header-left">
+          <button class="cc-icon-button" id="cc-menu-toggle" type="button" aria-label="메뉴 열기" aria-controls="cc-menu" aria-expanded="false">
+            <svg class="cc-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+          <a class="cc-brand" href="#" aria-current="page" aria-label="취준나침반 메인">
+            <svg class="cc-brand-mark" viewBox="0 0 44 44" aria-hidden="true">
+              <circle cx="22" cy="22" r="21" fill="#f7ca43"/>
+              <path d="m31 10-5 16-13 8 5-16Z" fill="#263127"/>
+              <path d="m31 10-9 12-4-4Z" fill="#fffaf0"/>
+            </svg>
+            <span>
+              취준나침반
+            </span>
+          </a>
+        </div>
+        <nav class="cc-header-right" aria-label="상단 메뉴">
+          <a class="cc-top-button cc-main-button" href="#" aria-current="page">
+            메인
+          </a>
+          <a class="cc-top-button cc-mypage-button" href="#">
+            마이페이지
+          </a>
+          <span class="cc-member-name username">
+            테스트님
+          </span>
+          <button class="cc-top-button cc-logout-button" type="button" id="demo-logout" onclick="document.getElementById('demo-message').textContent='로그아웃 버튼 디자인 예시입니다.'">
+            로그아웃
+          </button>
+        </nav>
+      </div>
+    </header>
+    <p class="cc-shell-message" id="cc-shell-message" role="status" aria-live="polite" hidden>
+    </p>
+    <div class="cc-menu-backdrop" id="cc-menu-backdrop" hidden>
+    </div>
+    <aside class="cc-menu" id="cc-menu" inert aria-label="주 메뉴">
+      <div class="cc-menu-heading">
+        <span>
+          나의 취준나침반
+        </span>
+        <button class="cc-icon-button" id="cc-menu-close" type="button" aria-label="메뉴 닫기">
+          <svg class="cc-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18"/>
+          </svg>
+        </button>
+      </div>
+      <p class="cc-menu-label">
+        YOUR NEXT DIRECTION
+      </p>
+      <nav class="cc-menu-list" aria-label="서비스 메뉴">
+        <a class="cc-menu-item" href="#" aria-current="page">
+          <svg class="cc-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-8h6v8"/>
+          </svg>
+          메인
+        </a>
+        <a class="cc-menu-item" href="#">
+          <svg class="cc-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <circle cx="12" cy="12" r="5"/>
+            <circle cx="12" cy="12" r="1"/>
+          </svg>
+          적합도 분석
+        </a>
+        <button class="cc-menu-item" type="button" data-cc-pending="training">
+          <svg class="cc-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 4h6a3 3 0 0 1 2 1 3 3 0 0 1 2-1h6v15h-6a3 3 0 0 0-2 1 3 3 0 0 0-2-1H4ZM12 5v15"/>
+          </svg>
+          교육추천
+          <span class="cc-soon">
+            준비 중
+          </span>
+        </button>
+        <button class="cc-menu-item" type="button" data-cc-pending="jobs">
+          <svg class="cc-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="7" width="18" height="14" rx="2"/>
+            <path d="M8 7V4h8v3M3 12c5 3 13 3 18 0"/>
+          </svg>
+          공고모음
+          <span class="cc-soon">
+            준비 중
+          </span>
+        </button>
+        <button class="cc-menu-item" type="button" data-cc-pending="courses">
+          <svg class="cc-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          교육모음
+          <span class="cc-soon">
+            준비 중
+          </span>
+        </button>
+        <a class="cc-menu-item cc-menu-last" href="#">
+          <svg class="cc-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 21v-2a8 8 0 0 1 16 0v2"/>
+          </svg>
+          마이페이지
+        </a>
+      </nav>
+      <p class="cc-menu-note">
+        각자의 속도로,
+        <br>
+        더 선명한 내일을 향해.
+      </p>
+    </aside>
+    <dialog class="cc-service-dialog" id="cc-service-dialog" aria-labelledby="cc-service-title">
+      <h2 id="cc-service-title">
+      </h2>
+      <p id="cc-service-body">
+      </p>
+      <form method="dialog">
+        <button class="cc-dialog-confirm" value="close">
+          확인
+        </button>
+      </form>
+    </dialog>
+    <main class="cc-page" data-member-content>
+      <div class="cc-page-heading">
+        <p class="eyebrow">
+          SHARED COMPONENTS
+        </p>
+        <h1>
+          함께 사용하는 취준나침반
+        </h1>
+        <p>
+          헤더 · 접이식 메뉴 · 색상 · 에이투지체
+        </p>
+      </div>
+      <section class="demo-card">
+        <h2>
+          글꼴 적용 기준
+        </h2>
+        <p class="cc-brand">
+          취준나침반 · 600
+        </p>
+        <p>
+          헤더, 사이드 메뉴, 로그인, 회원가입, 마이페이지 · 400
+        </p>
+        <label for="demo-input">
+          입력창 예시
+        </label>
+        <input id="demo-input" placeholder="희망 직무를 입력해 주세요">
+        <p id="demo-font-status" role="status">
+          글꼴을 확인하고 있어요.
+        </p>
+      </section>
+      <section class="demo-card">
+        <h2>
+          공통 색상
+        </h2>
+        <div class="demo-colors">
+          <span class="demo-color" style="background:var(--cc-yellow)">
+            주요 버튼
+          </span>
+          <span class="demo-color" style="background:var(--cc-soft-yellow)">
+            연노랑
+          </span>
+          <span class="demo-color" style="background:var(--cc-background)">
+            페이지 배경
+          </span>
+        </div>
+      </section>
+      <p>
+        메뉴 열기·닫기와 준비 중 안내를 확인할 수 있습니다. 이 미리보기에는 인증 요청이 연결되어 있지 않습니다.
+      </p>
+      <p id="demo-message" role="status">
+      </p>
+    </main>
+    <script src="compass.js">
+      
+    </script>
+    <script>
+      document.fonts.ready.then(()=> {
+        document.getElementById('demo-font-status').textContent=document.fonts.check('400 14px A2Z')&&document.fonts.check('600 24px A2Z')?'400 / 600 글꼴 로딩 완료':'글꼴 파일을 확인해 주세요.'
+      });
+    </script>
+  </body>
+</html>

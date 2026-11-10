@@ -2,13 +2,14 @@
 
 from html import escape
 from fastapi.responses import HTMLResponse
+from modules.main.member_shell import apply_member_shell
 from modules.mypage.bookmarks_ui import CONTENT as BOOKMARKS_CONTENT, SCRIPT as BOOKMARKS_SCRIPT, CSS as BOOKMARKS_CSS
 
 
 def render_dashboard(user):
     template = TEMPLATE.replace("__BOOKMARKS_CONTENT__", BOOKMARKS_CONTENT).replace("__BOOKMARKS_SCRIPT__", BOOKMARKS_SCRIPT).replace("__BOOKMARKS_CSS__", BOOKMARKS_CSS)
-    return HTMLResponse(template.replace("__NAME__", escape(user["name"], quote=True))
-                        .replace("__EMAIL__", escape(user["email"], quote=True)))
+    html = template.replace("__NAME__", escape(user["name"], quote=True)).replace("__EMAIL__", escape(user["email"], quote=True))
+    return HTMLResponse(apply_member_shell(html, user, 'mypage'))
 
 
 TEMPLATE = r'''<!doctype html>
@@ -25,9 +26,11 @@ dialog{width:calc(100% - 32px);max-width:500px;max-height:85vh;overflow:auto;bor
 __BOOKMARKS_CSS__
 #profile-overview,#bookmarks{scroll-margin-top:24px}#bookmarks{margin-top:16px;padding-bottom:24px}.sidebar{position:sticky;top:16px;max-height:calc(100dvh - 32px);overflow-y:auto}.side-nav a:hover{background:var(--pale)}
 @media(max-width:800px){.sidebar{top:0;z-index:5;min-height:0;padding:10px 16px;box-shadow:0 5px 16px #2631270a}.sidebar .user-name,.sidebar .role,.sidebar .status-pill{display:none}.side-nav{margin:0;padding:0;border:0}.side-nav a{padding:10px 8px}.counts{font-size:10px;line-height:1.8}#profile-overview,#bookmarks{scroll-margin-top:112px}}
-</style></head><body>
-<header><div class="header-inner"><a class="brand" href="/main"><span class="brand-icon" aria-hidden="true">🧭</span>취준나침반</a><nav class="header-nav" aria-label="상단 메뉴"><a href="/main">메인</a><span class="username">__NAME__님</span><a class="current" href="/mypage" aria-current="page">마이페이지</a><button class="button" id="logout">로그아웃</button></nav></div></header>
-<div class="container"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1>마이페이지</h1><p class="intro">개인정보와 프로필 정보를 한곳에서 관리하고, 필요한 항목을 펼쳐 수정해요.</p>
+__CC_CSS__
+</style></head><body class="cc-member-page">
+__CC_HEADER__
+__CC_MENU__
+<div class="container cc-page" data-member-content><section class="cc-page-heading"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1>마이페이지</h1><p class="intro">개인정보와 프로필 정보를 한곳에서 관리하고, 필요한 항목을 펼쳐 수정해요.</p></section>
 <div class="layout"><aside class="panel sidebar"><span class="avatar" aria-hidden="true">◎</span><div class="user-name">__NAME__님</div><p id="target-role" class="role">희망 직무를 입력해 보세요.</p><span id="profile-status" class="status-pill">프로필 확인 중</span><nav class="side-nav" aria-label="마이페이지 메뉴"><a class="active" href="#profile-overview" data-section="profile-overview" aria-current="location">개인정보 · 프로필 정보</a><a href="#bookmarks" data-section="bookmarks">관심목록 <span id="saved-count">—</span></a></nav><div class="counts"><div>저장한 공고 <span id="job-count">—</span></div><div>저장한 교육 <span id="course-count">—</span></div></div><p class="side-note">내 프로필을 구체적으로 정리하고,<br>다음 준비에 활용해 보세요.</p><div class="back"><a class="button" href="/main">메인으로 돌아가기</a></div></aside>
 <main class="content"><section class="panel" id="profile-overview" aria-labelledby="personal-title"><div class="section-anchor" tabindex="-1"></div><div class="section-head"><h2 id="personal-title">개인정보</h2><a class="button" href="/mypage/profile">정보 수정</a></div><dl class="info-grid"><div><dt>아이디 (이메일)</dt><dd>__EMAIL__</dd></div><div><dt>이름</dt><dd>__NAME__</dd></div><div><dt>비밀번호</dt><dd class="subtle">보안을 위해 표시하지 않습니다.</dd></div><div><dt>이메일 인증</dt><dd>인증 완료</dd></div></dl></section>
 <section class="panel"><div class="section-head"><h2>프로필 정보</h2><button id="edit-role" class="button" disabled>희망 직무 수정</button></div><p class="section-note">보유한 경험을 정리하면 나에게 필요한 다음 준비를 찾기 쉬워요.</p>
@@ -59,7 +62,7 @@ function openEditor(kind,index=null){if(!profileData)return;editing={kind,index}
  dialog.showModal();}
 byId('editor-form').addEventListener('submit',async event=>{event.preventDefault();if(saveButton.disabled)return;const values=Object.fromEntries(new FormData(event.target));for(const key in values)values[key]=values[key].trim();if('name'in values&&!values.name){byId('editor-message').textContent='이름을 입력해 주세요.';return;}const next=structuredClone(profileData),{kind,index}=editing;if(kind==='role')Object.assign(next,values);else{values.completed_on=values.completed_on||null;if(index===null)next[kind].push(values);else next[kind][index]=values;}saveButton.disabled=true;byId('cancel-editor').disabled=true;byId('editor-message').textContent='저장 중…';try{await persist(next);dialog.close();message('변경 내용을 저장했습니다.');}catch(error){byId('editor-message').textContent=error.message;}finally{saveButton.disabled=false;byId('cancel-editor').disabled=false;}});
 dialog.addEventListener('cancel',event=>{if(saveButton.disabled)event.preventDefault();});byId('cancel-editor').onclick=()=>dialog.close();byId('edit-role').onclick=()=>openEditor('role');document.querySelectorAll('[data-add]').forEach(button=>button.onclick=()=>openEditor(button.dataset.add));byId('retry').onclick=load;
-byId('logout').onclick=async()=>{byId('logout').disabled=true;try{await api('/api/auth/signout',{method:'POST'});location.assign('/signin');}catch(error){byId('flash').textContent=error.message;byId('logout').disabled=false;}};
+
 window.addEventListener('bookmarks-loaded',event=>{const counts=event.detail;byId('saved-count').textContent=counts.all;byId('job-count').textContent=counts.job;byId('course-count').textContent=counts.course;});load();
 const sectionLinks=[...document.querySelectorAll('[data-section]')];
 function selectSection(id){for(const link of sectionLinks){const active=link.dataset.section===id;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');}}
@@ -69,4 +72,5 @@ function scheduleSection(){if(scrollPending)return;scrollPending=true;requestAni
 sectionLinks.forEach(link=>link.addEventListener('click',event=>{event.preventDefault();const target=byId(link.dataset.section);history.pushState(null,'',link.getAttribute('href'));target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth',block:'start'});const focus=target.querySelector('[tabindex="-1"]')||target.querySelector('h2');focus.focus({preventScroll:true});scheduleSection();}));
 window.addEventListener('scroll',scheduleSection,{passive:true});window.addEventListener('resize',scheduleSection);window.addEventListener('hashchange',scheduleSection);new ResizeObserver(scheduleSection).observe(document.querySelector('.content'));updateSection();
 __BOOKMARKS_SCRIPT__
-</script></body></html>'''
+</script>__CC_SCRIPT__
+</body></html>'''
