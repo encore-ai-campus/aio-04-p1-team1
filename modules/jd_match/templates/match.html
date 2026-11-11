@@ -180,14 +180,10 @@
               </div>
               <div class="score-copy">
                 <h3 id="score-summary">
-                  6개 역량 중
-                  <br>
-                  4개가 연결돼요
+                  역량을 분석하고 있어요
                 </h3>
                 <p id="score-description">
-                  이미 갖춘 강점은 살리고,
-                  <br>
-                  부족한 두 가지를 채워 보세요.
+                  공고와 내 프로필을 비교하고 있어요.
                 </p>
               </div>
             </div>
@@ -200,9 +196,7 @@
               <h3>
                 한눈에 보는 내 역량
               </h3>
-              <span class="count">
-                공고 기준 6개
-              </span>
+              <span id="required-skills-count" class="count">분석 중</span>
             </div>
             <div class="skill-group">
               <div class="group-title">
@@ -893,6 +887,12 @@ footer  {
               ? matchedSkills.map(skill => `<span class="skill-chip">${text(skill)}</span>`).join("")
               : '<span class="skill-chip">확인된 충족 역량 없음</span>';
             const missingSkills = Array.isArray(score.missing_skills) ? score.missing_skills : [];
+            const requiredSkillCount = matchedSkills.length + missingSkills.length;
+            document.querySelector("#required-skills-count").textContent = `공고 기준 ${requiredSkillCount}개`;
+            document.querySelector("#score-summary").innerHTML = `${requiredSkillCount}개 역량 중<br>${matchedSkills.length}개가 연결돼요`;
+            document.querySelector("#score-description").innerHTML = missingSkills.length
+              ? `이미 갖춘 강점은 살리고,<br>부족한 ${missingSkills.length}가지를 채워 보세요.`
+              : "공고에서 요구하는 역량을 모두 확인했어요.";
             const grade = percent >= 80 ? "매우 잘 부합" : percent >= 60 ? "대부분 부합" : percent >= 40 ? "보통 수준으로 부합" : percent >= 20 ? "일부만 부합" : "거의 부합하지 않음";
             document.querySelector("#analysis-basis").textContent =
               `역량 적합도 ${percent}% · ${grade}. 공고 요구사항과 내 프로필 역량을 비교했어요. ` +
@@ -906,8 +906,6 @@ footer  {
               `conic-gradient(var(--green) 0 ${percent * 3.6}deg, #e5dfc4 ${percent * 3.6}deg 360deg)`;
             document.querySelector("#score-ring").setAttribute("aria-label", `역량 일치율 ${percent}%`);
             document.querySelector("#score-source").textContent = "AI 분석 결과";
-            document.querySelector("#score-summary").innerHTML = `AI 분석 결과<br>${percent}% 적합해요`;
-            document.querySelector("#score-description").textContent = "내 희망직무·보유역량과 공고의 직무·주요 업무·자격요건·우대사항을 비교한 결과입니다.";
           })
           .catch(error => {
             document.querySelector("#analysis-loading").hidden = true;
