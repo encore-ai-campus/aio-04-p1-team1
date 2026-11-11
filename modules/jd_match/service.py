@@ -102,6 +102,9 @@ def get_jd_match_score(
         "model": "jev-1.13.0",
         "state": {
             "job_requirements": {
+                "title": job_posting.title,
+                "position_detail": job_posting.position_detail or "",
+                "main_tasks": job_posting.main_tasks or "",
                 "qualifications": job_posting.qualifications or "",
                 "preferred_qualifications": job_posting.preferred_qualifications or "",
             },
@@ -110,7 +113,19 @@ def get_jd_match_score(
         "questions": {
             "qualification_fit": {
                 "type": "score",
-                "instructions": "공고의 자격요건과 우대사항 대비 지원자의 적합도를 0점부터 100점까지 백분율 점수로 평가하세요. 반드시 숫자 점수 하나를 반환하세요.",
+                "instructions": (
+                    "공고 제목, 직무 상세, 주요 업무, 자격요건과 우대사항을 "
+                    "candidate_profile과 비교하여 적합도를 0점부터 100점까지 평가하세요. "
+                    "target_role은 지원자의 희망직무이며 skills는 실제 보유역량입니다. "
+                    "희망직무와 공고 직무의 관련성 및 보유역량의 필수요건 충족도를 "
+                    "함께 평가하세요. 넓은 희망직무는 하위 직무와의 관련성을 고려하고, "
+                    "기술명의 대소문자, 띄어쓰기 및 통용되는 별칭 차이는 동일하게 해석하세요. "
+                    "희망직무가 일치한다는 이유만으로 필수역량을 보유했다고 간주하거나, "
+                    "저장한 공고를 보유역량으로 간주하지 마세요. "
+                    "자격증과 교육은 관련성이 있을 때 보조 근거로 사용하고, "
+                    "미입력 정보는 역량 부족으로 단정하지 마세요. "
+                    "반드시 숫자 점수 하나를 반환하세요."
+                ),
                 "criteria": [
                     "0~19점: 거의 부합하지 않음",
                     "20~39점: 일부만 부합함",

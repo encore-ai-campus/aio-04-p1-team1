@@ -912,7 +912,7 @@ footer  {
             document.querySelector("#score-ring").setAttribute("aria-label", `역량 일치율 ${percent}%`);
             document.querySelector("#score-source").textContent = "JEV 분석 결과";
             document.querySelector("#score-summary").innerHTML = `JEV 분석 결과<br>${percent}% 적합해요`;
-            document.querySelector("#score-description").textContent = "공고의 자격요건과 우대사항을 내 프로필과 비교한 결과입니다.";
+            document.querySelector("#score-description").textContent = "내 희망직무·보유역량과 공고의 직무·주요 업무·자격요건·우대사항을 비교한 결과입니다.";
           })
           .catch(error => {
             document.querySelector("#job-foot").textContent = error.message;
