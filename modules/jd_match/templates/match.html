@@ -192,7 +192,7 @@
               </div>
             </div>
             <p class="score-note">
-              일치율은 예시 역량 6개의 단순 비교이며, 합격 확률이 아닙니다.
+              공고와 프로필에서 추출한 역량 키워드를 바탕으로 계산한 적합도이며, 합격 확률은 아닙니다.
             </p>
           </section>
           <section class="panel skills-panel">
@@ -264,7 +264,6 @@
           </p>
         </aside>
       </div>
-    </main>
     <footer>
       <span>
         취준나침반 · 한 번에 찾고, 한 걸음씩 준비해요.
@@ -273,6 +272,7 @@
         YOUR NEXT DIRECTION ↗
       </span>
     </footer>
+    </main>
     <style>
 :root  {
   --ink:#263127;
@@ -742,9 +742,9 @@ h3  {
   line-height:1.8
 }
 footer  {
-  max-width:1180px;
-  margin:0 auto;
-  padding:20px 0 28px;
+  max-width:none;
+  margin:20px 0 0;
+  padding:20px 0 27px;
   border-top:1px solid var(--line);
   display:flex;
   justify-content:space-between;
@@ -905,8 +905,8 @@ footer  {
             document.querySelector("#score-ring").style.background =
               `conic-gradient(var(--green) 0 ${percent * 3.6}deg, #e5dfc4 ${percent * 3.6}deg 360deg)`;
             document.querySelector("#score-ring").setAttribute("aria-label", `역량 일치율 ${percent}%`);
-            document.querySelector("#score-source").textContent = "JEV 분석 결과";
-            document.querySelector("#score-summary").innerHTML = `JEV 분석 결과<br>${percent}% 적합해요`;
+            document.querySelector("#score-source").textContent = "AI 분석 결과";
+            document.querySelector("#score-summary").innerHTML = `AI 분석 결과<br>${percent}% 적합해요`;
             document.querySelector("#score-description").textContent = "내 희망직무·보유역량과 공고의 직무·주요 업무·자격요건·우대사항을 비교한 결과입니다.";
           })
           .catch(error => {
