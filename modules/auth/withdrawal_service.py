@@ -27,10 +27,8 @@ def verify_password(user, password, auth_request):
 
 
 def complete_withdrawal(user_id: str) -> bool:
-    """확정된 데이터 정리 및 Supabase 계정 삭제 처리를 나중에 연결합니다.
-
-    현재는 삭제를 수행하지 않고 False를 반환합니다. 실제 구현 시 서버에서
-    모든 삭제가 완료된 경우에만 True를 반환해야 합니다. 비밀번호는 전달하지
-    않습니다. 이 함수만 따로 호출하는 외부 API는 제공하지 않습니다.
-    """
-    return False
+    """연관 데이터를 삭제하지 않고 profiles.use_yn만 N으로 변경합니다."""
+    from modules.auth import member_store
+    if not member_store.deactivate(user_id):
+        raise HTTPException(status_code=409, detail="회원정보가 없거나 이미 탈퇴한 계정입니다.")
+    return True

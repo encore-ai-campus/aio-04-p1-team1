@@ -1,9 +1,9 @@
-"""역량 태그 UI. DB 연결 전에는 회원별 브라우저 초안만 저장합니다."""
+"""역량 태그 UI. 공통 인증 API를 통해 profiles.skills를 저장·조회합니다."""
 from html import escape
 
 
 def apply_skills_ui(html, user, *, editable=False):
-    """추후 readDraft/writeDraft만 실제 프로필 API로 교체할 수 있습니다."""
+    """기존 카드와 편집 UI를 유지하면서 DB 저장 API를 연결합니다."""
     block = EDITOR if editable else SUMMARY
     block = block.replace('__SKILLS_USER_ID__', escape(str(user['id']), quote=True))
     html = html.replace('__SKILLS_CONTENT__', block)
@@ -13,23 +13,23 @@ def apply_skills_ui(html, user, *, editable=False):
 
 SUMMARY = '''
 <div class="skills-section" data-skills-root data-user-id="__SKILLS_USER_ID__">
-  <div class="skills-heading"><h3>나의 역량</h3><span class="skills-storage-badge">브라우저 임시 저장</span></div>
+  <div class="skills-heading"><h3>나의 역량</h3></div>
   <div class="skills-tags" data-skills-list aria-label="등록한 역량"></div>
   <p class="skills-help" data-skills-empty>아직 등록한 역량이 없어요. 정보 수정에서 추가해 주세요.</p>
-  <p class="skills-help">현재 브라우저에만 보관됩니다. DB 저장과 공고 적합도 분석 연결은 추후 적용됩니다.</p>
+  <p class="skills-help">적합도 분석에 활용합니다.</p>
   <p class="skills-message" data-skills-message role="status" aria-live="polite"></p>
 </div>'''
 
 EDITOR = '''
 <section class="skills-section skills-editor" data-skills-root data-skills-editable data-user-id="__SKILLS_USER_ID__" aria-labelledby="skills-title">
-  <div class="skills-heading"><h3 id="skills-title">나의 역량</h3><span class="skills-storage-badge">브라우저 임시 저장</span></div>
+  <div class="skills-heading"><h3 id="skills-title">나의 역량</h3></div>
   <p class="skills-help" id="skills-help">Python, SQL, 문제 해결 등 나의 역량을 입력해 주세요. Enter 또는 쉼표로 추가할 수 있어요. 최대 20개, 각 30자까지 등록할 수 있습니다.</p>
   <label for="skills-input">역량 추가</label>
   <div class="skills-input-row"><input id="skills-input" type="text" autocomplete="off" placeholder="예: Python, SQL" aria-describedby="skills-help skills-message"><button class="button" type="button" id="skills-add">추가</button></div>
   <div class="skills-tags" data-skills-list aria-label="등록할 역량"></div>
   <p class="skills-help" data-skills-empty>등록한 역량이 없어요. 역량을 추가해 보세요.</p>
   <p class="skills-message" id="skills-message" data-skills-message role="status" aria-live="polite"></p>
-  <p class="skills-help">변경 내용 저장을 누르면 역량은 현재 브라우저에만 임시 보관됩니다. 다른 기기에는 공유되지 않으며, 아직 DB나 적합도 분석에 전달되지 않습니다.</p>
+  <p class="skills-help">적합도 분석에 활용합니다.</p>
 </section>'''
 
 CSS = r'''
@@ -62,9 +62,8 @@ SCRIPT = r'''
   const empty = root.querySelector('[data-skills-empty]');
   const message = root.querySelector('[data-skills-message]');
   const input = editable ? document.getElementById('skills-input') : null;
-  const storageKey = 'career-compass:skills-draft:v1:' + root.dataset.userId;
   const maxItems = 20, maxLength = 30;
-  let skills = [], readFailed = false, composing = false;
+  let skills = [], loaded = false, saving = false, composing = false;
 
   function normalize(value) {
     return value.trim().replace(/^#+/, '').trim().replace(/\s+/g, ' ');
@@ -82,16 +81,23 @@ SCRIPT = r'''
     }
     return result;
   }
-  // DB 연결 시 이 두 함수의 구현을 서버 프로필 API 호출로 교체합니다.
-  function readDraft() {
-    const raw = localStorage.getItem(storageKey);
-    if (!raw) return [];
-    const data = JSON.parse(raw);
-    if (data.version !== 1) throw new Error('지원하지 않는 임시 저장 형식입니다.');
+  async function skillsRequest(method, values) {
+    const options = {method, credentials: 'same-origin', cache: 'no-store'};
+    if (method === 'PUT') {
+      options.headers = {'Content-Type': 'application/json'};
+      options.body = JSON.stringify({skills: check(values)});
+    }
+    const response = await fetch('/api/mypage/skills', options);
+    if (response.status === 401) { location.assign('/signin'); throw new Error('다시 로그인해 주세요.'); }
+    const data = await response.json();
+    if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : '역량을 처리하지 못했습니다.');
     return check(data.skills);
   }
-  function writeDraft(values) {
-    localStorage.setItem(storageKey, JSON.stringify({version: 1, skills: check(values)}));
+  function setEditingDisabled(disabled) {
+    if (!editable) return;
+    input.disabled = disabled;
+    document.getElementById('skills-add').disabled = disabled;
+    list.querySelectorAll('button').forEach(button => button.disabled = disabled);
   }
   function showError(text) { message.textContent = text; }
   function render() {
@@ -106,8 +112,9 @@ SCRIPT = r'''
         remove.type = 'button'; remove.className = 'skills-tag-remove'; remove.textContent = '×';
         remove.setAttribute('aria-label', skill + ' 역량 삭제');
         remove.addEventListener('click', () => {
+          if (saving || !loaded) return;
           skills.splice(index, 1); render();
-          message.textContent = '변경 내용 저장을 눌러 임시 보관해 주세요.'; input.focus();
+          message.textContent = '변경 내용 저장을 눌러 주세요.'; input.focus();
         });
         tag.append(remove);
       }
@@ -116,6 +123,7 @@ SCRIPT = r'''
     empty.hidden = skills.length > 0;
   }
   function addInput() {
+    if (!loaded || saving) return false;
     const raw = input.value.trim();
     if (!raw) { showError('추가할 역량을 입력해 주세요.'); return false; }
     const incoming = raw.split(/[,，]/).map(normalize).filter(Boolean);
@@ -123,18 +131,22 @@ SCRIPT = r'''
     try {
       const next = check([...skills, ...incoming]);
       skills = next; input.value = ''; input.removeAttribute('aria-invalid'); render();
-      message.textContent = '변경 내용 저장을 눌러 임시 보관해 주세요.';
+      message.textContent = '변경 내용 저장을 눌러 주세요.';
       return true;
     } catch (error) {
       showError(error.message); input.setAttribute('aria-invalid', 'true'); return false;
     }
   }
-  try { skills = readDraft(); }
-  catch (error) {
-    readFailed = true;
-    showError('이 브라우저의 역량 임시 데이터를 불러오지 못했습니다. 기존 임시 데이터는 덮어쓰지 않습니다.');
+  async function loadSkills() {
+    setEditingDisabled(true);
+    message.textContent = '역량을 불러오는 중이에요.';
+    try {
+      skills = await skillsRequest('GET'); loaded = true; render(); message.textContent = '';
+    } catch (error) {
+      loaded = false; showError(error.message + ' 새로고침 후 다시 시도해 주세요.');
+    } finally { setEditingDisabled(!loaded); }
   }
-  render();
+  loadSkills();
   if (!editable) return;
   document.getElementById('skills-add').addEventListener('click', () => { addInput(); input.focus(); });
   input.addEventListener('compositionstart', () => { composing = true; });
@@ -148,15 +160,19 @@ SCRIPT = r'''
   input.addEventListener('input', () => input.removeAttribute('aria-invalid'));
   window.CompassSkillsDraft = {
     prepare() {
-      if (readFailed) { showError('역량 임시 데이터는 덮어쓰지 않습니다. 이름 변경은 계속할 수 있어요.'); return true; }
+      if (!loaded) return true; // 이름 저장은 유지하고 역량 덮어쓰기는 commit에서 막습니다.
       if (input.value.trim() && !addInput()) { input.focus(); return false; }
       return true;
     },
-    commit() {
-      if (readFailed) throw new Error('기존 역량 임시 데이터를 덮어쓰지 않았습니다.');
-      try { writeDraft(skills); }
-      catch (error) { throw new Error('역량을 임시 저장하지 못했습니다. 브라우저 저장 공간과 설정을 확인해 주세요.'); }
-      message.textContent = '역량을 이 브라우저에 임시 보관했습니다. 아직 DB에는 저장되지 않았습니다.';
+    async commit() {
+      if (!loaded) throw new Error('역량을 불러오지 못해 저장하지 않았습니다. 새로고침 후 다시 시도해 주세요.');
+      saving = true; setEditingDisabled(true);
+      try {
+        const next = await skillsRequest('PUT', skills);
+        skills = next; render(); message.textContent = '역량을 저장했습니다.';
+      } catch (error) {
+        showError(error.message); throw error;
+      } finally { saving = false; setEditingDisabled(false); }
     }
   };
 })();
