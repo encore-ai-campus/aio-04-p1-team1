@@ -8,11 +8,22 @@
     </title>
     <style>
       __CC_CSS__
+      .analysis-loading { position:fixed; inset:0; z-index:1000; display:grid; place-items:center; background:rgba(250,250,246,.88); backdrop-filter:blur(3px); }
+      .analysis-loading[hidden] { display:none; }
+      .analysis-loading-card { display:flex; align-items:center; gap:12px; padding:18px 22px; border:1px solid #e1e4dd; border-radius:14px; background:#fff; box-shadow:0 12px 35px rgba(35,45,30,.12); color:#394333; font-size:14px; }
+      .analysis-spinner { width:18px; height:18px; border:3px solid #dfe8d5; border-top-color:var(--green,#657b4c); border-radius:50%; animation:analysis-spin .8s linear infinite; }
+      @keyframes analysis-spin { to { transform:rotate(360deg); } }
     </style>
   </head>
   <body class="cc-member-page" data-page="jd_match">
     __CC_HEADER__
     __CC_MENU__
+    <div id="analysis-loading" class="analysis-loading" role="status" aria-live="polite">
+      <div class="analysis-loading-card">
+        <span class="analysis-spinner" aria-hidden="true"></span>
+        <span>공고와 내 역량을 분석하고 있어요...</span>
+      </div>
+    </div>
     <main class="cc-page" data-member-content>
       <nav class="breadcrumb" aria-label="현재 위치">
         <a href="/main">
@@ -144,9 +155,6 @@
                 </ul>
               </section>
             </div>
-            <p id="job-foot" class="job-foot">
-              실제 Supabase 공고 데이터를 불러오는 중입니다.
-            </p>
           </div>
         </article>
         <aside class="analysis" aria-label="내 역량과 공고 비교">
@@ -204,26 +212,13 @@
                 <span class="status-icon" aria-hidden="true">
                   ✓
                 </span>
-                <span class="count">
-                  4
-                </span>
+                <span id="matched-skills-count" class="count">-</span>
               </div>
-              <div class="skill-chips">
-                <span class="skill-chip">
-                  Python
-                </span>
-                <span class="skill-chip">
-                  SQL
-                </span>
-                <span class="skill-chip">
-                  Excel
-                </span>
-                <span class="skill-chip">
-                  분석 프로젝트
-                </span>
+              <div id="matched-skills" class="skill-chips">
+                <span class="skill-chip">분석 중</span>
               </div>
               <p>
-                예시 이력과 공고에서 공통으로 확인된 역량이에요.
+                공고와 내 프로필에서 공통으로 확인된 역량이에요.
               </p>
             </div>
             <div class="skill-group missing">
@@ -232,19 +227,14 @@
                   +
                 </span>
                 <span class="count">
-                  2
+                  <span id="missing-skills-count">-</span>
                 </span>
               </div>
-              <div class="skill-chips">
-                <span class="skill-chip">
-                  AWS
-                </span>
-                <span class="skill-chip">
-                  데이터 시각화
-                </span>
+              <div id="missing-skills" class="skill-chips">
+                <span class="skill-chip">분석 중</span>
               </div>
               <p>
-                예시 이력에서 아직 확인되지 않은 역량이에요.
+                내 프로필에서 아직 확인되지 않은 역량이에요.
               </p>
             </div>
             <details class="evidence">
@@ -252,22 +242,13 @@
                 어떤 이력을 기준으로 비교했나요?
               </summary>
               <ul>
-                <li>
-                  Python · SQL: 데이터 분석 기초 과정 수료
-                </li>
-                <li>
-                  Excel: 컴퓨터활용능력 2급
-                </li>
-                <li>
-                  분석 프로젝트: 서비스 이용 데이터 분석 경험
-                </li>
-                <li>
-                  AWS · 데이터 시각화: 관련 이력 미입력
+                <li id="analysis-basis">
+                  공고 요구사항과 내 프로필 역량을 분석 중이에요.
                 </li>
               </ul>
             </details>
           </section>
-          <section class="next-step">
+          <a class="next-step" href="/training_match">
             <span class="next-icon" aria-hidden="true">
               ↗
             </span>
@@ -276,14 +257,13 @@
                 다음 한 걸음은 이렇게
               </h3>
               <p>
-                AWS 기초와 데이터 시각화 실습으로
+                부족한 역량을 채울 교육을
                 <br>
-                공고에서 원하는 경험을 채워 보세요.
+                추천받아 보세요.
               </p>
             </div>
-          </section>
+          </a>
           <p class="mobile-note">
-            내 이력과 채용공고를 비교한 예시 화면입니다.
           </p>
         </aside>
       </div>
@@ -434,6 +414,9 @@ h1  {
   border:1px solid var(--line);
   border-radius:20px;
   overflow:hidden
+}
+.workspace > article.panel  {
+  margin-bottom:16px
 }
 .job-top  {
   padding:30px;
@@ -743,7 +726,10 @@ h3  {
   padding:20px 24px;
   display:flex;
   align-items:start;
-  gap:13px
+  gap:13px;
+  color:inherit;
+  text-decoration:none;
+  cursor:pointer
 }
 .next-icon  {
   display:grid;
@@ -767,7 +753,7 @@ h3  {
   line-height:1.8
 }
 footer  {
-  max-width:1120px;
+  max-width:1180px;
   margin:0 auto;
   padding:20px 0 28px;
   border-top:1px solid var(--line);
@@ -894,6 +880,7 @@ footer  {
           fetchJson(`/jd_match/job-postings/${jobId}/score`)
         ])
           .then(([job, score]) => {
+            document.querySelector("#analysis-loading").hidden = true;
             document.querySelector("#company-name").textContent = text(job.company_name);
             document.querySelector("#company-note").textContent = text(job.address || job.region_id);
             document.querySelector("#deadline").textContent = text(job.deadline_date || job.deadline_type);
@@ -904,18 +891,32 @@ footer  {
             document.querySelector("#main-tasks").innerHTML = list(job.main_tasks);
             document.querySelector("#qualifications").innerHTML = list(job.qualifications);
             document.querySelector("#preferred-qualifications").innerHTML = list(job.preferred_qualifications);
-            document.querySelector("#job-foot").textContent = "Supabase에 저장된 실제 공고 데이터입니다.";
             const percent = Number(score.score_percent || 0);
+            const matchedSkills = Array.isArray(score.matched_skills) ? score.matched_skills : [];
+            document.querySelector("#matched-skills-count").textContent = matchedSkills.length;
+            document.querySelector("#matched-skills").innerHTML = matchedSkills.length
+              ? matchedSkills.map(skill => `<span class="skill-chip">${text(skill)}</span>`).join("")
+              : '<span class="skill-chip">확인된 충족 역량 없음</span>';
+            const missingSkills = Array.isArray(score.missing_skills) ? score.missing_skills : [];
+            const grade = percent >= 80 ? "매우 잘 부합" : percent >= 60 ? "대부분 부합" : percent >= 40 ? "보통 수준으로 부합" : percent >= 20 ? "일부만 부합" : "거의 부합하지 않음";
+            document.querySelector("#analysis-basis").textContent =
+              `역량 적합도 ${percent}% · ${grade}. 공고 요구사항과 내 프로필 역량을 비교했어요. ` +
+              `충족 ${matchedSkills.length}개, 부족 ${missingSkills.length}개 기준입니다.`;
+            document.querySelector("#missing-skills-count").textContent = missingSkills.length;
+            document.querySelector("#missing-skills").innerHTML = missingSkills.length
+              ? missingSkills.map(skill => `<span class="skill-chip">${text(skill)}</span>`).join("")
+              : '<span class="skill-chip">확인된 부족 역량 없음</span>';
             document.querySelector("#score-number").innerHTML = `${percent}<small>%</small>`;
             document.querySelector("#score-ring").style.background =
               `conic-gradient(var(--green) 0 ${percent * 3.6}deg, #e5dfc4 ${percent * 3.6}deg 360deg)`;
             document.querySelector("#score-ring").setAttribute("aria-label", `역량 일치율 ${percent}%`);
             document.querySelector("#score-source").textContent = "JEV 분석 결과";
             document.querySelector("#score-summary").innerHTML = `JEV 분석 결과<br>${percent}% 적합해요`;
-            document.querySelector("#score-description").textContent = "공고의 자격요건과 우대사항을 내 프로필과 비교한 결과입니다.";
+            document.querySelector("#score-description").textContent = "내 희망직무·보유역량과 공고의 직무·주요 업무·자격요건·우대사항을 비교한 결과입니다.";
           })
           .catch(error => {
-            document.querySelector("#job-foot").textContent = error.message;
+            document.querySelector("#analysis-loading").hidden = true;
+            console.error(error);
           });
       })();
     </script>
