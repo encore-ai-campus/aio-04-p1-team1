@@ -1,4 +1,4 @@
-"""public.training_posting_mj access. Course data is read from DB, never from the browser."""
+"""public.training_posting access. Course data is read from DB, never from the browser."""
 from contextlib import contextmanager
 from datetime import datetime, timezone, timedelta
 import logging
@@ -36,7 +36,7 @@ def read_catalogue(start, end):
     from modules.training_posts.service import normalize_stored_course
 
     with database() as cursor:
-        cursor.execute('''SELECT id, training_id, source_url, title, center_name,
+        cursor.execute('''SELECT id, work24_training_id, source_url, title, center_name,
                                  center_address, training_start_dt, training_end_dt
                           FROM public.training_posting
                           WHERE use_yn = 'Y'
