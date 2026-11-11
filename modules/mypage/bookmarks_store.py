@@ -9,7 +9,7 @@ from psycopg import Error, sql
 from psycopg.errors import ForeignKeyViolation
 
 TABLES = {
-    'job': ('saved_jobs', 'job_id', 'job_posting_mj'),
+    'job': ('saved_jobs', 'job_id', 'job_postings'),
     'course': ('saved_trainings', 'training_id', 'training_posting'),
 }
 
@@ -83,7 +83,7 @@ def item(saved, original, user_id):
         'title':original['title'],
         'organization':original['company_name'] if kind=='job' else (original.get('center_name') or '교육기관 확인 필요'),
         'original_url':original['source_url'],
-        'location':original.get('address') if kind=='job' else original.get('center_address'),
+        'location':original.get('region_name') if kind=='job' else original.get('center_address'),
         'deadline':deadline,
         # 교육 종료일은 모집 마감일이 아니므로 deadline으로 사용하지 않습니다.
         'cost':None, 'is_online':None,
