@@ -1,6 +1,7 @@
 """교육목록 HTML/CSS/JavaScript 화면."""
 
 import re
+from pathlib import Path
 
 from shared.components.compass import apply_member_shell
 
@@ -74,6 +75,9 @@ body.cc-member-page.cc-training-page{font-size:14px}
 def render_training_page(template, user, current):
     """Use the shared shell and connect its existing training menu entries."""
     rendered = apply_member_shell(template, user, current=current)
+    if current == 'training_posts':
+        bookmarks = (Path(__file__).resolve().parents[2] / 'shared/components/scripts/bookmarks.js').read_text(encoding='utf-8')
+        rendered = rendered.replace('</head>', '<script>' + bookmarks + '</script></head>', 1)
     rendered = rendered.replace('</head>', '<style>' + TRAINING_TYPOGRAPHY + '</style></head>', 1)
     routes = {"training": "training_match", "courses": "training_posts"}
 
@@ -314,7 +318,7 @@ __CC_HEADER____CC_MENU__
 const el = (id) => document.getElementById(id);
 const PAGE_SIZE = 4;
 const state = {data:JSON.parse(el("initial-data").textContent),filtered:[],page:0,saved:[],filter:{category:"",mode:"all",budget:"",query:""},controller:null,generation:0};
-try { const saved=JSON.parse(localStorage.getItem("training-collection-favorites")||"[]"); if(Array.isArray(saved))state.saved=saved.filter(k=>typeof k==="string"); } catch {}
+const courseBookmarks = CompassBookmarks.create("course");
 const esc=(value)=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const modeName=(value)=>({online:"온라인",offline:"오프라인",mixed:"혼합",unknown:"방식 확인 필요",all:"전체 방식"}[value]||"방식 확인 필요");
 const costText=(value)=>value==null?"교육비 원문 확인":value===0?"무료":value.toLocaleString("ko-KR")+"원";
@@ -361,7 +365,7 @@ function render(){
   el("cards").innerHTML=visible.length?visible.map(c=>{
     const saved=state.saved.includes(c.key);
     const tags=c.tags.length?c.tags:[c.categoryName];
-    return '<article class="card"><div class="card-top"><span class="badge">'+esc(c.badge)+'</span><button class="heart" type="button" data-save="'+esc(c.key)+'" aria-label="'+esc(c.title)+' 관심 '+(saved?'해제':'저장')+'" aria-pressed="'+saved+'">'+(saved?'♥':'♡')+'</button></div><h3 title="'+esc(c.title)+'">'+esc(c.title)+'</h3><p class="provider">'+esc(c.provider)+'</p><p class="card-meta">'+esc(costText(c.cost))+' · '+esc(modeName(c.mode))+' · '+(c.weeks?c.weeks+'주':'기간 확인')+'</p><div class="tags">'+tags.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div><button class="details" type="button" data-detail="'+esc(c.key)+'">상세 보기 →</button></article>';
+    return '<article class="card"><div class="card-top"><span class="badge">'+esc(c.badge)+'</span><button class="heart" type="button" data-save="'+esc(c.key)+'" aria-label="'+esc(c.title)+' 관심 '+(saved?'해제':'저장')+'" aria-pressed="'+saved+'"'+(!courseBookmarks.ready||courseBookmarks.isPending(c.key)?' disabled':'')+'>'+ (saved?'♥':'♡')+'</button></div><h3 title="'+esc(c.title)+'">'+esc(c.title)+'</h3><p class="provider">'+esc(c.provider)+'</p><p class="card-meta">'+esc(costText(c.cost))+' · '+esc(modeName(c.mode))+' · '+(c.weeks?c.weeks+'주':'기간 확인')+'</p><div class="tags">'+tags.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div><button class="details" type="button" data-detail="'+esc(c.key)+'">상세 보기 →</button></article>';
   }).join(""):'<div class="empty"><h3>조건에 맞는 교육이 없어요</h3><p>검색어나 분야·교육 방식·교육비 조건을 넓혀서 다시 찾아보세요. 금액이 확인되지 않은 교육은 교육비 제한에서 제외됩니다.</p><button id="emptyReset" type="button">조건 초기화</button></div>';
   el("emptyReset")?.addEventListener("click",reset);
   if(pages<=1){el("pagination").innerHTML="";return;}
@@ -406,13 +410,18 @@ el("filterForm").addEventListener("submit",e=>{e.preventDefault();reloadAndApply
 el("searchForm").addEventListener("submit",e=>{e.preventDefault();reloadAndApply();});
 el("resetButton").addEventListener("click",reset);
 el("sort").addEventListener("change",applyFilters);
-el("cards").addEventListener("click",e=>{
+el("cards").addEventListener("click",async e=>{
   const save=e.target.closest("[data-save]"),detail=e.target.closest("[data-detail]");
   if(save){
-    const key=save.dataset.save,already=state.saved.includes(key);
-    state.saved=already?state.saved.filter(k=>k!==key):[...state.saved,key];
-    try{localStorage.setItem("training-collection-favorites",JSON.stringify(state.saved));toast(already?"관심목록에서 해제했어요.":"관심목록에 저장했어요.");}catch{toast("브라우저 저장을 사용할 수 없어 이번 화면에서만 유지됩니다.");}
-    render();
+    const key=save.dataset.save;
+    if(!courseBookmarks.ready||courseBookmarks.isPending(key))return;
+    const operation=courseBookmarks.toggle(key);render();
+    try{
+      const saved=await operation;
+      state.saved=courseBookmarks.ids();
+      toast(saved?"관심목록에 저장했어요.":"관심목록에서 해제했어요.");
+    }catch(error){toast(error.message);if(error.loginRequired)location.assign("/signin");}
+    finally{render();}
   }
   if(detail){const c=state.data.courses.find(c=>c.key===detail.dataset.detail);if(c)showDetails(c);}
 });
@@ -420,6 +429,8 @@ el("pagination").addEventListener("click",e=>{const button=e.target.closest("[da
 el("closeDetail").addEventListener("click",()=>el("detailDialog").close());
 el("detailDialog").addEventListener("click",e=>{if(e.target===el("detailDialog")){const box=e.target.getBoundingClientRect();if(e.clientX<box.left||e.clientX>box.right||e.clientY<box.top||e.clientY>box.bottom)e.target.close();}});
 applyFilters();
+courseBookmarks.load().then(()=>{state.saved=courseBookmarks.ids();render();}).catch(error=>toast(error.message));
+window.addEventListener("pageshow",event=>{if(event.persisted)courseBookmarks.load().then(()=>{state.saved=courseBookmarks.ids();render();}).catch(error=>{render();toast(error.message);});});
 </script>
 </div>
 __CC_SCRIPT__

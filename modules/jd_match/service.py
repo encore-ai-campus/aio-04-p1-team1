@@ -9,9 +9,17 @@ from kiwipiepy import Kiwi
 from modules.jd_match.model import JobPosting, Profile, SavedJobPosting
 
 
-def _extract_skill_candidates(text: str) -> list[str]:
+def _normalize_company_name(value: str) -> str:
+    """기업명 비교를 위해 법인 표기·공백을 정리한다."""
+    normalized = re.sub(r"\s+", "", value or "").casefold()
+    normalized = re.sub(r"^(주식회사|㈜|\(주\))", "", normalized)
+    return normalized
+
+
+def _extract_skill_candidates(text: str, company_name: str = "") -> list[str]:
     """형태소 품사 기준으로 공고의 명사·기술명 후보를 추출한다."""
     ignored = {"경험", "업무", "가능", "이상", "이하", "이용", "기반", "관련", "대한", "통한"}
+    normalized_company_name = _normalize_company_name(company_name)
     result = []
     tokens = Kiwi().tokenize(text or "")
     for index, token in enumerate(tokens):
@@ -39,6 +47,8 @@ def _extract_skill_candidates(text: str) -> list[str]:
         if token.tag == "NNG" and not is_compound_noun:
             continue
         if len(value) < 2 or value in ignored or value.lower() in {"the", "and", "for", "with"}:
+            continue
+        if normalized_company_name and _normalize_company_name(value) == normalized_company_name:
             continue
         if value not in result:
             result.append(value)
@@ -161,7 +171,7 @@ def get_jd_match_score(
             job_posting.preferred_qualifications,
         ) if value
     )
-    required_skill_candidates = _extract_skill_candidates(required_text)
+    required_skill_candidates = _extract_skill_candidates(required_text, job_posting.company_name)
     profile_skill_names = profile.skills + [
         item["name"] for item in profile.certificates + profile.courses if item.get("name")
     ]
@@ -238,7 +248,6 @@ def get_jd_match_score(
         json=payload,
         timeout=30,
     )
-    print(f"[JEV] response status={response.status_code} body={response.text[:2000]}", flush=True)
     response.raise_for_status()
 
     result = response.json().get("answers", {}).get("qualification_fit", {})
@@ -255,18 +264,12 @@ def get_jd_match_score(
             float(str(key).replace("점", "").strip()) * float(value)
             for key, value in probabilities.items()
         )
-        print(
-            f"[JEV] parsed score={score} probabilities={probabilities} "
-            f"expected_score={expected_score}",
-            flush=True,
-        )
         if score is None or float(score) <= 4:
             score = expected_score
 
     # JEV의 score/expected_score는 0~4 등급이므로 백분율로 환산한다.
     raw_score = float(score or 0)
     score_percent = round(max(0, min(raw_score * 25, 100)), 1)
-    print(f"[JEV] score_percent={score_percent}", flush=True)
     return {
         "score_percent": score_percent,
         "jev_score": score,
