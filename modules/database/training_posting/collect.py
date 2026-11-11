@@ -104,7 +104,7 @@ def normalize_course(raw):
     if start and end and start > end:
         raise ValueError('invalid_date_range')
     return asdict(TrainingPosting(
-        training_id=course_id, source_url=url, title=title,
+        work24_training_id=course_id, source_url=url, title=title,
         center_name=raw.get('subTitle', '').strip() or None,
         center_address=raw.get('address', '').strip() or None,
         training_start_dt=start, training_end_dt=end,
@@ -170,7 +170,7 @@ def preload_cache(output_dir, start, end):
             matches = match_jobs(row['title'])
             if not matches:
                 continue
-            key = row['training_id']
+            key = row['work24_training_id']
             if key not in pool or (row['training_start_dt'] or '9999') < (pool[key]['record']['training_start_dt'] or '9999'):
                 pool[key] = dict(record=row, matches=matches, raw=raw)
     return pool, previous
@@ -192,7 +192,7 @@ def collect(*, api_key, start, end, quota=125, max_calls=160, seed=42,
         (output_dir / 'api_cache').mkdir(parents=True, exist_ok=True)
         if resume:
             pool, previous = preload_cache(output_dir, start, end)
-    preferred = {role: [row['training_id'] for row in previous.get('selection', []) if row['job'] == role] for role in JOB_RULES}
+    preferred = {role: [row['work24_training_id'] for row in previous.get('selection', []) if row['job'] == role] for role in JOB_RULES}
     assignment = assign_jobs(pool, quota, seed, preferred)
     requests.extend(previous.get('queries', []))
     while any(queues.values()) and network_calls < max_calls:
@@ -235,7 +235,7 @@ def collect(*, api_key, start, end, quota=125, max_calls=160, seed=42,
                     if not matches:
                         rejects['no_job_title_match'] += 1
                         continue
-                    key = row['training_id']
+                    key = row['work24_training_id']
                     if key in pool:
                         rejects['duplicate_course_id'] += 1
                         # 가장 가까운 시작일의 회차를 남깁니다.
@@ -284,7 +284,7 @@ def collect(*, api_key, start, end, quota=125, max_calls=160, seed=42,
         'shortages': {role: quota - len(keys) for role, keys in assignment.items() if len(keys) < quota},
         'rejected_counts': dict(rejects), 'queries': requests, 'errors': errors,
         'selection': [{
-            'training_id': key, 'job': role, 'title': pool[key]['record']['title'],
+            'work24_training_id': key, 'job': role, 'title': pool[key]['record']['title'],
             'matching_evidence': pool[key]['matches'][role],
             'related_jobs': list(pool[key]['matches']), 'source_url': pool[key]['record']['source_url'],
         } for role in JOB_RULES for key in assignment[role]],

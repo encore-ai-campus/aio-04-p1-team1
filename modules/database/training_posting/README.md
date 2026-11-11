@@ -12,11 +12,11 @@
 | 테스트 import 및 `patch()` 대상 | 동일한 `modules.database.training_posting.*` 경로 |
 | `work24_client.py`, `save_to_supabase.py`의 `.env` 탐색 | `MODULE_DIR.parents[2] / ".env"`: 프로젝트 루트 |
 | 수집 결과·응답 캐시 | 이 폴더의 `results/` |
-| DB 테이블 정의 | 이 폴더의 `training_posting_mj.sql` |
+| DB 테이블 정의 | 이 폴더의 `training_posting.sql` |
 
 `collect.py`가 가져오는 서비스의 `MODULE_DIR`도 새 위치이므로 기본 결과 경로는 `modules/database/training_posting/results/`입니다.
 
-고용24의 **국민내일배움카드 훈련과정 API - 목록**을 사용해 8개 직무와 관련된 교육을 수집합니다. 직무별 최대 125개를 선정하고, JSON 파일과 Supabase의 `public.training_posting_mj` 테이블에 저장합니다.
+고용24의 **국민내일배움카드 훈련과정 API - 목록**을 사용해 8개 직무와 관련된 교육을 수집합니다. 직무별 최대 125개를 선정하고, JSON 파일과 Supabase의 `public.training_posting` 테이블에 저장합니다.
 
 현재 구현은 **명령줄에서 실행하는 수집·검증·저장 기능**입니다. 웹 화면에서 검색하거나 저장하는 기능은 아직 구현하지 않았습니다.
 
@@ -28,10 +28,10 @@
 | [work24_client.py](work24_client.py) | 인증키 로딩, 검색 조건 검증, API 요청, XML 파싱, 오류 처리, 원본 항목 확인 | API를 조회할 때 필수. 단독 실행하면 과정명·기관·지역·NCS 조건으로 한 페이지를 검색할 수 있음 |
 | [collect.py](collect.py) | 8개 직무 검색, 제목 기반 관련성 판별, 중복 제거, 직무별 수량 배정, 캐시 재사용, 결과·보고서 생성 | 여러 직무를 모아 수집할 때 사용하는 실행 진입점 |
 | [save_to_supabase.py](save_to_supabase.py) | JSON 검증, PostgreSQL 연결, 테이블 준비, 데이터 추가·갱신, 저장 후 조회 비교 | Supabase에 저장할 때 필요. 수집 없이 기존 JSON만 저장할 수도 있음 |
-| [training_posting_mj.sql](training_posting_mj.sql) | 테이블의 컬럼·타입·기본값·제약조건 정의 | 저장 코드가 읽어 실행하므로 DB 저장 시 필수. 별도로 직접 실행할 필요는 없음 |
+| [training_posting.sql](training_posting.sql) | 테이블의 컬럼·타입·기본값·제약조건 정의 | 저장 코드가 읽어 실행하므로 DB 저장 시 필수. 별도로 직접 실행할 필요는 없음 |
 | [test_work24_api.py](test_work24_api.py) | XML 파싱, 빈 결과와 API 오류 구분, 검색 조건 검증, 인증키 비노출 테스트 | 개발·검증용. 실제 수집 실행에 필수는 아님 |
 | [test_collection.py](test_collection.py) | 컬럼 변환, 관련성 판별, 중복 제거, 교차 직무 배정, 목표 충족 시 중단, 캐시 재개 테스트 | 수집 규칙을 수정할 때 검증용. 실제 수집 실행에 필수는 아님 |
-| [.gitignore](.gitignore) | 대용량 응답 캐시와 임시 JSON 파일을 Git 관리에서 제외 | 실행 기능에는 영향이 없지만 생성 파일 관리에 사용 |
+| `.gitignore` | 대용량 응답 캐시와 임시 JSON 파일을 Git 관리에서 제외 | 실행 기능에는 영향이 없지만 생성 파일 관리에 사용 |
 | `README.md` | 파일 역할, 실행법, 수집 기준과 결과 설명 | 사용·유지보수 안내용 |
 
 [공통 모델](schemas.py)의 `NCS_CATEGORIES`는 NCS 대분류 코드 설명입니다. **현재 8개 직무 수집기는 이 코드로 분류하지 않고 제목 키워드로 분류**합니다. NCS 조건 검색은 `work24_client.py --ncs`에서 별도로 지원합니다.
@@ -42,7 +42,7 @@
 |---|---|---|
 | [training_postings.json](results/training_postings.json) | 최종 선정된 교육을 DB의 9개 컬럼 형태로 정리한 목록 | 실제 저장 데이터 확인. DB 저장 후 발급된 UUID도 반영됨 |
 | [validation_report.json](results/validation_report.json) | 직무별 건수, 부족 수량, 검색 이력, 제외 사유, 선정 근거, 기관 분포, 호출 수, DB 저장 결과 | 수집·분류·저장 과정을 검토할 때 사용 |
-| [training_response.xml](results/training_response.xml) | `work24_client.py`로 마지막에 검색한 한 페이지의 원본 XML | API가 어떤 필드를 주는지 확인. 최종 전체 선정 목록은 아님 |
+| `results/training_response.xml` | `work24_client.py`로 마지막에 검색한 한 페이지의 원본 XML | API가 어떤 필드를 주는지 확인. 최종 전체 선정 목록은 아님 |
 | [training_inspection.json](results/training_inspection.json) | 위 페이지의 원본 값과 필드별 존재·누락·빈 값 구분 | API 항목 점검용. 전체 992개의 선정 보고서는 아님 |
 | `api_cache/` | 배치 검색 조건별 성공 응답 XML. 수집 시 자동 생성 | `--resume`으로 재개할 때 API 재호출을 줄임. Git에는 포함하지 않음 |
 | `training_error.xml` | API가 오류 XML을 보낸 경우의 응답. 오류가 있을 때 생성 | 인증·서비스 오류 확인용 |
@@ -63,9 +63,9 @@
   │                  results/validation_report.json
   │
   └─ DATABASE_URL → save_to_supabase.py
-                        ├─ training_posting_mj.sql로 테이블 준비
+                        ├─ training_posting.sql로 테이블 준비
                         ├─ JSON 데이터 추가·갱신 및 비교 검증
-                        └─ public.training_posting_mj
+                        └─ public.training_posting
 ```
 
 [공통 모델](schemas.py)은 이 흐름에서 사용하는 데이터 구조를 정의합니다. 웹 기능용 [router.py](../../training_posts/router.py)와 [page.py](../../training_posts/page.py)는 `modules/training_posts/`에 남아 있으며, 이 폴더의 CLI 수집 흐름에는 연결되어 있지 않습니다.
@@ -154,7 +154,7 @@
 | API 항목 | 저장 컬럼 | DB 타입·제약 |
 |---|---|---|
 | 내부 생성 | `id` | uuid PK, 기본값 `gen_random_uuid()` |
-| `trprId` | `training_id` | text NOT NULL |
+| `trprId` | `work24_training_id` | text NOT NULL |
 | `titleLink` | `source_url` | text NOT NULL UNIQUE |
 | `title` | `title` | text NOT NULL |
 | `subTitle` | `center_name` | text |
@@ -163,13 +163,17 @@
 | `traEndDate` | `training_end_dt` | date |
 | 내부 기본값 | `use_yn` | char(1) NOT NULL DEFAULT 'Y', Y/N만 허용 |
 
+`work24_training_id`는 고용24 API의 `trprId`를 저장하는 **문자열 외부 과정 ID**입니다. 이전 컬럼명은 `training_id`이며 SQL 파일은 기존 테이블에서 이 컬럼을 `ALTER TABLE ... RENAME COLUMN`으로 변경합니다. 데이터와 내부 UUID `id`는 유지됩니다.
+
+현재 DB 저장 대상은 `public.training_posting`입니다. 별도의 `training_postings`나 이전 `_mj` 테이블을 새로 만들지 않습니다. `saved_trainings.training_id`는 이 테이블의 내부 UUID `id`를 참조하는 북마크 컬럼이며 이름을 변경하지 않습니다.
+
 `use_yn`은 이 API의 공식 목록 응답 항목이 아니므로 내부 기본값 `Y`를 설정합니다. 모집 중 여부를 뜻하는 API 값은 아닙니다. DB 저장 전 `id`는 `null`이고 저장 후 실제 발급 UUID를 JSON에 반영합니다.
 
 `save_to_supabase.py`는 다음 순서로 처리합니다.
 
 1. JSON의 컬럼, 필수값, 날짜, 중복, `use_yn`을 검증합니다.
 2. 테이블이 없으면 SQL 파일의 정의대로 생성하고 RLS를 활성화합니다. 공개 접근 정책은 별도로 만들지 않습니다.
-3. 기존 테이블의 컬럼과 타입이 모델과 다르면 중단합니다. 기존 구조를 자동 삭제·변경하지 않습니다.
+3. 기존 `training_id`가 있으면 SQL에 명시된 `work24_training_id` 이름 변경만 수행합니다. 이후 전체 컬럼·타입이 모델과 다르면 중단하며, 임의 컬럼 삭제나 기타 자동 변경은 하지 않습니다.
 4. `source_url`이 같으면 갱신하고 없으면 추가합니다. 기존 UUID와 기존 `use_yn`은 보존합니다.
 5. 입력 데이터와 DB 조회 결과를 비교하고 일치해야 커밋합니다. 비교 시 기존 값 보존 대상인 UUID·사용 여부는 제외합니다.
 
@@ -288,3 +292,9 @@ python -m unittest modules.database.training_posting.test_work24_api modules.dat
 | 웹 검색 API·화면 | `modules/training_posts/router.py`, `modules/training_posts/page.py`에 별도 구현 필요 |
 
 공식 API 안내: https://www.work24.go.kr/cm/e/a/0110/selectOpenApiSvcInfo.do?fullApiSvcId=000000000000000000000000000004
+
+## 프로필 교육 이력과의 구분
+
+`public.training_posting`은 고용24에서 수집한 교육공고입니다. 사용자 입력 수료 이력은 별도 `public.profiles_trainings`, 교육 북마크는 `public.saved_trainings`에 저장합니다. 이 폴더의 수집·저장 명령은 프로필 테이블을 생성하거나 삭제하지 않습니다. 최신 프로필 구조·활성 접근 정책은 [profiles README](../profiles/README.md), 전체 테이블 실행 관계는 [database README](../README.md)를 확인하세요.
+
+원티드 폴더의 파일 통합이나 HTML 보관 방식 변경과 별개로, 이 폴더는 `work24_client.py`·`collect.py`·`save_to_supabase.py`와 XML/JSON 결과 파일을 계속 사용합니다.
