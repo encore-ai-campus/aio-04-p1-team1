@@ -183,6 +183,7 @@ RECOMMEND_STYLE = r"""
 .cc-training-page #analysisOpen{font-size:calc(11px + 4pt);border:1px solid #ebc03f;background:#fff;color:var(--cc-text);padding:9px 19px}
 
 .training-match-content .rec-panel{position:relative;min-height:158px;border-radius:24px;background:#f5efd0;padding:26px 34px;display:flex;align-items:center;justify-content:space-between;gap:25px}
+.training-match-content .rec-intro{margin:0 0 12px;font-size:16px;line-height:1.8;color:var(--ink);word-break:keep-all}
 .training-match-content .rec-panel h2{font-size:25px;letter-spacing:.5px;margin:0 0 12px;}
 .training-match-content .gap-line{display:flex;align-items:center;gap:15px;flex-wrap:wrap;font-size:17px;color:#8d947f}
 .training-match-content .gap-label{margin-right:45px}
@@ -330,14 +331,29 @@ RECOMMEND_STYLE = r"""
 .training-match-content .rec-footnote{font-size:10px}
 .training-match-content .ai-row{grid-template-columns:1fr;gap:0}
 .training-match-content .analysis-summary{font-size:13px}}
+.cc-training-page .training-match-content #recommendSort{font-size:calc(12px + 2pt);width:156px;height:46px;padding:8px 24px;text-align:center;text-align-last:center;color:#9ba08f}
+.cc-training-page .training-match-content #recommendSort option{text-align:center}
+@supports (appearance:base-select){
+  .cc-training-page .training-match-content #recommendSort,
+  .cc-training-page .training-match-content #recommendSort::picker(select){appearance:base-select}
+  .cc-training-page .training-match-content #recommendSort{display:flex;align-items:center;justify-content:center;anchor-name:--recommend-sort}
+  .cc-training-page .training-match-content #recommendSort::picker-icon{display:none}
+  .cc-training-page .training-match-content #recommendSort::picker(select){font-family:inherit;font-size:calc(12px + 2pt);color:#9ba08f;background:#fff;border:1px solid var(--cc-border);border-radius:12px;padding:4px 0;position:fixed;position-anchor:--recommend-sort;inset:auto;top:anchor(--recommend-sort bottom);left:anchor(--recommend-sort left);margin:4px 0 0;position-area:none;position-try-fallbacks:none;min-width:anchor-size(--recommend-sort width);max-height:240px;overflow-y:auto}
+  .cc-training-page .training-match-content #recommendSort option{display:flex;justify-content:center;padding:10px 12px;min-height:40px}
+  .cc-training-page .training-match-content #recommendSort option::checkmark{display:none}
+  .cc-training-page .training-match-content #recommendSort option:checked{background:#fff5d7;color:var(--cc-text)}
+  .cc-training-page .training-match-content #recommendSort option:hover,
+  .cc-training-page .training-match-content #recommendSort option:focus{background:var(--cc-yellow);color:var(--cc-text)}
+}
+.cc-training-page .training-match-content .rec-sort:after{right:8px;top:50%;transform:translateY(-50%)}
 """
 RECOMMEND_BODY = r"""
 <div class="training-match-content" data-member-content>
 <main class="cc-page">
 <section class="cc-page-heading"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1>지금 내게 필요한 다음 배움을 찾아요</h1><p class="subtitle">내 이력과 선택한 공고에서 확인한 보완 역량을 교육·자격증과 연결했어요.</p></section>
-<section class="rec-panel" aria-label="분석 기준"><div><h2 id="analysisTitle">분석 기준 &nbsp; 채용공고를 선택해 주세요</h2><div class="gap-line"><span class="gap-label">보완할 역량</span><span id="gapPills" style="display:contents"><span class="gap-pill">AI 분석 전</span></span></div></div><button class="analysis-button cc-top-button cc-main-button" id="analysisOpen" type="button">교육 추천 받기</button></section>
+<section class="rec-panel" aria-label="분석 기준"><div><p class="rec-intro">AI가 내 프로필과 저장한 채용공고를 비교해 보완할 역량과 관련 교육을 추천해요.</p><div class="gap-line"><span class="gap-label">보완할 역량</span><span id="gapPills" style="display:contents"><span class="gap-pill">AI 분석 전</span></span></div></div><button class="analysis-button cc-top-button cc-main-button" id="analysisOpen" type="button" disabled>AI 맞춤 교육 추천 받기</button></section>
 <section aria-labelledby="recommendTitle">
-<div class="rec-heading"><h2 id="recommendTitle">맞춤 교육과정</h2><div class="rec-conditions"><button type="button" class="rec-condition" id="budgetChip">교육비 제한 없음</button><button type="button" class="rec-condition" id="modeChip">전체 방식</button></div><div class="sort rec-sort"><select id="recommendSort" aria-label="추천 정렬"><option value="recommended">추천순</option><option value="cost">교육비순</option><option value="latest">최신순</option></select></div></div>
+<div class="rec-heading"><h2 id="recommendTitle">AI 추천 맞춤 교육과정 목록</h2><div class="sort rec-sort"><select id="recommendSort" aria-label="추천 정렬"><option value="latest">최신순</option><option value="recommended" disabled>AI 추천순</option><option value="cost_low">교육비 낮은순</option><option value="cost_high">교육비 높은순</option></select></div></div>
 <div class="rec-grid" id="recommendCards" aria-live="polite"></div>
 </section>
 <section class="rec-certificates"><h2>함께 살펴볼 자격증</h2><div class="certificate-grid" id="certificateCards"></div><p class="rec-footnote" id="recommendNote">선택한 공고와 내 프로필을 비교해 저장된 교육 중에서 Groq AI가 추천해요.</p></section>
@@ -380,15 +396,12 @@ function renderRecommendations(){
     rEl("certificateCards").innerHTML=Object.values(certInfo).map(c=>'<article class="certificate-card"><span class="certificate-label">학습 참고</span><h3>'+rEsc(c.name)+'</h3><p>분석 후 관련 학습 정보를 안내해요.</p></article>').join("");
     return;
   }
-  rEl("analysisTitle").textContent="분석 기준  "+data.job_title;
   rEl("gapPills").innerHTML=data.analysis.gaps.length?data.analysis.gaps.map(g=>'<span class="gap-pill" title="'+rEsc(g.status)+'">'+rEsc(g.skill)+'</span>').join(""):'<span class="gap-pill">역량 정보 확인 필요</span>';
-  rEl("analysisOpen").textContent="교육 추천 받기";
-  const prefs=data.preferences;
-  rEl("budgetChip").textContent=prefs.budget==null?"교육비 제한 없음":prefs.budget===0?"무료":"무료·"+(prefs.budget/10000)+"만원 이하";
-  rEl("modeChip").textContent={online_first:"온라인 우선",online_only:"온라인만",all:"전체 방식"}[prefs.mode];
+  rEl("analysisOpen").textContent="AI 맞춤 교육 추천 받기";
   let items=[...data.items];
   const sort=rEl("recommendSort").value;
-  if(sort==="cost")items.sort((a,b)=>(a.cost??Infinity)-(b.cost??Infinity));
+  if(sort==="cost_low")items.sort((a,b)=>(a.cost??Infinity)-(b.cost??Infinity));
+  if(sort==="cost_high")items.sort((a,b)=>(b.cost??-1)-(a.cost??-1));
   if(sort==="latest")items.sort((a,b)=>b.start.localeCompare(a.start));
   let cards=items.map((c,i)=>{
     const saved=rState.saved.includes(c.key);
@@ -421,7 +434,7 @@ rEl("recommendForm").addEventListener("submit",async event=>{
     const result=await response.json();
     if(response.status===401){location.assign("/signin");return;}
     if(!response.ok)throw new Error(result.error||result.detail||"저장된 공고와 프로필을 확인해 주세요.");
-    rState.result=result;rState.preferences=data;rEl("recommendSort").value="recommended";
+    rState.result=result;rState.preferences=data;rEl("recommendSort").value="latest";
     renderRecommendations();rEl("settingsDialog").close();rToast("AI가 실제 교육 "+result.items.length+"개를 추천했어요.");
   }catch(error){rEl("recommendError").textContent=error.message||"추천을 완료하지 못했어요. 잠시 후 다시 시도해 주세요.";}
   finally{rState.busy=false;rEl("runRecommendation").disabled=false;rEl("runRecommendation").textContent="AI 교육 추천받기";}
@@ -459,9 +472,6 @@ async function loadMatchContext(){
 }
 rEl("jobSelect").addEventListener("change",updateJobPreview);
 
-rEl("analysisOpen").addEventListener("click",showAnalysis);
-rEl("budgetChip").addEventListener("click",()=>openSettings("budget"));
-rEl("modeChip").addEventListener("click",()=>openSettings("mode"));
 rEl("settingsClose").addEventListener("click",()=>rEl("settingsDialog").close());
 rEl("analysisClose").addEventListener("click",()=>rEl("analysisDialog").close());
 rEl("editInputs").addEventListener("click",()=>{rEl("analysisDialog").close();openSettings();});

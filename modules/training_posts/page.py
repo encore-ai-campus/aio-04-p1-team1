@@ -34,6 +34,21 @@ body.cc-member-page.cc-training-page{font-size:14px}
 .cc-training-page :is(.apply,.search button,.ai-submit){font-size:14px}
 .cc-training-page :is(.reset,.analysis-button){font-size:11px}
 .cc-training-page :is(.sort select,.rec-condition,.gap-line,.gap-pill){font-size:12px}
+.cc-training-page .training-posts-content #sort{font-size:calc(12px + 2pt);width:156px;height:46px;padding:8px 24px;text-align:center;text-align-last:center}
+.cc-training-page .training-posts-content #sort option{text-align:center}
+@supports (appearance:base-select){
+  .cc-training-page .training-posts-content #sort,
+  .cc-training-page .training-posts-content #sort::picker(select){appearance:base-select}
+  .cc-training-page .training-posts-content #sort{display:flex;align-items:center;justify-content:center;anchor-name:--training-sort}
+  .cc-training-page .training-posts-content #sort::picker-icon{display:none}
+  .cc-training-page .training-posts-content #sort::picker(select){font-family:inherit;font-size:calc(12px + 2pt);color:#9ba08f;background:#fff;border:1px solid var(--cc-border);border-radius:12px;padding:4px 0;position:fixed;position-anchor:--training-sort;inset:auto;top:anchor(--training-sort bottom);left:anchor(--training-sort left);margin:4px 0 0;position-area:none;position-try-fallbacks:none;min-width:anchor-size(--training-sort width);max-height:240px;overflow-y:auto}
+  .cc-training-page .training-posts-content #sort option{display:flex;justify-content:center;padding:10px 12px;min-height:40px}
+  .cc-training-page .training-posts-content #sort option::checkmark{display:none}
+  .cc-training-page .training-posts-content #sort option:checked{background:#fff5d7;color:var(--cc-text)}
+  .cc-training-page .training-posts-content #sort option:hover,
+  .cc-training-page .training-posts-content #sort option:focus{background:var(--cc-yellow);color:var(--cc-text)}
+}
+.cc-training-page .training-posts-content .sort:after{right:8px;top:50%;transform:translateY(-50%)}
 .cc-training-page :is(.rec-reason,.certificate-card p,.analysis-summary,.gap-explanation){font-size:12px}
 .cc-training-page :is(.sidebar-note,.catalogue-note,.rec-footnote,.input-hint){font-size:10px}
 .cc-training-page .pagination button{font-size:12px}
