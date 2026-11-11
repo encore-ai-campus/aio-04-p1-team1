@@ -1,4 +1,4 @@
-"""Supabase Auth + auth_LYR 프로필 API 및 회원 JWT 기반 REST 요청."""
+"""Supabase Auth 인증과 profiles 회원정보 조회·수정 API."""
 
 from contextlib import asynccontextmanager
 import os
@@ -13,7 +13,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from shared.auth_dependencies import User
 from modules.auth.signup_guard import DUPLICATE_EMAIL_MESSAGE, signup_guard
-from modules.auth import withdrawal_service, password_service
+from modules.auth import withdrawal_service, password_service, member_store
 
 LEGACY_COOKIE_NAME = "compass_supabase_session"
 ACCESS_COOKIE_NAME = "compass_supabase_access"
@@ -170,10 +170,6 @@ def supabase_request(method, path, *, token=None, json=None, params=None, header
             if result.status_code in {400, 401, 403, 422}:
                 failure(400, "비밀번호를 변경하지 못했습니다. 이전 비밀번호와 보안 기준을 확인해 주세요.")
         if path.startswith("/rest/"):
-            if path == "/rest/v1/bookmarks_LYR" and code == "23505":
-                raise HTTPException(status_code=409, detail={
-                    "code": "BOOKMARK_ALREADY_EXISTS", "message": "이미 저장한 정보입니다.",
-                })
             if result.status_code == 401:
                 failure(401, "로그인이 만료되었습니다. 다시 로그인해 주세요.")
             failure(503, "데이터를 처리하지 못했습니다. Supabase 테이블과 접근 권한 설정을 확인해 주세요.")
@@ -193,11 +189,13 @@ def supabase_request(method, path, *, token=None, json=None, params=None, header
 def profile(user, access_token):
     if not user.get("email_confirmed_at"):
         failure(403, "이메일 인증 후 로그인해 주세요.")
-    rows = supabase_request("GET", "/rest/v1/auth_LYR", token=access_token,
-                            params={"select": "id,name", "id": "eq." + user["id"]})
-    if not rows or rows[0]["id"] != user["id"]:
-        failure(503, "회원정보가 없습니다. auth_LYR 테이블과 가입 트리거 설정을 확인해 주세요.")
-    return {"id": user["id"], "name": rows[0]["name"], "email": user["email"]}
+    row = member_store.get_profile(user["id"])
+    if not row or str(row["user_id"]) != str(user["id"]):
+        failure(503, "회원정보가 없습니다. profiles 테이블과 가입 트리거 설정을 확인해 주세요.")
+    if row["use_yn"] != "Y":
+        failure(403, "탈퇴한 계정입니다. 서비스를 이용할 수 없습니다.")
+    return {"id": str(row["user_id"]), "name": row["name"], "email": row["email"]}
+
 
 
 @api.post("/signup", status_code=202, summary="회원가입 및 인증 메일 요청")
@@ -222,7 +220,12 @@ def signin(body: SigninRequest, request: Request):
 
 def authenticated(request: Request):
     user, access_token = verified_session(request)
-    return profile(user, access_token), access_token
+    try:
+        return profile(user, access_token), access_token
+    except HTTPException as exc:
+        if exc.status_code == 403:
+            request.state.clear_auth_cookies = True
+        raise
 
 
 @api.get("/me", response_model=User, summary="현재 로그인한 회원")
@@ -255,12 +258,11 @@ class ProfileUpdate(BaseModel):
 @api.patch("/me", response_model=User, summary="내 표시 이름 수정")
 def update_profile(body: ProfileUpdate, request: Request):
     user, access_token = authenticated(request)
-    rows = supabase_request("PATCH", "/rest/v1/auth_LYR", token=access_token,
-                            params={"id": "eq." + user["id"], "select": "id,name"},
-                            headers={"Prefer": "return=representation"}, json={"name": body.name})
-    if not rows or rows[0]["id"] != user["id"]:
+    row = member_store.update_name(user["id"], body.name)
+    if not row or str(row["user_id"]) != str(user["id"]):
         failure(503, "이름을 수정하지 못했습니다. 접근 권한을 확인해 주세요.")
-    return {**user, "name": rows[0]["name"]}
+    return {"id": str(row["user_id"]), "name": row["name"], "email": row["email"]}
+
 
 
 class PasswordChangeRequest(BaseModel):
@@ -312,11 +314,15 @@ class WithdrawalRequest(BaseModel):
 
 @api.post("/withdrawal", summary="회원 탈퇴 전 비밀번호 확인 및 처리")
 def request_withdrawal(body: WithdrawalRequest, request: Request):
-    user, _ = authenticated(request)
+    user, token = authenticated(request)
     withdrawal_service.verify_password(user, body.password, supabase_request)
     if withdrawal_service.complete_withdrawal(str(user["id"])) is True:
         request.state.clear_auth_cookies = True
-        return {"password_verified": True, "withdrawal_completed": True, "message": "회원 탈퇴가 완료되었습니다."}
+        try:
+            supabase_request("POST", "/auth/v1/logout", token=token, params={"scope": "local"})
+        except HTTPException:
+            pass  # 계정은 이미 비활성화되었으며 앱 접근 차단과 쿠키 삭제는 유지합니다.
+        return {"password_verified": True, "withdrawal_completed": True, "message": "회원 탈퇴가 완료되어 서비스 이용이 중지되었습니다."}
     return {
         "password_verified": True,
         "withdrawal_completed": False,
