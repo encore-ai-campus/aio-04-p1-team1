@@ -11,32 +11,23 @@ from modules.jd_match.model import JobPosting, Profile, SavedJobPosting
 
 def _extract_skill_candidates(text: str) -> list[str]:
     """공고에서 기술명 후보를 추출해 JEV의 문맥 판단을 돕는다."""
-    extractor = yake.KeywordExtractor(lan="ko", n=2, top=40, dedupLim=0.8)
-    keywords = [keyword.strip() for keyword, score in extractor.extract_keywords(text or "") if score <= 0.35]
-    ignored = {
-        "경험", "실무 경험", "개발 실무", "충분한 이해", "어느 정도", "가능", "보유",
-        "이상", "이하", "관련 경력", "운영 경험", "서비스 운영", "구축", "개발 환경",
-        "퍼포먼스 측정", "정도 있으신", "익숙하신", "대회 입상", "기술 블로그 운영",
-    }
+    extractor = yake.KeywordExtractor(lan="ko", n=3, top=80, dedupLim=0.7)
+    keywords = [keyword.strip() for keyword, score in extractor.extract_keywords(text or "") if score <= 0.8]
+    ignored = {"the", "and", "for", "with", "from", "using"}
     result = []
     for keyword in keywords:
         keyword = re.sub(r"\s+", " ", keyword)
-        if keyword in ignored or len(keyword) > 24:
+        if len(keyword) > 24 or re.search(r"[가-힣]", keyword):
             continue
-        # YAKE가 붙여 만든 "Django 백엔드" 같은 문장형 후보는 제외하고,
-        # 기술명/약어와 소수의 명시적인 한국어 기술 용어만 사용한다.
-        if re.search(r"[가-힣]", keyword):
-            if keyword not in {"백엔드", "모니터링", "쿼리 튜닝", "대용량 트래픽 처리"}:
-                continue
-        else:
-            for token in keyword.split():
-                token = token.strip(".,:;()[]")
-                if len(token) >= 2 and token not in result:
-                    result.append(token)
-            continue
-        if keyword not in result:
-            result.append(keyword)
-    return result[:20]
+        for token in keyword.split():
+            token = token.strip(".,:;()[]")
+            if len(token) >= 2 and token.lower() not in ignored and token not in result:
+                result.append(token)
+    # YAKE가 놓칠 수 있는 영문 기술명·약어는 원문에서 보완한다.
+    for token in re.findall(r"(?<![가-힣A-Za-z0-9])[A-Za-z][A-Za-z0-9+#./-]{1,}(?![가-힣A-Za-z0-9])", text or ""):
+        if token not in result and token.lower() not in {"the", "and", "for"}:
+            result.append(token)
+    return result[:40]
 
 
 def get_saved_job_postings(db: Connection, user_id: UUID) -> list[SavedJobPosting]:
@@ -45,7 +36,7 @@ def get_saved_job_postings(db: Connection, user_id: UUID) -> list[SavedJobPostin
             """
             SELECT j.id, j.title, j.company_name
             FROM public.saved_jobs AS s
-            JOIN public.job_posting_mj AS j ON j.id = s.job_id
+            JOIN public.job_postings AS j ON j.id = s.job_id
             WHERE s.user_id = %s AND s.use_yn = 'Y'
             ORDER BY s.created_at DESC NULLS LAST, j.id
             """,
@@ -88,13 +79,16 @@ def get_job_posting(db: Connection, job_posting_id: UUID) -> JobPosting | None:
     with db.cursor() as cursor:
         cursor.execute(
             """
-            SELECT id, source_url, title, company_name, region_id, address,
-                   employment_type, career_type, min_experience_months,
-                   max_experience_months, position_detail, main_tasks,
+            SELECT id, source_url, title, company_name,
+                   NULL::uuid AS region_id, region_name AS address,
+                   employment_type, career_type,
+                   min_experience_years * 12 AS min_experience_months,
+                   max_experience_years * 12 AS max_experience_months,
+                   position_detail, main_tasks,
                    qualifications, preferred_qualifications, deadline_type,
-                   deadline_date, status
-            FROM job_posting_mj
-            WHERE id = %s
+                   deadline_date, use_yn AS status
+            FROM public.job_postings
+            WHERE id = %s AND use_yn = 'Y'
             """,
             (job_posting_id,),
         )
@@ -109,7 +103,7 @@ def get_jd_match_score(
     job_posting_id: UUID,
     email: str,
 ) -> dict:
-    profile = get_profile(db, user_id)
+    profile = get_profile(db, email, user_id)
     job_posting = get_job_posting(db, job_posting_id)
 
     if profile is None or job_posting is None:
