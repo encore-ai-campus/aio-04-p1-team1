@@ -4,29 +4,44 @@ from uuid import UUID
 
 from psycopg import Connection
 import requests
-import yake
+from kiwipiepy import Kiwi
 
 from modules.jd_match.model import JobPosting, Profile, SavedJobPosting
 
 
 def _extract_skill_candidates(text: str) -> list[str]:
-    """공고에서 기술명 후보를 추출해 JEV의 문맥 판단을 돕는다."""
-    extractor = yake.KeywordExtractor(lan="ko", n=3, top=80, dedupLim=0.7)
-    keywords = [keyword.strip() for keyword, score in extractor.extract_keywords(text or "") if score <= 0.8]
-    ignored = {"the", "and", "for", "with", "from", "using"}
+    """형태소 품사 기준으로 공고의 명사·기술명 후보를 추출한다."""
+    ignored = {"경험", "업무", "가능", "이상", "이하", "이용", "기반", "관련", "대한", "통한"}
     result = []
-    for keyword in keywords:
-        keyword = re.sub(r"\s+", " ", keyword)
-        if len(keyword) > 24 or re.search(r"[가-힣]", keyword):
+    tokens = Kiwi().tokenize(text or "")
+    for index, token in enumerate(tokens):
+        if token.tag not in {"NNG", "NNP", "SL", "SH", "SN"}:
             continue
-        for token in keyword.split():
-            token = token.strip(".,:;()[]")
-            if len(token) >= 2 and token.lower() not in ignored and token not in result:
-                result.append(token)
-    # YAKE가 놓칠 수 있는 영문 기술명·약어는 원문에서 보완한다.
-    for token in re.findall(r"(?<![가-힣A-Za-z0-9])[A-Za-z][A-Za-z0-9+#./-]{1,}(?![가-힣A-Za-z0-9])", text or ""):
-        if token not in result and token.lower() not in {"the", "and", "for"}:
-            result.append(token)
+        if index and tokens[index - 1].tag in {"NNG", "NNP"} and tokens[index - 1].start + len(tokens[index - 1].form) == token.start:
+            continue
+        value = token.form.strip()
+        if index + 1 < len(tokens):
+            next_token = tokens[index + 1]
+            if (
+                token.tag in {"NNG", "NNP"}
+                and next_token.tag in {"NNG", "NNP"}
+                and token.start + len(token.form) == next_token.start
+            ):
+                value += next_token.form
+        # 단일 일반 명사는 시장·과정·변화 같은 일반어가 많이 섞이므로 제외한다.
+        # 복합 명사(백+엔드, 데이터+분석)와 고유명사·영문 토큰은 유지한다.
+        is_compound_noun = (
+            index + 1 < len(tokens)
+            and token.tag == "NNG"
+            and tokens[index + 1].tag == "NNG"
+            and token.start + len(token.form) == tokens[index + 1].start
+        )
+        if token.tag == "NNG" and not is_compound_noun:
+            continue
+        if len(value) < 2 or value in ignored or value.lower() in {"the", "and", "for", "with"}:
+            continue
+        if value not in result:
+            result.append(value)
     return result[:40]
 
 
@@ -98,7 +113,6 @@ def get_profile(db: Connection, email: str, user_id: UUID) -> Profile | None:
     )
 
 # 공고 상세 내용 가져오기
-# job_post_id = '0183a987-1cdf-5048-a9e8-d5eedce2e177'
 def get_job_posting(db: Connection, job_posting_id: UUID) -> JobPosting | None:
     with db.cursor() as cursor:
         cursor.execute(
