@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="직무와 희망 조건으로 나에게 맞는 채용공고를 찾아보세요.">
+<title>채용공고 · 취준나침반</title>
+<style>__CC_CSS__</style>
+<style>__JOB_CSS__</style>
+</head>
+<body class="cc-member-page">
+<a class="skip-link" href="#job-results">검색 결과 바로가기</a>
+__CC_HEADER__
+__CC_MENU__
+<main class="cc-page jobs-page" data-member-content>
+<header class="cc-page-heading jobs-heading">
+<p class="eyebrow">YOUR NEXT DIRECTION</p>
+<h1>나에게 맞는 채용공고를 찾아보세요</h1>
+<p>직무와 희망 조건으로 검색하고, 관심 있는 공고는 저장하거나 내 이력과 비교하세요.</p>
+</header>
+<div class="search-layout">
+<aside class="filter-panel" aria-labelledby="filter-title">
+<form id="filter-form">
+<div class="filter-heading"><h2 id="filter-title">검색 조건</h2><button type="button" id="reset-filters" class="reset-button">초기화</button></div>
+<div class="filter-field"><label for="job-filter">직무 / 분야</label><select id="job-filter" name="job"><option value="">전체 직무</option></select></div>
+<div class="filter-field"><label for="region-filter">지역</label><select id="region-filter" name="region"><option value="">전체 지역</option><option value="수도권">서울·경기·인천</option></select></div>
+<div class="filter-field"><label for="career-filter">경력</label><select id="career-filter" name="career"><option value="">전체 경력</option><option value="신입">신입 지원 가능</option><option value="경력">경력 지원 가능</option><option value="무관">경력 무관</option><option value="신입·경력">신입·경력 동시 모집</option></select></div>
+<div class="filter-field"><label for="employment-filter">고용형태</label><select id="employment-filter" name="employment"><option value="">전체 고용형태</option></select></div>
+<label class="closed-toggle"><input type="checkbox" id="exclude-closed" name="exclude_closed" checked><span>마감된 정보 제외</span></label>
+<button type="submit" class="primary-button apply-button">조건 적용</button>
+<p class="filter-note">출처·마감일은 원문에서 확인해요.</p>
+</form>
+</aside>
+<section id="job-results" class="results-section" aria-labelledby="results-heading" tabindex="-1">
+<form id="keyword-form" class="keyword-search" role="search"><label for="keyword" class="sr-only">직무, 기업명 또는 키워드</label><input type="search" id="keyword" maxlength="100" placeholder="직무, 기업명 또는 키워드 검색" autocomplete="off"><button type="submit" class="primary-button">검색</button></form>
+<div class="results-toolbar"><h2 id="results-heading">공고를 찾고 있어요<span class="result-count" id="result-count"></span></h2><div class="sort-field"><label for="sort-order" class="sr-only">공고 정렬</label><select id="sort-order"><option value="default">기본순</option><option value="deadline">마감임박순</option><option value="company">회사명순</option></select></div></div>
+<div id="active-filters" class="active-filters" aria-label="적용된 검색 조건"></div>
+<p class="inline-status" id="inline-status" role="status" aria-live="polite"></p>
+<div id="job-list" class="job-grid" aria-busy="true"></div>
+<div id="results-state" class="results-state" role="status" hidden><div class="state-icon" aria-hidden="true">⌕</div><h3 id="state-title"></h3><p id="state-description"></p><button type="button" id="retry-search" class="secondary-button" hidden>다시 불러오기</button><button type="button" id="clear-search" class="primary-button" hidden>검색 조건 초기화</button></div>
+<nav class="pagination" id="pagination" aria-label="검색 결과 페이지"></nav>
+</section>
+</div>
+<footer class="jobs-footer"><span>취준나침반 · 한 번에 찾고, 한 걸음씩 준비해요.</span><span>공고의 최신 정보는 원문에서 확인해 주세요.</span></footer>
+</main>
+<div class="toast" id="bookmark-toast" role="status" aria-live="polite" hidden></div>
+<noscript><p class="noscript">검색과 관심 공고 저장을 사용하려면 JavaScript를 활성화해 주세요.</p></noscript>
+__CC_SCRIPT__
+<script>__JOB_SCRIPT__</script>
+</body></html>
