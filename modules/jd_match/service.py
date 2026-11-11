@@ -63,13 +63,37 @@ def get_profile(db: Connection, email: str, user_id: UUID) -> Profile | None:
     if row is None:
         return None
 
+    with db.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT certification_name AS name, certification_issuer AS organization,
+                   certification_acquired_date AS completed_on
+            FROM public.profiles_certifications
+            WHERE user_id = %s AND use_yn = 'Y'
+            ORDER BY certification_name, id
+            """,
+            (user_id,),
+        )
+        certificates = cursor.fetchall()
+        cursor.execute(
+            """
+            SELECT training_name AS name, training_provider AS organization,
+                   training_completed_date AS completed_on
+            FROM public.profiles_trainings
+            WHERE user_id = %s AND use_yn = 'Y'
+            ORDER BY training_name, id
+            """,
+            (user_id,),
+        )
+        courses = cursor.fetchall()
+
     return Profile(
         user_id=row["user_id"],
         target_role=", ".join(row["desired_jobs"] or [])
         if isinstance(row["desired_jobs"], list)
         else (row["desired_jobs"] or ""),
-        certificates=[],
-        courses=[],
+        certificates=certificates,
+        courses=courses,
         skills=[skill.strip() for skill in (row["skills"] or []) if skill and skill.strip()],
     )
 
@@ -124,7 +148,10 @@ def get_jd_match_score(
         ) if value
     )
     required_skill_candidates = _extract_skill_candidates(required_text)
-    normalized_profile_skills = {skill.strip().lower() for skill in profile.skills if skill.strip()}
+    profile_skill_names = profile.skills + [
+        item["name"] for item in profile.certificates + profile.courses if item.get("name")
+    ]
+    normalized_profile_skills = {skill.strip().lower() for skill in profile_skill_names if skill.strip()}
     candidate_missing_skills = [
         skill for skill in required_skill_candidates
         if skill.lower() not in normalized_profile_skills
