@@ -66,7 +66,9 @@ modules/database/
 
 `profiles/table.py`의 `initialize_profiles()`가 최종 테이블·권한·함수를 준비합니다. 기존 Auth 회원 중 이메일이 있고 프로필이 없는 회원만 초기 반영합니다. 기존 프로필의 이름·목록·이력은 덮어쓰지 않습니다. 이미 있는 테이블의 구조가 다르면 자동 변경하지 않고 중단합니다.
 
-`profiles/profile_functions.sql`은 가입 시 프로필 생성, 이메일 변경 동기화와 원자 저장 RPC를 정의합니다. 사용자가 수정한 이름은 Auth 동기화 때 보존합니다. `PATCH /api/auth/me`는 본인의 이름을 수정하고, `PUT /api/mypage/profile`은 배열·이력을 RPC로 저장합니다. 빠진 이력은 `use_yn='N'`으로 표시합니다. 요청 형식은 [마이페이지 README](../mypage/README.md)를 확인하세요.
+`profiles/profile_functions.sql`은 가입 시 프로필 생성, 이메일 변경 동기화와 원자 저장 RPC(`career_compass_save_profile`)를 정의합니다. 비어 있지 않은 기존 이름은 Auth 동기화 때 보존합니다.
+
+현재 화면 API는 RPC 대신 직접 SQL을 사용합니다. 이름 수정은 [auth/member_store.py](../auth/member_store.py), 희망 직무·역량 수정은 [mypage/profile_api.py](../mypage/profile_api.py), 자격증·교육 이력 CRUD는 [mypage/profile_entries.py](../mypage/profile_entries.py)에서 처리합니다. RPC는 별도로 설치되는 DB 함수이며 현재 화면의 저장 경로와 구분해야 합니다.
 
 프로필 RLS는 본인 상태 조회를 허용하지만 수정과 자격증·교육 CRUD에는 활성 프로필을 요구합니다. `use_yn='N'` 자체가 Auth 인증이나 세션을 삭제하는 기능은 아닙니다. 북마크 RLS는 상위 `table.py`에 별도로 정의되며 본인 행만 접근하도록 제한합니다.
 
@@ -121,11 +123,21 @@ python -m modules.database.job_posting.collect --all --save
 python -m modules.database.job_posting.collect --check
 ```
 
-네트워크와 DB를 사용하지 않는 로컬 테스트:
+채용·교육 수집 규칙의 로컬 테스트(실제 API 호출·DB 저장 없음):
 
 ```bash
-python -m unittest modules.database.profiles.test_profiles_api modules.database.job_posting.test_wanted_crawler modules.database.training_posting.test_work24_api modules.database.training_posting.test_collection -v
+python -m unittest modules.database.job_posting.test_wanted_crawler modules.database.training_posting.test_work24_api modules.database.training_posting.test_collection -v
 ```
+
+`profiles/test_profiles_api.py`에는 과거 REST/RPC 방식의 API 테스트가 남아 있습니다. 현재 직접 SQL 방식과 달라 전체 테스트가 통과하지 않으며, 예전 모의 객체가 실제 DB 접근 경로를 막지 못합니다. 전체 실행을 DB 없는 검증으로 간주하면 안 됩니다. 생성 SQL만 확인하는 명령과 현재 검증 상태는 [profiles README](profiles/README.md)를 참고하세요.
+
+고용24 배치 수집·저장 예시:
+
+```bash
+python -m modules.database.training_posting.collect --quota 125 --max-calls 160 --resume --save-db
+```
+
+날짜를 생략하면 한국 시간 기준 오늘부터 181일 동안 시작하는 과정을 조회합니다. 재개할 때는 이전 실행과 같은 `--start`·`--end`를 지정해야 같은 기간의 결과를 재사용할 수 있습니다. 수집 조건과 결과 파일은 [교육 수집 README](training_posting/README.md)를 확인하세요.
 
 ## 운영 테이블을 보호하는 생성 테스트
 

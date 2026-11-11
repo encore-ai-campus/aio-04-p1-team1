@@ -11,14 +11,14 @@
 | 모델·서비스·저장 코드 import | `modules.database.training_posting.schemas`, `.work24_client`, `.save_to_supabase` |
 | 테스트 import 및 `patch()` 대상 | 동일한 `modules.database.training_posting.*` 경로 |
 | `work24_client.py`, `save_to_supabase.py`의 `.env` 탐색 | `MODULE_DIR.parents[2] / ".env"`: 프로젝트 루트 |
-| 수집 결과·응답 캐시 | 이 폴더의 `results/` |
+| 수집 결과·응답 캐시 | 기본 결과는 `results/`, 배치 XML 캐시는 `results/api_cache/` (`--output-dir`로 변경 가능) |
 | DB 테이블 정의 | 이 폴더의 `training_posting.sql` |
 
 `collect.py`가 가져오는 서비스의 `MODULE_DIR`도 새 위치이므로 기본 결과 경로는 `modules/database/training_posting/results/`입니다.
 
 고용24의 **국민내일배움카드 훈련과정 API - 목록**을 사용해 8개 직무와 관련된 교육을 수집합니다. 직무별 최대 125개를 선정하고, JSON 파일과 Supabase의 `public.training_posting` 테이블에 저장합니다.
 
-현재 구현은 **명령줄에서 실행하는 수집·검증·저장 기능**입니다. 웹 화면에서 검색하거나 저장하는 기능은 아직 구현하지 않았습니다.
+이 폴더는 **명령줄에서 실행하는 수집·검증·저장 기능**을 담당합니다. 별도 웹 모듈 `modules/training_posts/`는 `public.training_posting`을 조회하는 교육 목록 화면을 구현합니다. 웹 조회 시 이 수집기를 실행하거나 고용24 API를 다시 호출하지 않습니다.
 
 ## 1. 파일별 역할과 필요한 이유
 
@@ -240,7 +240,7 @@ python -m modules.database.training_posting.save_to_supabase --create-only
 python -m unittest modules.database.training_posting.test_work24_api modules.database.training_posting.test_collection -v
 ```
 
-테스트는 합성 응답을 사용하며 실제 API 호출이나 DB 저장을 수행하지 않습니다. 이번 구현에서 15개 테스트가 통과했습니다.
+테스트는 합성 응답을 사용하며 실제 API 호출이나 DB 저장을 수행하지 않습니다. 2026-11-11 로컬 확인에서 15개 테스트가 통과했습니다.
 
 ## 6. 저장된 결과와 보고서 읽는 방법
 
@@ -289,7 +289,7 @@ python -m unittest modules.database.training_posting.test_work24_api modules.dat
 | 직무별 목표 수·조회 기간·호출 상한 | `--quota`, `--start`, `--end`, `--max-calls` |
 | API 요청·응답 구조 | `work24_client.py`, `TrainingSearchResult` |
 | 저장 컬럼 | `TrainingPosting`, `normalize_course()`, SQL 파일, 저장 검증 코드와 관련 테스트를 함께 수정 |
-| 웹 검색 API·화면 | `modules/training_posts/router.py`, `modules/training_posts/page.py`에 별도 구현 필요 |
+| 웹 목록 조회·화면 | `modules/training_posts/router.py`, `page.py`, `service.py`, `repository.py` |
 
 공식 API 안내: https://www.work24.go.kr/cm/e/a/0110/selectOpenApiSvcInfo.do?fullApiSvcId=000000000000000000000000000004
 
