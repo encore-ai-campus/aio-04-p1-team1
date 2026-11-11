@@ -1,4 +1,4 @@
-"""고용24 목록 API 응답 필드와 training_posting_mj 저장 모델."""
+"""고용24 목록 API 응답 필드와 training_posting 저장 모델."""
 
 from dataclasses import dataclass
 from typing import Dict, List, Optional
@@ -30,7 +30,7 @@ NCS_CATEGORIES = dict(zip(
 
 @dataclass(frozen=True)
 class TrainingPosting:
-    training_id: str
+    work24_training_id: str
     source_url: str
     title: str
     center_name: Optional[str]

@@ -20,7 +20,7 @@ class TrainingCollectionTests(unittest.TestCase):
         self.assertEqual(row['training_start_dt'], '2026-11-09')
         self.assertIsNone(row['id'])
         self.assertEqual(row['use_yn'], 'Y')
-        self.assertEqual(set(row), {'id', 'training_id', 'source_url', 'title', 'center_name', 'center_address', 'training_start_dt', 'training_end_dt', 'use_yn'})
+        self.assertEqual(set(row), {'id', 'work24_training_id', 'source_url', 'title', 'center_name', 'center_address', 'training_start_dt', 'training_end_dt', 'use_yn'})
         validate_records([row])
         with self.assertRaises(ValueError):
             validate_records([row, row])
@@ -58,7 +58,7 @@ class TrainingCollectionTests(unittest.TestCase):
             resumed, summary = collect(api_key='test', start='20261109', end='20270509', quota=1, fetch=no_network, interval=0, output_dir=path, resume=True)
             self.assertEqual(summary['api_calls'], 0)
             self.assertEqual(summary['api_calls_all_runs'], 8)
-            self.assertEqual({r['training_id'] for r in resumed}, {r['training_id'] for r in rows})
+            self.assertEqual({r['work24_training_id'] for r in resumed}, {r['work24_training_id'] for r in rows})
 
     def test_overlap_reallocation_and_quotas(self):
         pool = {
@@ -83,7 +83,7 @@ class TrainingCollectionTests(unittest.TestCase):
         self.assertEqual(report['status'], 'complete')
         self.assertEqual(len(calls), 8)
         self.assertTrue(all(n == 2 for n in report['job_counts'].values()))
-        self.assertEqual(len({r['training_id'] for r in rows}), 16)
+        self.assertEqual(len({r['work24_training_id'] for r in rows}), 16)
 
     def test_duplicates_and_unrelated_rows_are_not_filled(self):
         def fetch(**params):

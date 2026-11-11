@@ -1,4 +1,4 @@
-"""훈련과정 JSON을 요청한 9개 컬럼의 public.training_posting_mj에 저장합니다."""
+"""훈련과정 JSON을 요청한 9개 컬럼의 public.training_posting에 저장합니다."""
 
 import argparse
 import json
@@ -22,7 +22,7 @@ def validate_records(records):
     for row in records:
         if set(row) != set(COLUMNS):
             raise ValueError("훈련과정 컬럼이 요청한 모델과 다릅니다.")
-        for name in ("training_id", "source_url", "title"):
+        for name in ("work24_training_id", "source_url", "title"):
             if not isinstance(row[name], str) or not row[name].strip():
                 raise ValueError(f"{name} 값이 필요합니다.")
         if row['use_yn'] not in ('Y', 'N'):
@@ -34,10 +34,10 @@ def validate_records(records):
             raise ValueError("교육 종료일이 시작일보다 빠릅니다.")
         if row['id'] is not None:
             UUID(row['id'])
-        if row['source_url'] in urls or row['training_id'] in ids:
+        if row['source_url'] in urls or row['work24_training_id'] in ids:
             raise ValueError("원본 링크 또는 훈련과정 ID가 중복되었습니다.")
         urls.add(row['source_url'])
-        ids.add(row['training_id'])
+        ids.add(row['work24_training_id'])
 
 
 def save_records(records, database_url):
@@ -47,7 +47,7 @@ def save_records(records, database_url):
 
     validate_records(records)
     insert_columns = [name for name in COLUMNS if name != 'id']
-    statement = sql.SQL('INSERT INTO public.training_posting_mj ({}) VALUES ({}) ON CONFLICT (source_url) DO UPDATE SET {}').format(
+    statement = sql.SQL('INSERT INTO public.training_posting ({}) VALUES ({}) ON CONFLICT (source_url) DO UPDATE SET {}').format(
         sql.SQL(', ').join(map(sql.Identifier, insert_columns)),
         sql.SQL(', ').join(sql.Placeholder() for _ in insert_columns),
         sql.SQL(', ').join(sql.SQL('{} = EXCLUDED.{}').format(sql.Identifier(name), sql.Identifier(name))
@@ -55,15 +55,15 @@ def save_records(records, database_url):
     )
     with psycopg.connect(database_url, sslmode='require', connect_timeout=10, row_factory=dict_row) as connection:
         connection.execute("SET LOCAL statement_timeout = '30s'")
-        connection.execute((MODULE_DIR / 'training_posting_mj.sql').read_text())
-        schema = connection.execute("SELECT column_name, data_type FROM information_schema.columns WHERE table_schema='public' AND table_name='training_posting_mj'").fetchall()
+        connection.execute((MODULE_DIR / 'training_posting.sql').read_text())
+        schema = connection.execute("SELECT column_name, data_type FROM information_schema.columns WHERE table_schema='public' AND table_name='training_posting'").fetchall()
         actual_types = {row['column_name']: row['data_type'] for row in schema}
         expected_types = {name: ('uuid' if name == 'id' else 'date' if name.endswith('_dt') else 'character' if name == 'use_yn' else 'text') for name in COLUMNS}
         if actual_types != expected_types:
             raise RuntimeError('기존 테이블 구조가 요청한 9개 컬럼과 달라 롤백합니다.')
         with connection.cursor() as cursor:
             cursor.executemany(statement, [tuple(row[name] for name in insert_columns) for row in records])
-        saved = connection.execute('SELECT * FROM public.training_posting_mj WHERE source_url = ANY(%s)',
+        saved = connection.execute('SELECT * FROM public.training_posting WHERE source_url = ANY(%s)',
                                    ([row['source_url'] for row in records],)).fetchall() if records else []
         saved = [{k: str(v) if isinstance(v, (date, UUID)) else v for k, v in row.items()} for row in saved]
         by_url = {row['source_url']: row for row in saved}
@@ -72,8 +72,8 @@ def save_records(records, database_url):
         for record in records:
             if any(by_url[record['source_url']][name] != record[name] for name in COLUMNS if name not in ('id', 'use_yn')):
                 raise RuntimeError('저장 후 데이터 비교 실패로 롤백합니다.')
-        count = connection.execute('SELECT count(*) AS count FROM public.training_posting_mj').fetchone()['count']
-    return [by_url[row['source_url']] for row in records], {'table': 'public.training_posting_mj', 'verified_rows': len(saved), 'table_total_rows': count}
+        count = connection.execute('SELECT count(*) AS count FROM public.training_posting').fetchone()['count']
+    return [by_url[row['source_url']] for row in records], {'table': 'public.training_posting', 'verified_rows': len(saved), 'table_total_rows': count}
 
 
 def load_database_url():
