@@ -1,15 +1,17 @@
 # 취준 나침반
- 
+
+채용공고와 교육과정을 조회하고 취업 준비를 돕는 FastAPI 프로젝트입니다. 데이터 수집·DB 테이블 준비 코드는 `modules/database/`에서 관리합니다.
+
 ## Quick Start
-```
-# 의존성 설치
-pip install -r requirements.txt
 
 # 실행(백엔드, 프론트)
 uvicorn app:app --reload --env-file .env 
 ```
 
+`.env.example`을 참고해 프로젝트 루트 `.env`에 환경변수를 설정합니다. DB 작업은 `DATABASE_URL`, 고용24 API 조회는 `WORK24_API_KEY`를 사용합니다. 인증용 환경변수는 [인증 README](modules/auth/README.md)를 확인하세요. 실제 키와 연결 문자열은 문서에 기록하지 않습니다.
+
 ## 프로젝트 구조
+
 ```text
 career-compass/
 ├── app.py                         # FastAPI 앱 및 기능별 라우터 연결
