@@ -109,7 +109,7 @@ def get_jd_match_score(
     job_posting_id: UUID,
     email: str,
 ) -> dict:
-    profile = get_profile(db, email, user_id)
+    profile = get_profile(db, user_id)
     job_posting = get_job_posting(db, job_posting_id)
 
     if profile is None or job_posting is None:
@@ -122,6 +122,9 @@ def get_jd_match_score(
     candidate_profile = profile.model_dump(mode="json", exclude={"user_id"})
     required_text = "\n".join(
         value for value in (
+            job_posting.title,
+            job_posting.position_detail,
+            job_posting.main_tasks,
             job_posting.qualifications,
             job_posting.preferred_qualifications,
         ) if value

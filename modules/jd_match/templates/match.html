@@ -48,9 +48,6 @@
             공고를 살펴보고, 내가 가진 역량과 다음 준비를 확인하세요.
           </p>
         </div>
-        <span class="preview">
-          예시 미리보기
-        </span>
       </div>
       <div class="workspace">
         <article class="panel" aria-labelledby="job-title">
@@ -394,14 +391,6 @@ h1  {
   margin:0;
   color:var(--muted);
   font-size:13px
-}
-.preview  {
-  font-size:11px;
-  border:1px solid #dedccf;
-  background:#f4f1e7;
-  padding:5px 10px;
-  border-radius:20px;
-  white-space:nowrap
 }
 .workspace  {
   display:grid;
@@ -799,9 +788,6 @@ footer  {
   .brand  {
     font-size:18px
   }
-  .intro .preview  {
-    margin-top:4px
-  }
   .job-top,.job-body  {
     padding:24px
   }
@@ -875,9 +861,18 @@ footer  {
           return response.json();
         });
 
+        const scoreCacheKey = `jd-match-score:${jobId}`;
+        const cachedScore = sessionStorage.getItem(scoreCacheKey);
+        const scoreRequest = cachedScore
+          ? Promise.resolve(JSON.parse(cachedScore))
+          : fetchJson(`/jd_match/job-postings/${jobId}/score`).then(score => {
+              sessionStorage.setItem(scoreCacheKey, JSON.stringify(score));
+              return score;
+            });
+
         Promise.all([
           fetchJson(`/jd_match/job-postings/${jobId}`),
-          fetchJson(`/jd_match/job-postings/${jobId}/score`)
+          scoreRequest
         ])
           .then(([job, score]) => {
             document.querySelector("#analysis-loading").hidden = true;
