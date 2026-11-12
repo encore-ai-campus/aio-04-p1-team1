@@ -7,7 +7,6 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from modules.auth import auth_store
 from shared.components.compass import apply_member_shell
-from modules.mypage.skills_ui import apply_skills_ui
 from modules.mypage.bookmarks_ui import CONTENT as BOOKMARKS_CONTENT, SCRIPT as BOOKMARKS_SCRIPT
 
 router = APIRouter(tags=["마이페이지"])
@@ -30,7 +29,7 @@ def render_member_page(page, user):
               "profile": ("나를 소개하는 기본 정보", "내 정보")}
     subtitle, title = titles[page]
     if page == "profile":
-        content = '''<section class="panel profile"><h2>기본 정보</h2><p class="muted">계정에 등록된 정보를 확인하고 이름을 수정할 수 있어요.</p><form id="profile-form"><label for="profile-name">이름</label><input id="profile-name" name="name" minlength="2" maxlength="30" value="__NAME__" required><label for="profile-email">이메일</label><input id="profile-email" type="email" value="__EMAIL__" readonly><p class="hint">가입 이메일은 이 화면에서 변경할 수 없어요.</p>__SKILLS_CONTENT__<div class="profile-button-bar"><div class="password-change-row"><button class="button" id="password-change-open" type="button">비밀번호 변경</button></div><div class="profile-actions"><button class="button withdraw-trigger" id="withdraw-open" type="button">탈퇴하기</button><button class="button primary" id="profile-save" type="submit">변경 내용 저장</button></div></div></form><p id="profile-message" role="status" aria-live="polite"></p></section>
+        content = '''<section class="panel profile"><h2>기본 정보</h2><p class="muted">계정에 등록된 정보를 확인하고 이름을 수정할 수 있어요.</p><form id="profile-form"><label for="profile-name">이름</label><input id="profile-name" name="name" minlength="2" maxlength="30" value="__NAME__" required><label for="profile-email">이메일</label><input id="profile-email" type="email" value="__EMAIL__" readonly><p class="hint">가입 이메일은 이 화면에서 변경할 수 없어요.</p><div class="profile-button-bar"><div class="password-change-row"><button class="button" id="password-change-open" type="button">비밀번호 변경</button></div><div class="profile-actions"><button class="button withdraw-trigger" id="withdraw-open" type="button">탈퇴하기</button><button class="button primary" id="profile-save" type="submit">변경 내용 저장</button></div></div></form><p id="profile-message" role="status" aria-live="polite"></p></section>
 
 <dialog class="password-dialog" id="password-dialog" aria-labelledby="password-dialog-title" aria-describedby="password-dialog-note">
 <h2 id="password-dialog-title">비밀번호 변경</h2><p id="password-dialog-note">이전 비밀번호를 확인한 뒤 새 비밀번호로 변경합니다. 변경 후에는 다시 로그인해 주세요.</p>
@@ -53,11 +52,8 @@ def render_member_page(page, user):
     html = html.replace("__BOOKMARKS_SCRIPT__", BOOKMARKS_SCRIPT if page == "bookmarks" else "")
     html = html.replace("__TITLE__", title).replace("__SUBTITLE__", subtitle)
     html = html.replace("__NAME__", escape(user["name"], quote=True)).replace("__EMAIL__", escape(user["email"], quote=True))
-    if page == 'profile':
-        html = apply_skills_ui(html, user, editable=True)
-    else:
-        for marker in ('__SKILLS_CSS__', '__SKILLS_CONTENT__', '__SKILLS_SCRIPT__'):
-            html = html.replace(marker, '')
+    for marker in ('__SKILLS_CSS__', '__SKILLS_CONTENT__', '__SKILLS_SCRIPT__'):
+        html = html.replace(marker, '')
     return HTMLResponse(apply_member_shell(html, user, 'mypage'))
 
 
@@ -102,7 +98,7 @@ const selected=document.querySelector(`[data-menu="${page}"]`);if(selected){sele
 async function api(url,options={}){const response=await fetch(url,options);if(response.status===401){location.assign('/signin');throw new Error('로그인이 필요합니다.');}if(response.status===204)return null;const data=await response.json();if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:data.error?.message||'요청을 처리하지 못했습니다.');return data;}
 
 if(page==='home'){api('/api/bookmarks?size=1').then(data=>document.getElementById('saved-count').textContent=`저장한 정보 ${data.counts.all}개 →`).catch(error=>document.getElementById('flash').textContent=error.message);}
-if(page==='profile'){document.getElementById('profile-form').addEventListener('submit',async event=>{event.preventDefault();if(window.CompassSkillsDraft&&!window.CompassSkillsDraft.prepare())return;const button=document.getElementById('profile-save'),message=document.getElementById('profile-message');button.disabled=true;message.textContent='저장 중…';try{const data=await api('/api/auth/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('profile-name').value})});document.querySelectorAll('.user-name,.username').forEach(node=>node.textContent=data.name+'님');message.className='success';message.textContent='개인정보를 저장했습니다.';try{await window.CompassSkillsDraft?.commit();message.textContent='개인정보와 역량을 저장했습니다.';}catch(draftError){message.className='error';message.textContent='개인정보는 저장했습니다. '+draftError.message;}}catch(error){message.className='error';message.textContent=error.message;}finally{button.disabled=false;}});}
+if(page==='profile'){document.getElementById('profile-form').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('profile-save'),message=document.getElementById('profile-message');button.disabled=true;message.textContent='저장 중…';try{const data=await api('/api/auth/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('profile-name').value})});document.querySelectorAll('.user-name,.username').forEach(node=>node.textContent=data.name+'님');message.className='success';message.textContent='개인정보를 저장했습니다.';}catch(error){message.className='error';message.textContent=error.message;}finally{button.disabled=false;}});}
 
 if(page==='profile'){
  const dialog=document.getElementById('withdraw-dialog'),form=document.getElementById('withdraw-form'),open=document.getElementById('withdraw-open'),cancel=document.getElementById('withdraw-cancel'),submit=document.getElementById('withdraw-submit'),message=document.getElementById('withdraw-message');
