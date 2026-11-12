@@ -861,12 +861,42 @@ footer  {
           return response.json();
         });
 
-        const scoreCacheKey = `jd-match-score:v2:${jobId}`;
-        const cachedScore = sessionStorage.getItem(scoreCacheKey);
+        const scoreCachePrefix = "jd-match-score:v2:";
+        const scoreCacheKey = `${scoreCachePrefix}${jobId}`;
+        const readCachedScore = () => {
+          try {
+            const cached = localStorage.getItem(scoreCacheKey);
+            if (!cached) return null;
+            const parsed = JSON.parse(cached);
+            return parsed.score || parsed;
+          } catch (error) {
+            localStorage.removeItem(scoreCacheKey);
+            return null;
+          }
+        };
+        const saveCachedScore = score => {
+          try {
+            localStorage.setItem(scoreCacheKey, JSON.stringify({ savedAt: Date.now(), score }));
+            const cacheKeys = Object.keys(localStorage)
+              .filter(key => key.startsWith(scoreCachePrefix))
+              .map(key => {
+                try {
+                  return { key, savedAt: Number(JSON.parse(localStorage.getItem(key)).savedAt) || 0 };
+                } catch (error) {
+                  return { key, savedAt: 0 };
+                }
+              })
+              .sort((left, right) => right.savedAt - left.savedAt);
+            cacheKeys.slice(5).forEach(({ key }) => localStorage.removeItem(key));
+          } catch (error) {
+            // 캐시 저장 실패는 적합도 분석 결과 자체에 영향을 주지 않아요.
+          }
+        };
+        const cachedScore = readCachedScore();
         const scoreRequest = cachedScore
-          ? Promise.resolve(JSON.parse(cachedScore))
+          ? Promise.resolve(cachedScore)
           : fetchJson(`/jd_match/job-postings/${jobId}/score`).then(score => {
-              sessionStorage.setItem(scoreCacheKey, JSON.stringify(score));
+              saveCachedScore(score);
               return score;
             });
 
