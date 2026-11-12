@@ -1,0 +1,35 @@
+수집 시각: 2026-11-11T06:30:07.697341+00:00
+직무별 상세 수집 상한: 전체 링크
+수집 행 수: 708
+
+개발자: 링크 100개, 선택 100개, 수집 100개
+데이터 분석가: 링크 100개, 선택 100개, 수집 100개
+인사: 링크 100개, 선택 100개, 수집 100개
+총무: 링크 70개, 선택 70개, 수집 70개
+회계: 링크 100개, 선택 100개, 수집 100개
+생산관리: 링크 38개, 선택 38개, 수집 38개
+마케팅: 링크 100개, 선택 100개, 수집 100개
+기획자: 링크 100개, 선택 100개, 수집 100개
+
+원본에서 수집하지 못한 항목(NULL) 건수:
+  min_experience_years: 4
+  max_experience_years: 228
+  preferred_qualifications: 29
+  deadline_date: 618
+
+마감 날짜 누락 공고:
+없음
+
+수집 오류:
+없음
+
+DB 저장 결과:
+  table: public.job_postings
+  verified_rows: 708
+  previously_saved: 707
+  newly_saved: 1
+  remaining_urls: 0
+  complete: True
+  counts_by_job: {'개발자': 100, '데이터 분석가': 100, '인사': 100, '총무': 70, '회계': 100, '생산관리': 38, '마케팅': 100, '기획자': 100}
+  deadline_date_type: date
+  newbie_max_nonnull: 0

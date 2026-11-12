@@ -7,6 +7,8 @@ from modules.jd_match.router import router as jd_match_router
 from modules.training_posts.router import router as training_posts_router
 from modules.training_match.router import router as training_match_router
 from modules.mypage.router import router as mypage_router
+from modules.main.router import router as main_router
+from modules.chatbot.router import router as chatbot_router
 
 # 로그인, 회원가입 후 이동할 주소
 app = auth_store.create_app("취준나침반 - 회원·마이페이지")
@@ -20,6 +22,8 @@ app.include_router(jd_match_router)
 app.include_router(training_posts_router)
 app.include_router(training_match_router)
 app.include_router(mypage_router)
+app.include_router(main_router)
+app.include_router(chatbot_router)
 
 @app.get("/")
 def root():
