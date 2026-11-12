@@ -409,7 +409,6 @@ RECOMMEND_BODY = r"""
 <div class="rec-grid" id="recommendCards" aria-live="polite"></div>
 <button id="courseMore" type="button" aria-controls="recommendCards" hidden>더보기</button>
 </section>
-<section class="rec-certificates"><h2>함께 살펴볼 자격증</h2><div class="certificate-grid" id="certificateCards"></div><p class="rec-footnote" id="recommendNote">저장된 부족 역량을 바탕으로 관련 교육을 최대 15개 추천해요.</p></section>
 </div>
 <footer><span>취준나침반 · 한 번에 찾고, 한 걸음씩 준비해요.</span><span id="recommendSource">교육추천 · Groq AI · 고용24 교육 정보</span></footer>
 </main>
@@ -432,7 +431,7 @@ const rEl=id=>document.getElementById(id);
 const rEsc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const rMode=value=>({online:"온라인",offline:"오프라인",mixed:"혼합",unknown:"방식 확인 필요"}[value]||"방식 확인 필요");
 const rCost=value=>value==null?"원문 확인":value===0?"무료":value.toLocaleString("ko-KR")+"원";
-const rState={result:null,preferences:null,saved:[],busy:false,context:null,contextPromise:null,availableSkills:[],selectedSkills:[],visibleSkillCount:5,keywordSkills:[],perfectAnalysis:false,hasAnalysis:false,visibleCourseCount:3};
+const rState={result:null,preferences:null,saved:[],busy:false,context:null,contextPromise:null,availableSkills:[],selectedSkills:[],visibleSkillCount:5,keywordSkills:[],perfectAnalysis:false,hasAnalysis:false,visibleCourseCount:3,companyFilter:null};
 function readMissingSkills(){
   const prefix="jd-match-score:v2:";
   const keys=Object.keys(localStorage).filter(key=>key.startsWith(prefix));
@@ -454,7 +453,9 @@ function readMissingSkills(){
     if(skill&&!skills.some(item=>item.toLocaleLowerCase()===skill.toLocaleLowerCase()))skills.push(skill);
   }
   const hasAnalysis=latestScore!==null;
-  return {skills,hasAnalysis,isPerfect:hasAnalysis&&Number(latestScore.score_percent)===100&&skills.length===0};
+  const signature=JSON.stringify([latestSavedAt,latestScore]);
+  const excluded=rState.companyFilter?.signature===signature?rState.companyFilter.names:[];
+  return {skills:skills.filter(skill=>!excluded.includes(skill)),hasAnalysis,signature,isPerfect:hasAnalysis&&Number(latestScore.score_percent)===100&&latestScore.missing_skills.length===0};
 }
 function updateAnalysisState(cached){
   rState.availableSkills=cached.skills;
@@ -506,6 +507,9 @@ async function recommendMissingSkills(selectedOnly=false){
     const result=await response.json();
     if(response.status===401){location.assign("/signin");return;}
     if(!response.ok)throw new Error(result.error||"교육 추천을 완료하지 못했어요. 다시 시도해 주세요.");
+    const previous=rState.companyFilter?.signature===cached.signature?rState.companyFilter.names:[];
+    rState.companyFilter={signature:cached.signature,names:[...new Set([...previous,...(result.excluded_company_names||[])])]};
+    rState.availableSkills=readMissingSkills().skills;
     rState.result=result;rState.visibleCourseCount=3;renderRecommendations();
     status.textContent=result.items.length?target+"에 맞는 교육 "+result.items.length+"개를 추천했어요.":"저장된 교육 중 "+target+"에 맞는 과정을 찾지 못했어요.";
   }catch(error){status.textContent=error.message||"교육을 불러오지 못했어요. 다시 시도해 주세요.";}
@@ -523,7 +527,6 @@ rEl("gapPills").addEventListener("click",event=>{
   rEl("skillRecommendationStatus").textContent="";
 });
 try{const keys=JSON.parse(localStorage.getItem("training-collection-favorites")||"[]");if(Array.isArray(keys))rState.saved=keys.filter(k=>typeof k==="string");}catch{}
-const certInfo={sqld:{name:"SQL 개발자 (SQLD)",description:"SQL 기초와 데이터 이해 학습에 참고"},computer1:{name:"컴퓨터활용능력 1급",description:"스프레드시트 활용 역량 확장에 참고"}};
 let rToastTimer;
 function rToast(message){rEl("aiToast").textContent=message;rEl("aiToast").classList.add("show");clearTimeout(rToastTimer);rToastTimer=setTimeout(()=>rEl("aiToast").classList.remove("show"),2800);}
 function openSettings(focusName){
@@ -536,13 +539,11 @@ function renderRecommendations(){
   rEl("courseMore").hidden=true;
   if(!rState.hasAnalysis||rState.perfectAnalysis){
     rEl("recommendCards").innerHTML="";
-    rEl("certificateCards").innerHTML="";
     return;
   }
   const data=rState.result;
   if(!data){
     rEl("recommendCards").innerHTML=[placeholder(1,"나에게 필요한 교육"),placeholder(2,"역량을 넓히는 다음 배움"),placeholder(3,"직무 목표와 연결한 학습")].join("");
-    rEl("certificateCards").innerHTML=Object.values(certInfo).map(c=>'<article class="certificate-card"><span class="certificate-label">학습 참고</span><h3>'+rEsc(c.name)+'</h3><p>분석 후 관련 학습 정보를 안내해요.</p></article>').join("");
     return;
   }
   renderMissingSkills(data.missing_skills?rState.availableSkills:data.analysis.gaps.map(g=>g.skill));
@@ -556,8 +557,6 @@ function renderRecommendations(){
   });
   if(!cards.length)cards=['<article class="rec-card"><h3>부족 역량과 연결되는 교육을 찾지 못했어요</h3><p class="rec-reason">현재 저장된 교육에는 관련 과정이 없습니다. 다른 공고의 적합도 분석 후 다시 추천받아 보세요.</p></article>'];
   rEl("recommendCards").innerHTML=cards.join("");
-  rEl("certificateCards").innerHTML=data.certificates.length?data.certificates.map(c=>'<button type="button" class="certificate-card" data-certificate="'+rEsc(c.id)+'"><span class="certificate-label">선택 준비</span><h3>'+rEsc(c.name)+'</h3><p>'+rEsc(c.ai_reason)+'</p></button>').join(""):'<article class="certificate-card"><h3>관련 자격증은 별도 확인이 필요해요</h3><p>현재 참고 목록에서 연결할 자격증을 선택하지 않았어요.</p></article>';
-  rEl("recommendNote").textContent="Groq AI 추천 · "+data.meta.fetched_count+"개 저장 교육 · "+data.meta.candidate_count+"개 후보 비교 · 교육비·교육 방식·분야는 미제공이며 원문 확인 필요"+(data.meta.failed_categories?" · 일부 분야 조회 실패":"");
   rEl("recommendSource").textContent="Supabase 저장 자료 · "+data.meta.fetchedAt+" · "+data.meta.model;
 }
 function showAnalysis(){
@@ -638,14 +637,6 @@ rEl("recommendCards").addEventListener("click",event=>{
     renderRecommendations();
   }
   if(detail){const c=rState.result?.items.find(c=>c.key===detail.dataset.aiDetail);if(c)showRecommendedDetail(c);}
-});
-rEl("certificateCards").addEventListener("click",event=>{
-  const button=event.target.closest("[data-certificate]");
-  if(!button||!rState.result)return;
-  const cert=rState.result.certificates.find(c=>c.id===button.dataset.certificate);
-  if(!cert)return;
-  rEl("recommendDetailBody").innerHTML='<h2 class="modal-title" id="recommendDetailTitle">'+rEsc(cert.name)+'</h2><p class="analysis-summary">'+rEsc(cert.ai_reason)+'</p><p class="detail-note">학습 참고용 자격증입니다. 채용 필수 여부는 공고에서, 시험 일정·응시 조건은 공식 사이트에서 확인해 주세요.</p><a class="primary-link" href="'+rEsc(cert.url)+'" target="_blank" rel="noopener noreferrer">자격시험 공식 사이트 ↗</a>';
-  rEl("recommendDetailDialog").showModal();
 });
 try{const cached=readMissingSkills();updateAnalysisState(cached);renderMissingSkills(cached.skills);}
 catch{updateAnalysisState({skills:[],hasAnalysis:false,isPerfect:false});}
