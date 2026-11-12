@@ -22,14 +22,10 @@ def page_user(request):
 
 
 def render_member_page(page, user):
-    if page == "main":
-        from modules.main.page import render_main
-        return render_main(user)
     if page == "home":
         from modules.mypage.dashboard_ui import render_dashboard
         return render_dashboard(user)
-    titles = {"main": ("우리의 다음 걸음이 시작되는 곳", "메인 화면 연결 확인"),
-              "home": ("나의 취업 준비를 한곳에서", "마이페이지"),
+    titles = {"home": ("나의 취업 준비를 한곳에서", "마이페이지"),
               "bookmarks": ("다시 보고 싶은 기회를 모았어요", "관심목록"),
               "profile": ("나를 소개하는 기본 정보", "내 정보")}
     subtitle, title = titles[page]

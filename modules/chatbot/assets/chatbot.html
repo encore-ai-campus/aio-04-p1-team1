@@ -1,0 +1,22 @@
+<dialog id="chatbot-dialog" aria-labelledby="chatbot-title">
+  <div class="chatbot-layout">
+    <header class="chatbot-header">
+      <div><h2 id="chatbot-title">나침이 챗봇</h2><p>취업 준비의 고민부터 다음 기회까지 함께해요</p></div>
+      <button id="chatbot-close" type="button" aria-label="챗봇 닫기">×</button>
+    </header>
+    <div id="chatbot-log" class="chatbot-log" role="log" aria-label="챗봇 대화" aria-live="polite" aria-relevant="additions">
+      <div class="chatbot-message chatbot-assistant"><span class="chatbot-speaker">나침이</span><p>안녕하세요, 나침이예요! 취업 준비는 요즘 어떠세요? 힘든 마음도 편하게 이야기해 주세요. 원하시면 공고·교육 검색과 적합도 분석, 교육 추천도 함께 도와드릴게요.</p></div>
+    </div>
+    <div class="chatbot-shortcuts" aria-label="빠른 질문">
+      <button type="button" data-chatbot-prompt="공고 검색">공고 검색</button>
+      <button type="button" data-chatbot-prompt="교육 검색">교육 검색</button>
+      <button type="button" data-chatbot-prompt="적합도 분석으로 이동해줘">적합도 분석</button>
+    </div>
+    <p id="chatbot-status" role="status" aria-live="polite"></p>
+    <form id="chatbot-form" class="chatbot-composer">
+      <label class="sr-only" for="chatbot-input">챗봇에게 질문하기</label>
+      <input id="chatbot-input" name="message" placeholder="고민이나 찾고 싶은 기회를 이야기해 주세요" maxlength="500" required autocomplete="off" autofocus>
+      <button id="chatbot-send" type="submit">보내기</button>
+    </form>
+  </div>
+</dialog>
