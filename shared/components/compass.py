@@ -3,6 +3,7 @@ from pathlib import Path
 from html import escape
 import base64
 import re
+from modules.chatbot.widget import render_widget
 
 _ROOT = Path(__file__).resolve().parent
 
@@ -21,7 +22,7 @@ def apply_member_shell(html, user, current="main"):
         "__CC_CSS__": css,
         "__CC_HEADER__": header,
         "__CC_MENU__": menu,
-        "__CC_SCRIPT__": "<script>" + script + "</script>",
+        "__CC_SCRIPT__": "<script>" + script + "</script>" + render_widget(),
         "__CC_MAIN_CURRENT__": ' aria-current="page"' if current == "main" else "",
         "__CC_MYPAGE_CURRENT__": ' aria-current="page"' if current == "mypage" else "",
         "__CC_JD_MATCH_CURRENT__": ' aria-current="page"' if current == "jd_match" else "",

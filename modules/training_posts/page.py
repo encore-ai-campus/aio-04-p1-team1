@@ -428,6 +428,9 @@ el("cards").addEventListener("click",async e=>{
 el("pagination").addEventListener("click",e=>{const button=e.target.closest("[data-page]");if(button){state.page=Number(button.dataset.page);render();}});
 el("closeDetail").addEventListener("click",()=>el("detailDialog").close());
 el("detailDialog").addEventListener("click",e=>{if(e.target===el("detailDialog")){const box=e.target.getBoundingClientRect();if(e.clientX<box.left||e.clientX>box.right||e.clientY<box.top||e.clientY>box.bottom)e.target.close();}});
+const initialQuery = (new URLSearchParams(location.search).get("q") || "").slice(0,200);
+el("searchInput").value = initialQuery;
+state.filter.query = initialQuery;
 applyFilters();
 courseBookmarks.load().then(()=>{state.saved=courseBookmarks.ids();render();}).catch(error=>toast(error.message));
 window.addEventListener("pageshow",event=>{if(event.persisted)courseBookmarks.load().then(()=>{state.saved=courseBookmarks.ids();render();}).catch(error=>{render();toast(error.message);});});
