@@ -32,15 +32,20 @@ def recommend_missing_skills(body: MissingSkillsRecommendationRequest,
         today = datetime.now(timezone(timedelta(hours=9))).date()
         payload = catalogue_data(today-timedelta(days=365), today+timedelta(days=365))
         candidates = shortlist_courses(payload, preferences)
-        if candidates:
-            result, model = call_groq(preferences, candidates)
-            verified = validate_recommendations(result, candidates)
-        else:
-            model = ''
-            verified = {'analysis': {'summary': '부족 역량과 연결되는 교육을 찾지 못했어요.', 'gaps': []},
+        result, model = call_groq(preferences, candidates)
+        if not isinstance(result, dict):
+            raise RecommendationError('AI 분석 결과가 올바르지 않습니다. 다시 추천받아 주세요.')
+        excluded = result.get('excluded_company_names', [])
+        if not isinstance(excluded, list) or any(not isinstance(name, str) or name not in skills for name in excluded):
+            raise RecommendationError('회사명 분류 결과를 확인하지 못했습니다. 다시 추천받아 주세요.')
+        excluded = list(dict.fromkeys(excluded))
+        skills = [skill for skill in skills if skill not in excluded]
+        verified = validate_recommendations(result, candidates)
+        if not skills:
+            verified = {'analysis': {'summary': '회사명을 제외한 보완 역량이 없습니다.', 'gaps': []},
                         'items': [], 'certificates': []}
         return JSONResponse({
-            **verified, 'missing_skills': skills, 'job_title': '부족 역량 맞춤 교육',
+            **verified, 'missing_skills': skills, 'excluded_company_names': excluded, 'job_title': '부족 역량 맞춤 교육',
             'meta': {'model': model, 'fetchedAt': payload['fetchedAt'],
                      'fetched_count': len(payload['courses']), 'candidate_count': len(candidates),
                      'failed_categories': len(payload['errors'])},
