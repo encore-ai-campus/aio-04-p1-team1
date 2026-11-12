@@ -155,7 +155,11 @@ def get_jd_match_score(
     job_posting = get_job_posting(db, job_posting_id)
 
     if profile is None or job_posting is None:
-        return {"score_percent": 0, "reason": "프로필 또는 공고를 찾을 수 없습니다."}
+        return {
+            "job_id": str(job_posting_id),
+            "score_percent": 0,
+            "reason": "프로필 또는 공고를 찾을 수 없습니다.",
+        }
 
     api_key = os.getenv("JEV_API_KEY", "").strip()
     if not api_key:
@@ -267,10 +271,12 @@ def get_jd_match_score(
         if score is None or float(score) <= 4:
             score = expected_score
 
-    # JEV의 score/expected_score는 0~4 등급이므로 백분율로 환산한다.
-    raw_score = float(score or 0)
-    score_percent = round(max(0, min(raw_score * 25, 100)), 1)
+    # JEV의 score/expected_score(0~4)를 전체 점수의 50% 범위로 환산하고,
+    # 기본 점수 50점을 더해 최종 적합도를 계산한다.
+    raw_score = max(0, min(float(score or 0), 4))
+    score_percent = round(50 + (raw_score * 12.5), 1)
     return {
+        "job_id": str(job_posting_id),
         "score_percent": score_percent,
         "jev_score": score,
         "probabilities": probabilities,
