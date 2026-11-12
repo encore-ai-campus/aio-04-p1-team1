@@ -62,6 +62,7 @@
         }
         throw new Error(text);
       }
+      Object.keys(localStorage).filter(key=>key.startsWith('jd-match-score:v2:')).forEach(key=>localStorage.removeItem(key));
       location.assign('/signin');
     }
     catch(error) {
