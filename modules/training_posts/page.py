@@ -368,8 +368,6 @@ function showDetails(c){
   el("detailDialog").showModal();
 }
 el("searchForm").addEventListener("submit",e=>{e.preventDefault();reloadAndApply();});
-el("resetButton").addEventListener("click",reset);
-el("sort").addEventListener("change",applyFilters);
 el("cards").addEventListener("click",async e=>{
   const save=e.target.closest("[data-save]"),detail=e.target.closest("[data-detail]");
   if(save){
