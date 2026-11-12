@@ -6,6 +6,6 @@ MODULE_DIR = Path(__file__).resolve().parent
 
 def render_job_search(user):
     html = (MODULE_DIR / 'templates/job_search.html').read_text(encoding='utf-8')
-    html = html.replace('__JOB_CSS__',(MODULE_DIR / 'assets/job_search.css').read_text(encoding='utf-8'))
-    html = html.replace('__JOB_SCRIPT__',(MODULE_DIR / 'assets/job_search.js').read_text(encoding='utf-8'))
+    html = html.replace('__JOB_CSS__',(MODULE_DIR / 'assets/job_cards.css').read_text(encoding='utf-8') + (MODULE_DIR / 'assets/job_search.css').read_text(encoding='utf-8'))
+    html = html.replace('__JOB_SCRIPT__',(MODULE_DIR / 'assets/job_cards.js').read_text(encoding='utf-8') + (MODULE_DIR / 'assets/job_search.js').read_text(encoding='utf-8'))
     return apply_member_shell(html,user,current='job_posts')

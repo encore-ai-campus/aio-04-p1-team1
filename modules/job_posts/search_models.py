@@ -32,6 +32,7 @@ class JobCard(BaseModel):
     max_experience_years: int | None
     deadline_type: str | None
     deadline_date: date | None
+    use_yn: Literal['Y', 'N']
     is_saved: bool
     is_closed: bool
 

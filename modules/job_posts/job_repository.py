@@ -7,7 +7,13 @@ from .search_models import SearchFilters
 
 JOB_ORDER = ['개발자','데이터 분석가','인사','총무','회계','생산관리','마케팅','기획자']
 SORT_SQL = {
-    'default': 'j.company_name ASC, j.title ASC, j.id ASC',
+    'default': """EXISTS(
+        SELECT 1 FROM public.profiles p
+        CROSS JOIN LATERAL unnest(p.desired_jobs) AS desired(role)
+        WHERE p.user_id=%s AND p.use_yn='Y' AND btrim(role)<>''
+          AND (strpos(lower(j.title),lower(btrim(role)))>0
+            OR strpos(lower(j.job_name),lower(btrim(role)))>0)
+        ) DESC, j.deadline_date ASC NULLS LAST, j.title ASC, j.id ASC""",
     'company': 'j.company_name ASC, j.title ASC, j.id ASC',
     'deadline': 'j.deadline_date ASC NULLS LAST, j.company_name ASC, j.id ASC',
 }
@@ -16,7 +22,7 @@ def korea_today():
     return datetime.now(ZoneInfo('Asia/Seoul')).date()
 
 def search_condition(filters: SearchFilters):
-    conditions, params = ["j.use_yn='Y'"], []
+    conditions, params = ["j.use_yn IN ('Y','N')"], []
     if filters.q:
         escaped = filters.q.replace('\\','\\\\').replace('%','\\%').replace('_','\\_')
         conditions.append('(j.title ILIKE %s OR j.company_name ILIKE %s OR j.job_name ILIKE %s)')
@@ -33,7 +39,7 @@ def search_condition(filters: SearchFilters):
     if filters.employment:
         conditions.append('j.employment_type=%s'); params.append(filters.employment)
     if filters.exclude_closed:
-        conditions.append('(j.deadline_date IS NULL OR j.deadline_date >= %s)'); params.append(korea_today())
+        conditions.append("j.use_yn='Y' AND (j.deadline_date IS NULL OR j.deadline_date >= %s)"); params.append(korea_today())
     return ' AND '.join(conditions), params
 
 def get_filter_options(db: Connection):
@@ -41,7 +47,7 @@ def get_filter_options(db: Connection):
         cursor.execute("""SELECT array_agg(DISTINCT job_name ORDER BY job_name) AS jobs,
             array_agg(DISTINCT split_part(region_name,' ',1) ORDER BY split_part(region_name,' ',1)) AS regions,
             array_agg(DISTINCT employment_type ORDER BY employment_type) FILTER (WHERE employment_type IS NOT NULL) AS employments
-            FROM public.job_postings WHERE use_yn='Y'""")
+            FROM public.job_postings WHERE use_yn IN ('Y','N')""")
         row = cursor.fetchone()
     jobs = row['jobs'] or []
     return {'jobs': sorted(jobs,key=lambda value: (JOB_ORDER.index(value) if value in JOB_ORDER else len(JOB_ORDER),value)),
@@ -50,17 +56,24 @@ def get_filter_options(db: Connection):
 
 def search_jobs(db: Connection, user_id: UUID, filters: SearchFilters):
     condition, params = search_condition(filters)
-    today = korea_today()
+    sort_params = [user_id] if filters.sort == 'default' else []
     # ID/사용자 값은 SQL 문자열에 끼워 넣지 않습니다. 정렬은 고정 허용 목록만 사용합니다.
     with db.cursor() as cursor:
         cursor.execute('SELECT count(*) AS total FROM public.job_postings j WHERE '+condition, params)
         total = cursor.fetchone()['total']
         cursor.execute('''SELECT j.id,j.source_url,j.title,j.company_name,j.job_name,j.region_name,
             j.career_type,j.employment_type,j.min_experience_years,j.max_experience_years,
-            j.deadline_type,j.deadline_date,
+            j.deadline_type,j.deadline_date,j.use_yn,
             EXISTS(SELECT 1 FROM public.saved_jobs s WHERE s.job_id=j.id AND s.user_id=%s AND s.use_yn='Y') AS is_saved,
-            COALESCE(j.deadline_date < %s,FALSE) AS is_closed
+            (j.use_yn='N') AS is_closed
             FROM public.job_postings j WHERE '''+condition+' ORDER BY '+SORT_SQL[filters.sort]+' LIMIT %s OFFSET %s',
-            [user_id,today,*params,filters.size,(filters.page-1)*filters.size])
+            [user_id,*params,*sort_params,filters.size,(filters.page-1)*filters.size])
         items = cursor.fetchall()
     return {'items':items,'total':total,'page':filters.page,'size':filters.size}
+
+
+def get_home_jobs(db: Connection, user_id: UUID):
+    """공고모음과 같은 추천순으로 현재 유효한 공고를 최대 6개 반환합니다."""
+    result = search_jobs(db, user_id, SearchFilters(size=6))
+    result['total'] = len(result['items'])
+    return result
