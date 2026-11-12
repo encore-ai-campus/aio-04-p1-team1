@@ -1,3 +1,4 @@
+from fastapi import HTTPException, Request
 from fastapi.responses import RedirectResponse
 from modules.auth.Signin import router as signin_router
 from modules.auth.Signup import router as signup_router
@@ -26,8 +27,14 @@ app.include_router(main_router)
 app.include_router(chatbot_router)
 
 @app.get("/")
-def root():
-    return RedirectResponse("/signin")
+def root(request: Request):
+    try:
+        auth_store.verified_session(request)
+    except HTTPException as exc:
+        if exc.status_code == 401:
+            return RedirectResponse("/signin", status_code=303)
+        raise
+    return RedirectResponse("/main", status_code=303)
 
 
 if __name__ == "__main__":
