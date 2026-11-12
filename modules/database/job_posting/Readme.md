@@ -55,7 +55,7 @@ python -m modules.database.job_posting.collect --samples-only --per-job 10 --sav
 python -m modules.database.job_posting.save_to_supabase
 ```
 
-테스트:
+로컬 테스트(실제 원티드 요청·DB 저장 없음, 2026-11-11 확인에서 12개 통과):
 
 ```bash
 python -m unittest modules.database.job_posting.test_wanted_crawler -v
@@ -101,4 +101,6 @@ python -m unittest modules.database.job_posting.test_wanted_crawler -v
 
 ## 다른 database 모듈과의 구분
 
-이 폴더는 채용공고의 생성·수집·저장만 담당합니다. 사용자 프로필과 교육 이수 기록의 생성은 [profiles README](../profiles/README.md), 프로필·북마크 통합 실행은 [database README](../README.md)를 확인하세요. `job_postings.sql`은 최종 date 구조를 직접 생성하며 프로필 테이블을 변경하지 않습니다.
+이 폴더는 채용공고의 생성·수집·저장만 담당합니다. 웹 채용공고 조회·필터·하트 저장 연동은 [job_posts README](../../job_posts/README.md)를 확인하세요. 수집기가 사용하는 DB 연결과 로그인 사용자의 조회·북마크 API는 별도 실행 경로입니다.
+
+사용자 프로필과 교육 이수 기록의 생성은 [profiles README](../profiles/README.md), 프로필·북마크 통합 실행은 [database README](../README.md)를 확인하세요. `job_postings.sql`은 최종 date 구조를 직접 생성하며 프로필 테이블을 변경하지 않습니다.
