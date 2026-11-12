@@ -32,6 +32,23 @@ PAGE = r'''<!doctype html>
 @media(max-width:520px){.header-inner{padding:0 16px}.header-left{gap:10px}.brand{font-size:18px}.brand-mark{width:31px;height:31px}.icon-button{width:36px;height:36px;border-radius:9px}.mypage-button{padding:8px 10px;font-size:10px}.page{padding:24px 16px 0}.greeting h1{font-size:23px;line-height:1.55;word-break:keep-all}.greeting>p:last-child{line-height:1.9;word-break:keep-all}.eyebrow{font-size:9px}.hero{padding:27px 17px;min-height:335px;border-radius:19px}.hero h2{font-size:27px;letter-spacing:-1.2px}.hero-description{font-size:11px;max-width:260px;word-break:keep-all}.hero-actions{gap:9px}.hero-actions .action-button{font-size:11px;min-height:52px;padding:12px 9px;gap:7px;flex:1;max-width:none;width:auto}.hero-actions .icon{width:15px;height:15px}.hero-role{font-size:10px}.profile-fields{grid-template-columns:1fr;gap:11px}.profile-field{display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px;align-items:start}.profile-field dt{padding-top:3px;margin:0}.profile-field dd.role-value{font-size:13px}.card-title{font-size:16px}.summary-stack{gap:10px}.summary-card{padding:14px 12px;gap:8px;flex-wrap:wrap;min-height:104px}.summary-icon{width:27px;height:27px;border-radius:8px}.summary-icon .icon{width:16px;height:16px}.summary-copy h3{font-size:11px}.summary-copy p{font-size:9px}.summary-value{margin-left:auto;font-size:22px}.summary-value.pending{font-size:10px}.job-grid{grid-template-columns:1fr;gap:13px}.job-card{padding:19px 20px 15px}.job-card h3{font-size:16px}.company,.job-meta{font-size:11px}.section-heading h2{font-size:19px}.section-note{font-size:9px}.all-jobs{font-size:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
 __CC_CSS__
+.main-hero.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;gap:14px;padding:0;min-height:0;border-radius:0;overflow:visible;background:transparent;text-align:left}
+.main-hero.hero::before,.main-hero.hero::after{display:none}
+.hero-intro{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:30px 24px;border-radius:22px;background:var(--hero);min-width:0}
+.main-hero .hero-label{font-size:9px;padding:5px 10px;margin-bottom:20px}
+.main-hero h2{font-size:27px;line-height:1.55;letter-spacing:-1px;margin-bottom:15px;word-break:keep-all}
+.main-hero .hero-description{font-size:11px;line-height:1.9;word-break:keep-all}
+.main-hero .hero-role{font-size:10px;margin:17px 0 0}
+.hero-features{display:grid;grid-template-rows:1fr 1fr;gap:14px;min-width:0}
+.hero-feature{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:20px 23px;border:1px solid var(--line);border-radius:20px;background:white;gap:12px;min-width:0}
+.hero-feature-match{background:#fffdf5;border-color:#e9dfb8}
+.hero-feature-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#fff1be;color:#64794f}
+.hero-feature-courses .hero-feature-icon{background:#eef3e6}
+.hero-feature h3{margin:0;font-size:15px;line-height:1.6;letter-spacing:-.45px;font-weight:400;word-break:keep-all}
+.hero-feature .action-button{width:100%;justify-content:space-between;min-height:43px;padding:10px 14px;font-size:12px;gap:8px;border-radius:9px}
+.hero-feature-courses .secondary{background:white;border-color:var(--line)}
+@media(max-width:1100px){.main-hero h2{font-size:23px}.hero-intro{padding:25px 19px}.hero-feature{padding:18px}.hero-feature h3{font-size:14px}}
+@media(max-width:620px){.main-hero.hero{grid-template-columns:1fr}.hero-intro{padding:28px 22px}.main-hero h2{font-size:26px}.hero-features{grid-template-rows:auto auto}.hero-feature{padding:22px}.hero-feature h3{font-size:15px}}
 </style>
 </head>
 <body class="cc-member-page">
@@ -55,7 +72,26 @@ __CC_MENU__
 <main class="page cc-page" data-member-content id="main-content" tabindex="-1">
 <section class="greeting cc-page-heading" aria-labelledby="greeting-title"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1 id="greeting-title">__MEMBER_NAME__님, 오늘의 다음 기회를 찾아볼까요?</h1><p>내 프로필을 바탕으로 나에게 맞는 공고와 다음 준비를 이어가요.</p></section>
 <div class="dashboard-grid">
-<section class="hero" aria-labelledby="hero-title"><p class="hero-label">나만의 취업 준비 대시보드</p><h2 id="hero-title">내 프로필에 맞는 공고,<br>필요한 배움까지</h2><p class="hero-description">지금까지 쌓아온 경험에서 가능성을 발견하고,<br>나에게 필요한 다음 한 걸음을 찾아보세요.</p><p class="hero-role" id="hero-role">나의 프로필을 확인하고 있어요.</p><div class="hero-actions"><a class="action-button primary" href="/jd_match">적합도 분석하기<svg class="icon" aria-hidden="true"><use href="#i-up-right"/></svg></a><a class="action-button secondary" href="/training_match">교육 추천받기<svg class="icon" aria-hidden="true"><use href="#i-up-right"/></svg></a></div></section>
+<section class="hero main-hero" aria-labelledby="hero-title">
+  <div class="hero-intro">
+    <p class="hero-label">나만의 취업 준비 대시보드</p>
+    <h2 id="hero-title">내 프로필에 맞는 공고,<br>필요한 배움까지</h2>
+    <p class="hero-description">지금까지 쌓아온 경험에서 가능성을 발견하고,<br>나에게 필요한 다음 한 걸음을 찾아보세요.</p>
+    <p class="hero-role" id="hero-role">나의 프로필을 확인하고 있어요.</p>
+  </div>
+  <div class="hero-features">
+    <article class="hero-feature hero-feature-match">
+      <span class="hero-feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg></span>
+      <h3>나와 잘 맞는 공고를 찾고 싶다면?</h3>
+      <a class="action-button primary" href="/jd_match">적합도 분석하기<svg class="icon" aria-hidden="true"><use href="#i-up-right"/></svg></a>
+    </article>
+    <article class="hero-feature hero-feature-courses">
+      <span class="hero-feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg></span>
+      <h3>다양한 교육을 찾고 싶다면?</h3>
+      <a class="action-button secondary" href="/training_posts">다양한 교육 찾아보기<svg class="icon" aria-hidden="true"><use href="#i-up-right"/></svg></a>
+    </article>
+  </div>
+</section>
 <aside class="sidebar" aria-label="내 준비 현황">
 <section class="card profile-card" aria-labelledby="profile-title"><h2 class="card-title" id="profile-title"><span class="title-icon"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg></span>나의 준비 프로필</h2><dl class="profile-fields"><div class="profile-field"><dt>희망 직무</dt><dd class="role-value" id="profile-role">불러오는 중…</dd></div><div class="profile-field"><dt>자격증</dt><dd id="profile-certificates">불러오는 중…</dd></div><div class="profile-field"><dt>교육이수</dt><dd id="profile-courses">불러오는 중…</dd></div></dl><a class="manage-profile" href="/mypage#profile-overview">마이페이지에서 프로필 관리하기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a><p class="profile-note" id="profile-note" role="status" aria-live="polite"></p><button class="text-button" type="button" id="profile-retry" hidden>프로필 다시 불러오기</button></section>
 <div class="summary-stack"><a class="card summary-card" href="/mypage#bookmarks"><span class="summary-icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span><div class="summary-copy"><h3>관심목록</h3><p id="saved-detail">저장한 정보를 불러오는 중이에요</p></div><span class="summary-value" id="saved-total">—</span></a></div>

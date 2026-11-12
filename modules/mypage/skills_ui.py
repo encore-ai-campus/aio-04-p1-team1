@@ -13,9 +13,8 @@ def apply_skills_ui(html, user, *, editable=False):
 
 SUMMARY = '''
 <div class="skills-section" data-skills-root data-user-id="__SKILLS_USER_ID__">
-  <div class="skills-heading"><h3>나의 역량</h3></div>
   <div class="skills-tags" data-skills-list aria-label="등록한 역량"></div>
-  <p class="skills-help" data-skills-empty>아직 등록한 역량이 없어요. 정보 수정에서 추가해 주세요.</p>
+  <p class="skills-help" data-skills-empty>아직 등록한 역량이 없어요. 역량 수정에서 추가해 주세요.</p>
   <p class="skills-help">적합도 분석에 활용합니다.</p>
   <p class="skills-message" data-skills-message role="status" aria-live="polite"></p>
 </div>'''
@@ -142,10 +141,14 @@ SCRIPT = r'''
     message.textContent = '역량을 불러오는 중이에요.';
     try {
       skills = await skillsRequest('GET'); loaded = true; render(); message.textContent = '';
+      window.dispatchEvent(new CustomEvent('profile-skills-loaded', {detail: skills}));
     } catch (error) {
       loaded = false; showError(error.message + ' 새로고침 후 다시 시도해 주세요.');
     } finally { setEditingDisabled(!loaded); }
   }
+  window.addEventListener('profile-skills-saved', event => {
+    skills = check(event.detail); loaded = true; render(); message.textContent = '';
+  });
   loadSkills();
   if (!editable) return;
   document.getElementById('skills-add').addEventListener('click', () => { addInput(); input.focus(); });
