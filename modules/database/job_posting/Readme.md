@@ -104,3 +104,30 @@ python -m unittest modules.database.job_posting.test_wanted_crawler -v
 이 폴더는 채용공고의 생성·수집·저장만 담당합니다. 웹 채용공고 조회·필터·하트 저장 연동은 [job_posts README](../../job_posts/README.md)를 확인하세요. 수집기가 사용하는 DB 연결과 로그인 사용자의 조회·북마크 API는 별도 실행 경로입니다.
 
 사용자 프로필과 교육 이수 기록의 생성은 [profiles README](../profiles/README.md), 프로필·북마크 통합 실행은 [database README](../README.md)를 확인하세요. `job_postings.sql`은 최종 date 구조를 직접 생성하며 프로필 테이블을 변경하지 않습니다.
+
+
+## 매일 마감 상태 갱신
+
+[update_deadlines.py](update_deadlines.py)는 한국 시간 기준 오늘 날짜가 `deadline_date`보다 늦은 행을 `use_yn='N'`으로 변경합니다. 마감 당일과 NULL 마감일은 유지하고, 이미 N인 행을 Y로 되돌리지 않습니다. DB 스키마 변경이나 공고 재수집은 하지 않습니다.
+
+프로젝트 루트에서 기존 가상환경을 활성화하고 실행합니다. 루트 `.env`의 `DATABASE_URL`과 `shared.database.get_db` 연결을 사용합니다.
+
+```bash
+# 변경 대상 건수 확인: UPDATE 후 전체 롤백
+python -m modules.database.job_posting.update_deadlines --dry-run
+
+# 실제 반영: 매일 한 번 실행
+python -m modules.database.job_posting.update_deadlines
+```
+
+실행하는 SQL의 조건은 다음과 같습니다.
+
+```sql
+UPDATE public.job_postings
+SET use_yn = 'N'
+WHERE use_yn = 'Y'
+  AND deadline_date IS NOT NULL
+  AND (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul')::date > deadline_date;
+```
+
+이 명령은 실행한 시점에만 적용됩니다. 자동 스케줄러는 등록하지 않았습니다. 공고 데이터를 다시 저장해 Y로 갱신한 경우에는 이 명령을 다시 실행하면 됩니다. 웹의 ‘마감된 정보 제외’는 날짜도 비교하므로 일일 갱신 전이라도 지난 공고를 제외합니다.
