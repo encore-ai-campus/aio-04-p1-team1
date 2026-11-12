@@ -35,21 +35,7 @@ body.cc-member-page.cc-training-page{font-size:14px}
 .cc-training-page :is(.apply,.search button,.ai-submit){font-size:14px}
 .cc-training-page :is(.reset,.analysis-button){font-size:11px}
 .cc-training-page :is(.sort select,.rec-condition,.gap-line,.gap-pill){font-size:12px}
-.cc-training-page .training-posts-content #sort{font-size:calc(12px + 2pt);width:156px;height:46px;padding:8px 24px;text-align:center;text-align-last:center}
-.cc-training-page .training-posts-content #sort option{text-align:center}
-@supports (appearance:base-select){
-  .cc-training-page .training-posts-content #sort,
-  .cc-training-page .training-posts-content #sort::picker(select){appearance:base-select}
-  .cc-training-page .training-posts-content #sort{display:flex;align-items:center;justify-content:center;anchor-name:--training-sort}
-  .cc-training-page .training-posts-content #sort::picker-icon{display:none}
-  .cc-training-page .training-posts-content #sort::picker(select){font-family:inherit;font-size:calc(12px + 2pt);color:#9ba08f;background:#fff;border:1px solid var(--cc-border);border-radius:12px;padding:4px 0;position:fixed;position-anchor:--training-sort;inset:auto;top:anchor(--training-sort bottom);left:anchor(--training-sort left);margin:4px 0 0;position-area:none;position-try-fallbacks:none;min-width:anchor-size(--training-sort width);max-height:240px;overflow-y:auto}
-  .cc-training-page .training-posts-content #sort option{display:flex;justify-content:center;padding:10px 12px;min-height:40px}
-  .cc-training-page .training-posts-content #sort option::checkmark{display:none}
-  .cc-training-page .training-posts-content #sort option:checked{background:#fff5d7;color:var(--cc-text)}
-  .cc-training-page .training-posts-content #sort option:hover,
-  .cc-training-page .training-posts-content #sort option:focus{background:var(--cc-yellow);color:var(--cc-text)}
-}
-.cc-training-page .training-posts-content .sort:after{right:8px;top:50%;transform:translateY(-50%)}
+.cc-training-page .training-posts-content .ai-recommend-link{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 24px;font-size:calc(12px + 3pt);white-space:nowrap;background:#fff;border:1px solid #000}
 .cc-training-page :is(.rec-reason,.certificate-card p,.analysis-summary,.gap-explanation){font-size:12px}
 .cc-training-page :is(.sidebar-note,.catalogue-note,.rec-footnote,.input-hint){font-size:10px}
 .cc-training-page .pagination button{font-size:12px}
@@ -111,7 +97,7 @@ PAGE = r"""<!doctype html>
 .training-posts-content a{color:inherit;text-decoration:none}
 .training-posts-content button:disabled{cursor:default;opacity:.35}
 .training-posts-content button:focus-visible,.training-posts-content a:focus-visible,.training-posts-content input:focus-visible,.training-posts-content select:focus-visible{outline:3px solid #c99c1c;outline-offset:4px}
-.training-posts-content .layout{display:grid;grid-template-columns:352px minmax(0,1fr);gap:30px;align-items:start}
+.training-posts-content .layout{display:grid;grid-template-columns:minmax(0,1fr);gap:30px;align-items:start}
 .training-posts-content .sidebar{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 28px 36px;min-height:900px}
 .training-posts-content .sidebar-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
 .training-posts-content .sidebar h2{font-size:27px;letter-spacing:1px;margin:0}
@@ -127,7 +113,7 @@ PAGE = r"""<!doctype html>
 .training-posts-content .search input{border:0;background:none;outline:none;min-width:0;flex:1;font-size:20px;letter-spacing:.5px}
 .training-posts-content .search input::placeholder{color:#aaae9f}
 .training-posts-content .search button{background:var(--yellow);border:0;border-radius:14px;width:122px;height:53px;font-size:21px;}
-.training-posts-content .results-head{display:flex;align-items:center;justify-content:space-between;margin:29px 0 13px}
+.training-posts-content .results-head{display:flex;align-items:center;justify-content:space-between;margin:29px 0 13px;padding-right:21px}
 .training-posts-content .results-head h2{font-size:25px;letter-spacing:.7px;margin:0;}
 .training-posts-content .sort{position:relative;margin-right:78px}
 .training-posts-content .sort select{width:120px;height:40px;font-size:18px;border:0;background:transparent;color:#9ba08f;padding:0 25px 0 0;text-align:right}
@@ -174,7 +160,7 @@ PAGE = r"""<!doctype html>
 .training-posts-content .primary-link{display:block;background:var(--yellow);padding:12px;border-radius:12px;text-align:center;font-size:17px;margin-top:20px}
 .training-posts-content .toast{position:fixed;bottom:30px;left:50%;transform:translate(-50%,15px);background:#35482f;color:white;padding:12px 23px;border-radius:11px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:5;max-width:90vw}
 .training-posts-content .toast.show{opacity:1;transform:translate(-50%,0)}
-@media(min-width:2100px){.training-posts-content .layout{grid-template-columns:452px minmax(0,1fr);gap:39px}
+@media(min-width:2100px){.training-posts-content .layout{gap:39px}
 .training-posts-content .sidebar{padding:34px 36px 46px;min-height:962px}
 .training-posts-content .sidebar h2{font-size:35px}
 .training-posts-content .sidebar-head{margin-bottom:39px}
@@ -188,7 +174,7 @@ PAGE = r"""<!doctype html>
 .training-posts-content .search{height:95px;padding:12px 26px 12px 35px}
 .training-posts-content .search input{font-size:26px}
 .training-posts-content .search button{width:156px;height:68px;font-size:27px}
-.training-posts-content .results-head{margin:37px 0 17px}
+.training-posts-content .results-head{margin:37px 0 17px;padding-right:27px}
 .training-posts-content .results-head h2{font-size:32px}
 .training-posts-content .sort{margin-right:100px}
 .training-posts-content .sort select{font-size:23px;width:154px}
@@ -206,7 +192,7 @@ PAGE = r"""<!doctype html>
 .training-posts-content .pagination{margin-top:90px;gap:12px}
 .training-posts-content .pagination button{height:62px;min-width:64px;font-size:24px}
 .training-posts-content footer{font-size:18px;margin-top:51px;padding:26px 0 35px}}
-@media(max-width:1550px){.training-posts-content .layout{grid-template-columns:290px minmax(0,1fr);gap:25px}
+@media(max-width:1550px){.training-posts-content .layout{gap:25px}
 .training-posts-content .sidebar{padding:25px 23px;min-height:690px}
 .training-posts-content .sidebar h2{font-size:23px}
 .training-posts-content .field>span{font-size:17px}
@@ -221,7 +207,7 @@ PAGE = r"""<!doctype html>
 .training-posts-content .sort{margin-right:25px}
 .training-posts-content .search input{font-size:17px}
 .training-posts-content .chips{gap:22px}}
-@media(max-width:1120px){.training-posts-content .layout{grid-template-columns:235px minmax(0,1fr);gap:20px}
+@media(max-width:1120px){.training-posts-content .layout{gap:20px}
 .training-posts-content .sidebar{padding:20px 18px;min-height:650px}
 .training-posts-content .sidebar h2{font-size:21px}
 .training-posts-content .reset{font-size:13px}
@@ -259,7 +245,7 @@ PAGE = r"""<!doctype html>
 .training-posts-content .search{height:58px;border-radius:14px;padding:6px 9px 6px 14px}
 .training-posts-content .search input{font-size:13px}
 .training-posts-content .search button{height:43px;width:67px;font-size:15px}
-.training-posts-content .results-head{margin-top:22px;margin-bottom:9px}
+.training-posts-content .results-head{margin-top:22px;margin-bottom:9px;padding-right:10px}
 .training-posts-content .results-head h2{font-size:19px}
 .training-posts-content .chips{gap:9px;margin-bottom:17px;min-height:26px}
 .training-posts-content .chip{font-size:11px;padding:3px 10px}
@@ -289,19 +275,9 @@ __CC_HEADER____CC_MENU__
 <main class="cc-page">
 <section class="cc-page-heading"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1>다음 성장을 위한 교육을 찾아보세요</h1><p class="subtitle">직무에 필요한 교육을 조건별로 살펴보고 관심목록에 저장하세요.</p></section>
 <div class="layout">
-<aside class="sidebar" aria-label="검색 조건">
-<div class="sidebar-head"><h2>검색 조건</h2><button type="button" class="reset" id="resetButton">초기화</button></div>
-<form id="filterForm" class="filter-form">
-<label class="field"><span>직무 / 분야</span><div class="select-wrap"><select id="category" aria-label="직무 / 분야"><option value="">전체 분야</option>__CATEGORY_OPTIONS__</select></div></label>
-<label class="field"><span>교육 방식</span><div class="select-wrap"><select id="mode" aria-label="교육 방식"><option value="all">전체 방식</option><option value="online">온라인</option><option value="offline">오프라인</option><option value="mixed">혼합</option><option value="unknown">방식 확인 필요</option></select></div></label>
-<label class="field"><span>교육비</span><div class="select-wrap"><select id="budget" aria-label="교육비"><option value="">전체 금액</option><option value="0">무료</option><option value="100000">무료·10만원 이하</option><option value="300000">30만원 이하</option><option value="500000">50만원 이하</option></select></div></label>
-<button type="submit" class="apply" id="applyButton">조건 적용</button>
-</form>
-<p class="sidebar-note">분야·교육비·교육 방식은 미제공입니다.<br>비용·방식 조건을 지정하면 미확인 교육은 제외됩니다.</p>
-</aside>
 <section class="result-area" aria-label="교육 검색 결과">
 <form class="search" id="searchForm"><input id="searchInput" type="search" aria-label="교육 검색" placeholder="교육명, 교육기관 또는 기술 검색" maxlength="200"><button type="submit" id="searchButton">검색</button></form>
-<div class="results-head"><h2 id="resultsTitle" aria-live="polite">검색된 교육</h2><div class="sort"><select id="sort" aria-label="교육 정렬"><option value="latest">최신순</option><option value="cost_low">교육비 낮은순</option><option value="cost_high">교육비 높은순</option><option value="title">교육명순</option></select></div></div>
+<div class="results-head"><h2 id="resultsTitle" aria-live="polite">검색된 교육</h2><a class="cc-top-button cc-main-button ai-recommend-link" href="/training_match">AI 교육 추천 받기</a></div>
 <div id="chips" class="chips" aria-label="적용된 검색 조건"></div>
 <p id="dataNote" class="catalogue-note" role="status"></p>
 <div id="cards" class="cards" aria-live="polite"></div>
@@ -325,26 +301,14 @@ const costText=(value)=>value==null?"교육비 원문 확인":value===0?"무료"
 const safeUrl=(value)=>{try{const u=new URL(value);return ["https:","http:"].includes(u.protocol)&&["www.work24.go.kr","work24.go.kr","hrd.work24.go.kr","www.hrd.go.kr"].includes(u.hostname)?u.href:"";}catch{return "";}};
 let toastTimer;
 function toast(message){el("toast").textContent=message;el("toast").classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el("toast").classList.remove("show"),2800);}
-function pendingFilter(){return {category:el("category").value,mode:el("mode").value,budget:el("budget").value,query:el("searchInput").value.trim()};}
-function categoryMatch(course,value){
-  if(!value)return true;
-  if(value==="hr")return course.category==="02"&&/인사|인적|노무|급여|\bhr\b|excel|엑셀|sql|사무|행정|보고서/i.test(course.title);
-  return course.category===value;
-}
+function pendingFilter(){return {query:el("searchInput").value.trim()};}
 function applyFilters(){
   const f=state.filter;
   state.filtered=state.data.courses.filter(c=>{
-    if(!categoryMatch(c,f.category))return false;
-    if(f.mode!=="all"&&c.mode!==f.mode)return false;
-    if(f.budget!==""&&(c.cost==null||c.cost>Number(f.budget)))return false;
     if(f.query){const haystack=[c.title,c.provider,c.categoryName,...c.tags].join(" ").toLocaleLowerCase();const terms=f.query.toLocaleLowerCase().split(/\s+/).filter(Boolean);if(!terms.every(t=>haystack.includes(t)))return false;}
     return true;
   });
-  const sort=el("sort").value;
   state.filtered.sort((a,b)=>b.start.localeCompare(a.start)||a.key.localeCompare(b.key));
-  if(sort==="cost_low")state.filtered.sort((a,b)=>(a.cost??Infinity)-(b.cost??Infinity));
-  if(sort==="cost_high")state.filtered.sort((a,b)=>(b.cost??-1)-(a.cost??-1));
-  if(sort==="title")state.filtered.sort((a,b)=>a.title.localeCompare(b.title,"ko"));
   state.page=0;render();
 }
 function render(){
@@ -353,9 +317,6 @@ function render(){
   state.page=Math.max(0,Math.min(state.page,Math.max(0,pages-1)));
   el("resultsTitle").textContent="검색된 교육 "+total+"개";
   const f=state.filter,chips=[];
-  if(f.category)chips.push(f.category==="hr"?"인사·HR":state.data.categories.find(c=>c.code===f.category)?.name||f.category);
-  if(f.mode!=="all")chips.push(modeName(f.mode));
-  if(f.budget!=="")chips.push(f.budget==="0"?"무료":"무료·"+(Number(f.budget)/10000)+"만원 이하");
   if(f.query)chips.push("검색: "+f.query);
   el("chips").innerHTML=chips.map(text=>'<span class="chip">'+esc(text)+'</span>').join("");
   el("dataNote").textContent=state.data.errors.length?state.data.errors.map(item=>item.message).join(" "):"";
@@ -385,7 +346,7 @@ async function reloadAndApply(){
   state.controller?.abort();state.controller=new AbortController();
   const generation=++state.generation,nextFilter=pendingFilter();
   el("cards").classList.add("loading");el("cards").setAttribute("aria-busy","true");
-  el("applyButton").disabled=true;el("searchButton").disabled=true;el("dataNote").textContent="저장된 교육목록을 불러오고 있어요…";
+  el("searchButton").disabled=true;el("dataNote").textContent="저장된 교육목록을 불러오고 있어요…";
   try{
     const response=await fetch("/training_posts?data=1",{signal:state.controller.signal,cache:"no-store"});
     if(!response.ok)throw new Error("조회 실패");
@@ -394,19 +355,18 @@ async function reloadAndApply(){
     state.data=data;state.filter=nextFilter;applyFilters();
   }catch(error){
     if(error.name==="AbortError"||generation!==state.generation)return;
-    el("dataNote").textContent="새 조회에 실패했습니다. 현재 화면을 유지하며, 검색 또는 조건 적용으로 다시 시도할 수 있어요.";el("dataNote").classList.add("error-note");
+    el("dataNote").textContent="새 조회에 실패했습니다. 현재 화면을 유지하며, 검색으로 다시 시도할 수 있어요.";el("dataNote").classList.add("error-note");
   }finally{
-    if(generation===state.generation){el("cards").classList.remove("loading");el("cards").setAttribute("aria-busy","false");el("applyButton").disabled=false;el("searchButton").disabled=false;}
+    if(generation===state.generation){el("cards").classList.remove("loading");el("cards").setAttribute("aria-busy","false");el("searchButton").disabled=false;}
   }
 }
-function reset(){el("category").value="";el("mode").value="all";el("budget").value="";el("searchInput").value="";el("sort").value="latest";reloadAndApply();}
+function reset(){el("searchInput").value="";reloadAndApply();}
 function showDetails(c){
   const url=safeUrl(c.url);
   const fields=[["교육기관",c.provider],["분야",c.categoryName],["교육 방식",modeName(c.mode)+(c.modeEvidence?" · "+c.modeEvidence:"")],["교육 기간",(c.start||"미정")+" ~ "+(c.end||"미정")],["API 수강비",costText(c.cost)],["실제 훈련비",c.rawRealCost?c.rawRealCost+"원":"원문 확인"],["개인 본인부담금","고용24 원문에서 확인"],["지역",c.address||"원문 확인"],["과정 ID",c.courseId],["훈련 회차",c.round?c.round+"회차":"미제공"],["NCS 코드",c.ncsCode||"미제공"]];
   el("detailBody").innerHTML='<h2 class="modal-title" id="detailTitle">'+esc(c.title)+'</h2><dl class="detail-grid">'+fields.map(([label,value])=>'<dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd>').join("")+'</dl><p class="detail-note">저장된 교육명·기관·주소·기간을 표시합니다. 분야·교육 방식·교육비·회차는 제공되지 않아 원문 확인이 필요합니다.</p>'+(url?'<a class="primary-link" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">고용24 원문 보기 ↗</a>':'');
   el("detailDialog").showModal();
 }
-el("filterForm").addEventListener("submit",e=>{e.preventDefault();reloadAndApply();});
 el("searchForm").addEventListener("submit",e=>{e.preventDefault();reloadAndApply();});
 el("resetButton").addEventListener("click",reset);
 el("sort").addEventListener("change",applyFilters);

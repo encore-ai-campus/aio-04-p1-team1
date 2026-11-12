@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from modules.auth import auth_store
 from shared.auth_dependencies import get_current_user
 from modules.training_posts.page import render_training_page
-from modules.training_match.model import JobRecommendationRequest
+from modules.training_match.model import JobRecommendationRequest, MissingSkillsRecommendationRequest, RecommendationInput
 from modules.training_match.page import RECOMMEND_PAGE
 from modules.training_match.repository import get_job, get_own_profile, list_jobs, profile_summary
 from modules.training_match.service import (
@@ -16,6 +16,40 @@ from modules.training_match.service import (
 from modules.training_posts.repository import CatalogueStorageError
 
 router = APIRouter(prefix='/training_match', tags=['교육추천'])
+
+
+@router.post('/api/skill-recommendations')
+def recommend_missing_skills(body: MissingSkillsRecommendationRequest,
+                             member: tuple[dict, str] = Depends(auth_store.authenticated)):
+    """Use the tab's analyzed gaps without looking up an unrelated job/profile table."""
+    skills = list(dict.fromkeys(body.missing_skills))
+    preferences = RecommendationInput(
+        job_title='적합도 분석에서 확인한 부족 역량 보완',
+        job_text='적합도 분석 결과의 부족 역량을 보완하는 교육과정을 찾습니다.',
+        missing_skills=skills,
+    )
+    try:
+        today = datetime.now(timezone(timedelta(hours=9))).date()
+        payload = catalogue_data(today-timedelta(days=365), today+timedelta(days=365))
+        candidates = shortlist_courses(payload, preferences)
+        if candidates:
+            result, model = call_groq(preferences, candidates)
+            verified = validate_recommendations(result, candidates)
+        else:
+            model = ''
+            verified = {'analysis': {'summary': '부족 역량과 연결되는 교육을 찾지 못했어요.', 'gaps': []},
+                        'items': [], 'certificates': []}
+        return JSONResponse({
+            **verified, 'missing_skills': skills, 'job_title': '부족 역량 맞춤 교육',
+            'meta': {'model': model, 'fetchedAt': payload['fetchedAt'],
+                     'fetched_count': len(payload['courses']), 'candidate_count': len(candidates),
+                     'failed_categories': len(payload['errors'])},
+        }, headers={'Cache-Control': 'no-store'})
+    except RecommendationError as exc:
+        return JSONResponse({'error': exc.message}, status_code=exc.status, headers={'Cache-Control': 'no-store'})
+    except CatalogueStorageError:
+        return JSONResponse({'error': '교육 자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'},
+                            status_code=503, headers={'Cache-Control': 'no-store'})
 
 
 @router.get('', response_class=HTMLResponse)
