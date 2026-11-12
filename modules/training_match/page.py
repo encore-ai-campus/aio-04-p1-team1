@@ -183,20 +183,21 @@ RECOMMEND_STYLE = r"""
 .cc-training-page #analysisOpen{font-size:calc(11px + 4pt);border:1px solid #ebc03f;background:#fff;color:var(--cc-text);padding:9px 19px}
 
 .training-match-content .rec-panel{position:relative;min-height:158px;border-radius:24px;background:#f5efd0;padding:26px 34px;display:flex;align-items:center;justify-content:space-between;gap:25px}
-.training-match-content .rec-intro{margin:0 0 12px;font-size:16px;line-height:1.8;color:var(--ink);word-break:keep-all}
+.training-match-content .rec-intro{margin:0 0 26px;font-size:16px;line-height:1.8;color:var(--ink);word-break:keep-all}
 .training-match-content .rec-panel h2{font-size:25px;letter-spacing:.5px;margin:0 0 12px;}
 .training-match-content .gap-line{display:flex;align-items:center;gap:15px;flex-wrap:wrap;font-size:17px;color:#8d947f}
 .training-match-content .gap-label{margin-right:45px}
 .training-match-content .gap-pill{background:white;border-radius:30px;padding:4px 26px;min-width:138px;text-align:center;font-size:16px;color:#909889}
+.training-match-content button.gap-pill{border:1px solid transparent;cursor:pointer}
+.training-match-content button.gap-pill:hover{border-color:var(--cc-yellow);color:var(--cc-text)}
+.training-match-content button.gap-pill[aria-pressed="true"]{background:var(--cc-yellow);color:var(--cc-text);border-color:#c99c1c}
+.training-match-content button.gap-pill:disabled{cursor:wait;opacity:.6}
 .training-match-content .analysis-button{background:none;border:0;color:#607b4d;font-size:21px;white-space:nowrap;letter-spacing:.5px;margin-right:275px}
 .training-match-content .analysis-button span{margin-left:12px}
 .training-match-content .rec-heading{display:flex;align-items:center;gap:60px;margin:32px 0 26px;min-height:42px}
 .training-match-content .rec-heading h2{font-size:28px;letter-spacing:.8px;margin:0;white-space:nowrap}
 .training-match-content .rec-conditions{display:flex;gap:74px;flex:1;align-items:center}
 .training-match-content .rec-condition{border:0;background:#fff5d7;color:#a9a683;font-size:16px;border-radius:30px;padding:4px 16px}
-.training-match-content .rec-sort{margin-left:auto;margin-right:140px}
-.training-match-content .rec-sort select{height:40px;border:0;background:none;width:130px;padding:0 20px 0 0;font-size:18px;color:#909985;text-align:right}
-.training-match-content .rec-sort:after{right:0}
 .training-match-content .rec-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .training-match-content .rec-card{background:#fff;border:1px solid #e0e3d7;border-radius:20px;min-height:410px;padding:24px 28px;display:flex;flex-direction:column}
 .training-match-content .rec-card-top{display:flex;align-items:center;justify-content:space-between}
@@ -246,8 +247,6 @@ RECOMMEND_STYLE = r"""
 .training-match-content .rec-heading h2{font-size:36px}
 .training-match-content .rec-conditions{gap:95px}
 .training-match-content .rec-condition{font-size:20px;padding:5px 20px}
-.training-match-content .rec-sort{margin-right:180px}
-.training-match-content .rec-sort select{font-size:23px;width:166px}
 .training-match-content .rec-grid{gap:31px}
 .training-match-content .rec-card{min-height:525px;padding:31px 36px}
 .training-match-content .rec-rank{font-size:41px}
@@ -270,7 +269,6 @@ RECOMMEND_STYLE = r"""
 .training-match-content .rec-heading{gap:35px}
 .training-match-content .rec-heading h2{font-size:25px}
 .training-match-content .rec-conditions{gap:25px}
-.training-match-content .rec-sort{margin-right:40px}
 .training-match-content .rec-card{padding:23px;min-height:420px}
 .training-match-content .rec-card h3{font-size:21px}
 .training-match-content .rec-card .provider{font-size:15px}
@@ -290,8 +288,6 @@ RECOMMEND_STYLE = r"""
 .training-match-content .rec-heading h2{font-size:22px}
 .training-match-content .rec-condition{font-size:12px}
 .training-match-content .rec-conditions{gap:14px}
-.training-match-content .rec-sort{margin-right:0}
-.training-match-content .rec-sort select{font-size:14px;width:100px}
 .training-match-content .rec-grid{gap:16px}
 .training-match-content .rec-card{padding:19px;min-height:430px}
 .training-match-content .rec-card h3{font-size:19px}
@@ -313,7 +309,6 @@ RECOMMEND_STYLE = r"""
 .training-match-content .rec-heading h2{font-size:22px;flex-basis:100%}
 .training-match-content .rec-conditions{gap:9px}
 .training-match-content .rec-condition{font-size:11px;padding:4px 10px}
-.training-match-content .rec-sort select{font-size:12px;width:90px}
 .training-match-content .rec-grid{grid-template-columns:1fr;gap:15px}
 .training-match-content .rec-card{min-height:365px;padding:22px}
 .training-match-content .rec-rank{font-size:29px}
@@ -331,17 +326,79 @@ RECOMMEND_STYLE = r"""
 .training-match-content .rec-footnote{font-size:10px}
 .training-match-content .ai-row{grid-template-columns:1fr;gap:0}
 .training-match-content .analysis-summary{font-size:13px}}
+.cc-training-page .training-match-content .rec-panel{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start;min-height:0}
+.cc-training-page .training-match-content .rec-panel>div{min-width:0;width:100%}
+.cc-training-page .training-match-content .gap-line{display:block;max-width:none}
+.cc-training-page .keyword-selection-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:32px}
+.cc-training-page .keyword-selection-main{min-width:0}
+.cc-training-page .selected-keyword-panel{display:flex;flex-direction:column;gap:24px;min-width:0;padding-top:10px;text-align:center}
+.cc-training-page #selectedKeywordList{display:flex;flex:1;flex-wrap:wrap;align-content:center;justify-content:center;gap:8px;min-height:120px;padding:12px 0 12px 24px;border-left:2px solid #b8b18b;overflow-wrap:anywhere}
+.cc-training-page .selected-keyword-chip{align-self:center;max-width:100%;padding:6px 12px;border-radius:20px;background:#fff5d7;border:1px solid #e2c96a;font-size:14px;line-height:1.5}
+.cc-training-page .selected-keyword-empty{align-self:center;margin:0;color:var(--cc-muted);font-size:14px;line-height:1.7}
+.cc-training-page .training-match-content .rec-panel h2{font-size:22px;line-height:1.5;margin:0 0 6px;letter-spacing:0}
+.cc-training-page .training-match-content .rec-intro{margin:0 0 20px;font-size:15px;line-height:1.7;color:var(--cc-muted)}
+.cc-training-page .training-match-content .gap-label{margin:0;padding-top:8px;font-size:clamp(13px,.9vw,16px);line-height:1.4}
+.cc-training-page .gap-keywords{min-width:0}
+.cc-training-page #gapPills{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;min-width:0}
+.cc-training-page #gapMore{display:block;margin:8px 0 0 auto;padding:4px 0 4px 12px;border:0;background:transparent;color:var(--cc-muted);font-size:13px;cursor:pointer}
+.cc-training-page #gapMore[hidden]{display:none}
+.cc-training-page .training-match-content .gap-pill{box-sizing:border-box;min-width:0;max-width:100%;width:100%;padding:8px 12px;font-size:clamp(13px,.9vw,16px);line-height:1.4;white-space:normal;overflow-wrap:anywhere}
+.cc-training-page #skillRecommendationStatus{margin:14px 0 0;line-height:1.6;overflow-wrap:anywhere;white-space:pre-line}
+.cc-training-page #skillRecommendationStatus:empty{display:none}
+.cc-training-page .perfect-match{padding:40px 24px;border-radius:24px;background:#f5efd0;text-align:center}
+.cc-training-page .perfect-match h2{margin:0 0 18px;font-size:clamp(22px,2vw,30px);line-height:1.5}
+.cc-training-page .perfect-match p{margin:0 0 24px;font-size:16px;line-height:1.9;word-break:keep-all}
+.cc-training-page .perfect-match a{display:inline-block;position:relative;top:3px;padding:12px 24px;border:1px solid #ebc03f;border-radius:12px;background:#fff;color:var(--cc-text)}
+.cc-training-page .training-match-content .rec-heading{justify-content:space-between;flex-wrap:wrap;gap:16px}
+.cc-training-page .training-match-content .rec-heading h2{min-width:0;white-space:normal}
+.cc-training-page .training-match-content .rec-heading #analysisOpen{margin-left:auto;background:#eeece4;border-color:#fff}
+.cc-training-page .recommend-actions{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px;padding-top:18px;border-top:1px solid #ded7b2}
+.cc-training-page #selectedKeywordCount{margin:0;font-size:15px;color:var(--cc-text)}
+.cc-training-page .training-match-content #analysisOpen,
+.cc-training-page .training-match-content #selectedRecommendation{max-width:100%;margin:0;padding:12px 24px;white-space:normal;text-align:center;font-size:calc(11px + 4pt);border:1px solid #ebc03f;background:#fff;color:var(--cc-text)}
+.cc-training-page .training-match-content #selectedRecommendation{background:var(--cc-yellow);position:relative;top:3px}
+@media(max-width:760px){
+  .cc-training-page .keyword-selection-layout{grid-template-columns:minmax(0,1fr);gap:18px}
+  .cc-training-page .selected-keyword-panel{padding-top:16px;border-top:1px solid #ded7b2;gap:10px;text-align:left}
+  .cc-training-page #selectedKeywordList{border-left:0;min-height:0;padding:0;justify-content:flex-start;align-content:start}
+  .cc-training-page .training-match-content .gap-line{grid-template-columns:minmax(0,1fr);gap:8px}
+  .cc-training-page .training-match-content .gap-label{padding-top:0}
+  .cc-training-page #gapPills{gap:6px}
+  .cc-training-page .training-match-content .gap-pill{padding:7px 4px}
+  .cc-training-page .training-match-content #analysisOpen,
+  .cc-training-page .training-match-content #selectedRecommendation{padding:11px 18px;font-size:15px}
+}
 """
 RECOMMEND_BODY = r"""
 <div class="training-match-content" data-member-content>
 <main class="cc-page">
 <section class="cc-page-heading"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1>지금 내게 필요한 다음 배움을 찾아요</h1><p class="subtitle">잘하는 것은 이어가고, 필요한 역량은 하나씩 채워보세요.</p></section>
-<section class="rec-panel" aria-label="분석 기준"><div><p class="rec-intro">AI가 내 프로필과 저장한 채용공고를 비교해 보완할 역량과 관련 교육을 추천해요.</p><div class="gap-line"><span class="gap-label">보완할 역량</span><span id="gapPills" style="display:contents"><span class="gap-pill">AI 분석 전</span></span></div></div><button class="analysis-button cc-top-button cc-main-button" id="analysisOpen" type="button" disabled>AI 맞춤 교육 추천 받기</button></section>
+<section class="perfect-match" id="analysisRequired" aria-labelledby="analysisRequiredTitle" hidden>
+<h2 id="analysisRequiredTitle">나에게 맞는 교육, 적합도 분석부터 시작해요</h2>
+<p>내 프로필과 관심 채용공고를 비교하면 보완할 역량을 확인할 수 있어요.<br>분석을 마치면 부족 역량에 맞는 교육과정을 추천해 드릴게요.</p>
+<p>현재 탭에 저장된 분석 결과가 없어요.</p>
+<a href="/jd_match">적합도 분석하러 가기</a>
+</section>
+<section class="perfect-match" id="perfectMatch" aria-labelledby="perfectMatchTitle" hidden>
+<h2 id="perfectMatchTitle">선택한 공고와 역량이 잘 맞아요! 🎉</h2>
+<p>적합도 분석 결과 100%로, 현재 분석에서 확인된 부족 역량이 없어요.<br>관심 있는 교육을 살펴보며 역량을 더 넓혀보세요.</p>
+<a href="/training_posts">교육모음 둘러보기</a>
+</section>
+<div id="recommendationContent">
+<section class="rec-panel" aria-labelledby="keywordSelectionTitle">
+<div class="keyword-selection-layout"><div class="keyword-selection-main"><h2 id="keywordSelectionTitle">보완할 역량을 선택해 주세요</h2>
+<p class="rec-intro">관심 있는 키워드를 고르면 관련 교육을 추천해 드려요.</p>
+<div class="gap-line"><div class="gap-keywords"><div id="gapPills"><span class="gap-pill">AI 분석 전</span></div><button id="gapMore" type="button" aria-controls="gapPills" hidden>더보기 ⌄</button></div></div>
+<p id="skillRecommendationStatus" role="status" aria-live="polite"></p></div>
+<aside class="selected-keyword-panel" aria-labelledby="selectedKeywordCount"><p id="selectedKeywordCount" role="status" aria-live="polite">선택한 키워드 0개</p><div id="selectedKeywordList"><p class="selected-keyword-empty">키워드를 선택해 주세요.</p></div></aside></div>
+<div class="recommend-actions"><button class="cc-top-button cc-main-button" id="selectedRecommendation" type="button">선택 키워드로 교육 추천</button></div>
+</section>
 <section aria-labelledby="recommendTitle">
-<div class="rec-heading"><h2 id="recommendTitle">AI 추천 맞춤 교육과정 목록</h2></div>
+<div class="rec-heading"><h2 id="recommendTitle">AI 추천 맞춤 교육과정 목록</h2><button class="analysis-button cc-top-button cc-main-button" id="analysisOpen" type="button">AI 맞춤 전체 교육 목록 보기</button></div>
 <div class="rec-grid" id="recommendCards" aria-live="polite"></div>
 </section>
-<section class="rec-certificates"><h2>함께 살펴볼 자격증</h2><div class="certificate-grid" id="certificateCards"></div><p class="rec-footnote" id="recommendNote">선택한 공고와 내 프로필을 비교해 저장된 교육 중에서 Groq AI가 추천해요.</p></section>
+<section class="rec-certificates"><h2>함께 살펴볼 자격증</h2><div class="certificate-grid" id="certificateCards"></div><p class="rec-footnote" id="recommendNote">저장된 부족 역량을 바탕으로 관련 교육을 최대 3개 추천해요.</p></section>
+</div>
 <footer><span>취준나침반 · 한 번에 찾고, 한 걸음씩 준비해요.</span><span id="recommendSource">교육추천 · Groq AI · 고용24 교육 정보</span></footer>
 </main>
 <dialog id="settingsDialog" aria-labelledby="settingsTitle"><div class="modal-top"><p>MY NEXT LEARNING</p><button class="close" id="settingsClose" type="button" aria-label="학습 정보 닫기">×</button></div><h2 class="modal-title" id="settingsTitle">채용공고와 내 프로필을 비교해요</h2>
@@ -363,7 +420,92 @@ const rEl=id=>document.getElementById(id);
 const rEsc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const rMode=value=>({online:"온라인",offline:"오프라인",mixed:"혼합",unknown:"방식 확인 필요"}[value]||"방식 확인 필요");
 const rCost=value=>value==null?"원문 확인":value===0?"무료":value.toLocaleString("ko-KR")+"원";
-const rState={result:null,preferences:null,saved:[],busy:false,context:null,contextPromise:null};
+const rState={result:null,preferences:null,saved:[],busy:false,context:null,contextPromise:null,availableSkills:[],selectedSkills:[],visibleSkillCount:5,keywordSkills:[],perfectAnalysis:false,hasAnalysis:false};
+function readMissingSkills(){
+  const jobId=new URLSearchParams(location.search).get("job_id");
+  const keys=jobId?[`jd-match-score:${jobId}`]:Object.keys(sessionStorage).filter(key=>key.startsWith("jd-match-score:"));
+  const skills=[];let hasAnalysis=false,allPerfect=true;
+  for(const key of keys){
+    try{
+      const score=JSON.parse(sessionStorage.getItem(key)||"null");
+      if(!Array.isArray(score?.missing_skills))continue;
+      hasAnalysis=true;
+      allPerfect=allPerfect&&Number(score.score_percent)===100;
+      for(const value of score.missing_skills){
+        if(typeof value!=="string")continue;
+        const skill=value.trim();
+        if(skill&&!skills.some(item=>item.toLocaleLowerCase()===skill.toLocaleLowerCase()))skills.push(skill);
+      }
+    }catch{}
+  }
+  return {skills,hasAnalysis,isPerfect:hasAnalysis&&allPerfect&&skills.length===0};
+}
+function updateAnalysisState(cached){
+  rState.availableSkills=cached.skills;
+  rState.perfectAnalysis=cached.isPerfect;
+  rState.hasAnalysis=cached.hasAnalysis;
+  rEl("analysisRequired").hidden=cached.hasAnalysis;
+  rEl("perfectMatch").hidden=!cached.isPerfect;
+  rEl("recommendationContent").hidden=!cached.hasAnalysis||cached.isPerfect;
+}
+function renderMissingSkills(skills){
+  const keywords=skills.slice(0,15);
+  if(JSON.stringify(keywords)!==JSON.stringify(rState.keywordSkills))rState.visibleSkillCount=5;
+  rState.keywordSkills=keywords;
+  rState.selectedSkills=rState.selectedSkills.filter(skill=>keywords.includes(skill));
+  rEl("selectedKeywordCount").textContent="선택한 키워드 "+rState.selectedSkills.length+"개";
+  rEl("selectedKeywordCount").title=rState.selectedSkills.join(", ");
+  rEl("selectedKeywordList").innerHTML=rState.selectedSkills.length?rState.selectedSkills.map(skill=>'<span class="selected-keyword-chip">'+rEsc(skill)+'</span>').join(""):'<p class="selected-keyword-empty">키워드를 선택해 주세요.</p>';
+  const visible=keywords.slice(0,rState.visibleSkillCount);
+  rEl("gapPills").innerHTML=visible.length?visible.map(skill=>'<button type="button" class="gap-pill" data-recommend-skill="'+rEsc(skill)+'" aria-pressed="'+rState.selectedSkills.includes(skill)+'" aria-label="'+rEsc(skill)+' 선택"'+(rState.busy?' disabled':'')+'>'+rEsc(skill)+'</button>').join(""):'<span class="gap-pill">저장된 부족 역량 없음</span>';
+  rEl("gapMore").hidden=visible.length>=keywords.length;
+}
+rEl("gapMore").addEventListener("click",()=>{
+  rState.visibleSkillCount=15;
+  renderMissingSkills(rState.keywordSkills);
+});
+async function recommendMissingSkills(selectedOnly=false){
+  if(rState.busy)return;
+  const status=rEl("skillRecommendationStatus"),button=rEl("analysisOpen");
+  let cached;
+  try{cached=readMissingSkills();}catch{status.textContent="분석 결과를 읽지 못했어요. 같은 탭에서 적합도 분석을 다시 진행해 주세요.";return;}
+  updateAnalysisState(cached);
+  if(!cached.hasAnalysis||cached.isPerfect){rState.result=null;renderRecommendations();return;}
+  renderMissingSkills(cached.skills);
+  const requestedSkills=selectedOnly?[...rState.selectedSkills]:cached.skills;
+  if(selectedOnly&&!requestedSkills.length){status.textContent="추천받을 키워드를 하나 이상 선택해 주세요.";return;}
+  rState.result=null;renderRecommendations();
+  if(!cached.skills.length){
+    status.textContent=cached.hasAnalysis?"분석 결과에 부족 역량이 없어요. 보완 교육을 추천할 항목이 없습니다.":"저장된 분석 결과가 없어요. 같은 탭에서 적합도 분석을 먼저 진행해 주세요.";
+    return;
+  }
+  rState.busy=true;button.disabled=true;button.textContent="맞춤 교육을 찾고 있어요…";
+  rEl("selectedRecommendation").disabled=true;
+  renderMissingSkills(cached.skills);
+  const target=selectedOnly?requestedSkills.join(", "):"전체 부족 역량";
+  status.textContent=target+"에 맞는 교육을 찾고 있어요.";
+  rEl("recommendCards").setAttribute("aria-busy","true");
+  try{
+    const response=await fetch("/training_match/api/skill-recommendations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({missing_skills:requestedSkills}),cache:"no-store"});
+    const result=await response.json();
+    if(response.status===401){location.assign("/signin");return;}
+    if(!response.ok)throw new Error(result.error||"교육 추천을 완료하지 못했어요. 다시 시도해 주세요.");
+    rState.result=result;renderRecommendations();
+    status.textContent=result.items.length?target+"에 맞는 교육 "+result.items.length+"개를 추천했어요.":"저장된 교육 중 "+target+"에 맞는 과정을 찾지 못했어요.";
+  }catch(error){status.textContent=error.message||"교육을 불러오지 못했어요. 다시 시도해 주세요.";}
+  finally{rState.busy=false;button.disabled=false;rEl("selectedRecommendation").disabled=false;button.textContent="AI 맞춤 전체 교육 목록 보기";renderMissingSkills(rState.availableSkills);rEl("recommendCards").setAttribute("aria-busy","false");}
+}
+rEl("analysisOpen").addEventListener("click",()=>recommendMissingSkills());
+rEl("selectedRecommendation").addEventListener("click",()=>recommendMissingSkills(true));
+rEl("gapPills").addEventListener("click",event=>{
+  const button=event.target.closest("[data-recommend-skill]");
+  if(!button||rState.busy)return;
+  const skill=button.dataset.recommendSkill;
+  if(!rState.keywordSkills.includes(skill))return;
+  rState.selectedSkills=rState.selectedSkills.includes(skill)?rState.selectedSkills.filter(item=>item!==skill):[...rState.selectedSkills,skill];
+  renderMissingSkills(rState.keywordSkills);
+  rEl("skillRecommendationStatus").textContent="";
+});
 try{const keys=JSON.parse(localStorage.getItem("training-collection-favorites")||"[]");if(Array.isArray(keys))rState.saved=keys.filter(k=>typeof k==="string");}catch{}
 const certInfo={sqld:{name:"SQL 개발자 (SQLD)",description:"SQL 기초와 데이터 이해 학습에 참고"},computer1:{name:"컴퓨터활용능력 1급",description:"스프레드시트 활용 역량 확장에 참고"}};
 let rToastTimer;
@@ -373,22 +515,27 @@ function openSettings(focusName){
   loadMatchContext();
   if(focusName)rEl("recommendForm").elements[focusName].focus();
 }
-function placeholder(rank,text){return '<article class="rec-card rec-placeholder"><div class="rec-card-top"><span class="rec-rank">'+String(rank).padStart(2,"0")+'</span><span style="color:#a3ad99">♡</span></div><h3>'+rEsc(text)+'</h3><p class="provider">저장된 고용24 교육에서 선택해요</p><span class="learning-badge">AI 맞춤 학습</span><p class="rec-reason">채용공고를 선택하면 마이페이지의 자격증·이수 교육과 비교해 필요한 다음 배움을 추천해요.</p><button class="rec-detail" type="button" data-open-settings>공고 선택하고 추천받기 →</button></article>';}
+function placeholder(rank,text){return '<article class="rec-card rec-placeholder"><div class="rec-card-top"><span class="rec-rank">'+String(rank).padStart(2,"0")+'</span><span style="color:#a3ad99">♡</span></div><h3>'+rEsc(text)+'</h3><p class="provider">저장된 고용24 교육에서 선택해요</p><span class="learning-badge">AI 맞춤 학습</span><p class="rec-reason">적합도 분석에서 확인한 부족 역량에 맞춰 필요한 교육을 추천해요.</p><button class="rec-detail" type="button" data-recommend-skills>부족 역량으로 추천받기 →</button></article>';}
 function renderRecommendations(){
+  if(!rState.hasAnalysis||rState.perfectAnalysis){
+    rEl("recommendCards").innerHTML="";
+    rEl("certificateCards").innerHTML="";
+    return;
+  }
   const data=rState.result;
   if(!data){
     rEl("recommendCards").innerHTML=[placeholder(1,"나에게 필요한 교육"),placeholder(2,"역량을 넓히는 다음 배움"),placeholder(3,"직무 목표와 연결한 학습")].join("");
     rEl("certificateCards").innerHTML=Object.values(certInfo).map(c=>'<article class="certificate-card"><span class="certificate-label">학습 참고</span><h3>'+rEsc(c.name)+'</h3><p>분석 후 관련 학습 정보를 안내해요.</p></article>').join("");
     return;
   }
-  rEl("gapPills").innerHTML=data.analysis.gaps.length?data.analysis.gaps.map(g=>'<span class="gap-pill" title="'+rEsc(g.status)+'">'+rEsc(g.skill)+'</span>').join(""):'<span class="gap-pill">역량 정보 확인 필요</span>';
-  rEl("analysisOpen").textContent="AI 맞춤 교육 추천 받기";
-  let items=[...data.items];
+  renderMissingSkills(data.missing_skills?rState.availableSkills:data.analysis.gaps.map(g=>g.skill));
+  rEl("analysisOpen").textContent="AI 맞춤 전체 교육 목록 보기";
+  const items=data.items;
   let cards=items.map((c,i)=>{
     const saved=rState.saved.includes(c.key);
     return '<article class="rec-card"><div class="rec-card-top"><span class="rec-rank">'+String(i+1).padStart(2,"0")+'</span><button type="button" class="heart" data-ai-save="'+rEsc(c.key)+'" aria-label="'+rEsc(c.title)+' 관심 '+(saved?'해제':'저장')+'" aria-pressed="'+saved+'">'+(saved?'♥':'♡')+'</button></div><h3 title="'+rEsc(c.title)+'">'+rEsc(c.title)+'</h3><p class="provider">'+rEsc(c.provider)+'</p><span class="learning-badge">'+rEsc(c.skill_label)+'</span><div class="rec-explanation"><strong class="reason-label">AI 추천 이유</strong><p class="rec-reason" title="'+rEsc(c.ai_reason)+'">'+rEsc(c.ai_reason)+'</p></div><p class="rec-meta">'+rEsc(rCost(c.cost))+' · '+rEsc(rMode(c.mode))+' · '+(c.weeks?c.weeks+'주':'기간 확인')+'</p><button type="button" class="rec-detail" data-ai-detail="'+rEsc(c.key)+'">교육 상세 / 원문 보기 →</button></article>';
   });
-  if(!cards.length)cards=[placeholder(1,"조건과 연결되는 교육을 찾지 못했어요")];
+  if(!cards.length)cards=['<article class="rec-card"><h3>부족 역량과 연결되는 교육을 찾지 못했어요</h3><p class="rec-reason">현재 저장된 교육에는 관련 과정이 없습니다. 다른 공고의 적합도 분석 후 다시 추천받아 보세요.</p></article>'];
   rEl("recommendCards").innerHTML=cards.join("");
   rEl("certificateCards").innerHTML=data.certificates.length?data.certificates.map(c=>'<button type="button" class="certificate-card" data-certificate="'+rEsc(c.id)+'"><span class="certificate-label">선택 준비</span><h3>'+rEsc(c.name)+'</h3><p>'+rEsc(c.ai_reason)+'</p></button>').join(""):'<article class="certificate-card"><h3>관련 자격증은 별도 확인이 필요해요</h3><p>현재 참고 목록에서 연결할 자격증을 선택하지 않았어요.</p></article>';
   rEl("recommendNote").textContent="Groq AI 추천 · "+data.meta.fetched_count+"개 저장 교육 · "+data.meta.candidate_count+"개 후보 비교 · 교육비·교육 방식·분야는 미제공이며 원문 확인 필요"+(data.meta.failed_categories?" · 일부 분야 조회 실패":"");
@@ -458,8 +605,8 @@ rEl("analysisClose").addEventListener("click",()=>rEl("analysisDialog").close())
 rEl("editInputs").addEventListener("click",()=>{rEl("analysisDialog").close();openSettings();});
 rEl("recommendDetailClose").addEventListener("click",()=>rEl("recommendDetailDialog").close());
 rEl("recommendCards").addEventListener("click",event=>{
-  const save=event.target.closest("[data-ai-save]"),detail=event.target.closest("[data-ai-detail]"),setup=event.target.closest("[data-open-settings]");
-  if(setup)openSettings();
+  const save=event.target.closest("[data-ai-save]"),detail=event.target.closest("[data-ai-detail]"),setup=event.target.closest("[data-recommend-skills]");
+  if(setup)recommendMissingSkills();
   if(save){
     const key=save.dataset.aiSave;
     rState.saved=rState.saved.includes(key)?rState.saved.filter(k=>k!==key):[...rState.saved,key];
@@ -476,8 +623,9 @@ rEl("certificateCards").addEventListener("click",event=>{
   rEl("recommendDetailBody").innerHTML='<h2 class="modal-title" id="recommendDetailTitle">'+rEsc(cert.name)+'</h2><p class="analysis-summary">'+rEsc(cert.ai_reason)+'</p><p class="detail-note">학습 참고용 자격증입니다. 채용 필수 여부는 공고에서, 시험 일정·응시 조건은 공식 사이트에서 확인해 주세요.</p><a class="primary-link" href="'+rEsc(cert.url)+'" target="_blank" rel="noopener noreferrer">자격시험 공식 사이트 ↗</a>';
   rEl("recommendDetailDialog").showModal();
 });
+try{const cached=readMissingSkills();updateAnalysisState(cached);renderMissingSkills(cached.skills);}
+catch{updateAnalysisState({skills:[],hasAnalysis:false,isPerfect:false});}
 renderRecommendations();
-if(new URLSearchParams(location.search).has("job_id"))openSettings();
 </script>
 </div>
 __CC_SCRIPT__
