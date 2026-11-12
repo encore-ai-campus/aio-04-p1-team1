@@ -855,7 +855,7 @@ footer  {
           return response.json();
         });
 
-        const scoreCacheKey = `jd-match-score:${jobId}`;
+        const scoreCacheKey = `jd-match-score:v2:${jobId}`;
         const cachedScore = sessionStorage.getItem(scoreCacheKey);
         const scoreRequest = cachedScore
           ? Promise.resolve(JSON.parse(cachedScore))
