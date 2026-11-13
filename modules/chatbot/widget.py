@@ -19,7 +19,7 @@ def render_launcher():
 
 def render_widget():
     root = Path(__file__).with_name("assets")
-    avatar = asset_url("nachimi.png")
+    avatar = asset_url("nachimi-question.png")
     return (
         '<style>#chatbot-dialog{--chatbot-avatar:url("' + avatar + '")}'
         + (root / "chatbot.css").read_text(encoding="utf-8") + "</style>"

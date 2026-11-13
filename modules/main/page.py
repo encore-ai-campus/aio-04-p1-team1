@@ -122,7 +122,7 @@ __CC_MENU__
  function summarize(items,empty){if(!Array.isArray(items)||items.length===0)return empty;return items[0].name+(items.length>1?' 외 '+(items.length-1)+'개':'');}
  async function loadProfile(){byId('profile-retry').hidden=true;byId('profile-note').textContent='';try{const data=await api('/api/mypage/profile');byId('profile-role').textContent=data.target_role||'희망 직무를 등록해 주세요';byId('hero-role').textContent=data.target_role?'나의 희망 직무 · '+data.target_role:'프로필을 채우고, 다음 준비를 시작해 보세요.';byId('profile-certificates').textContent=summarize(data.certificates,'등록된 자격증이 없어요');byId('profile-courses').textContent=summarize(data.courses,'등록된 교육이 없어요');byId('profile-certificates').title=(data.certificates||[]).map(item=>item.name).join(', ');byId('profile-courses').title=(data.courses||[]).map(item=>item.name).join(', ');}catch(error){byId('profile-note').textContent=error.message;byId('profile-retry').hidden=false;for(const id of ['profile-role','profile-certificates','profile-courses'])byId(id).textContent='잠시 후 다시 확인해 주세요';byId('hero-role').textContent='마이페이지에서 나의 프로필을 확인해 보세요.';}}
  async function loadBookmarks(){try{const data=await api('/api/bookmarks?size=1');byId('saved-total').textContent=data.counts.all;byId('saved-detail').textContent='저장 공고 '+data.counts.job+' · 교육 '+data.counts.course;}catch(error){byId('saved-total').textContent='—';byId('saved-detail').textContent='마이페이지에서 다시 확인해 주세요';}}
- byId('profile-retry').addEventListener('click',loadProfile);loadProfile();loadBookmarks();
+ byId('profile-retry').addEventListener('click',loadProfile);window.CompassLoading.track(loadProfile());window.CompassLoading.track(loadBookmarks());
 })();
 </script>
 <style>__JOB_CARD_CSS__</style>
