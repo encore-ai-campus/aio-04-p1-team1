@@ -41,12 +41,12 @@ __SKILLS_CSS__
 #profile-data-content .profile-item-editable summary{padding-right:188px}
 #profile-data-content .profile-item-editable summary::after{position:absolute;right:144px;top:20px;margin:0}
 .profile-edit-button{position:absolute;right:16px;top:20px;min-width:112px;min-height:32px;padding:6px 10px;font-size:12px;line-height:1.5}
-.profile-information .skills-tags{gap:12px;margin:14px 0 12px}
-.profile-information .skills-tag{padding:10px 16px;border-color:#e0e4da;border-radius:12px;font-size:18px;line-height:1.5}
+.profile-information .skills-tags{gap:8px;margin:14px 0 12px}
+.profile-information .skills-tag{padding:6px 10px;border-color:#e0e4da;border-radius:8px;font-size:12px;line-height:1.5}
 .profile-information .skills-tag-hash{color:#8b917f;margin-right:5px}
 .profile-information .skills-help{font-size:14px;line-height:1.8;margin:12px 0;color:var(--cc-muted)}
 .profile-information .entries{padding:0 16px 20px}
-@media(max-width:620px){#profile-data-content summary{font-size:16px;padding:18px 12px}#profile-data-content .profile-item-editable summary{padding-right:168px}#profile-data-content .profile-item-editable .summary-note{display:none}#profile-data-content .profile-item-editable summary::after{width:28px;height:28px;right:130px;top:21px}.profile-edit-button{min-width:108px;right:12px;top:20px;font-size:11px}.profile-information .skills-tags{gap:8px}.profile-information .skills-tag{font-size:16px;padding:9px 12px}.profile-information .skills-help{font-size:12px}.profile-information .entries{padding:0 12px 18px}}
+@media(max-width:620px){#profile-data-content summary{font-size:16px;padding:18px 12px}#profile-data-content .profile-item-editable summary{padding-right:168px}#profile-data-content .profile-item-editable .summary-note{display:none}#profile-data-content .profile-item-editable summary::after{width:28px;height:28px;right:130px;top:21px}.profile-edit-button{min-width:108px;right:12px;top:20px;font-size:11px}.profile-information .skills-tags{gap:8px}.profile-information .skills-tag{font-size:11px;padding:5px 8px}.profile-information .skills-help{font-size:12px}.profile-information .entries{padding:0 12px 18px}}
 </style></head><body class="cc-member-page">
 __CC_HEADER__
 __CC_MENU__
