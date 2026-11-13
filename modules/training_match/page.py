@@ -1,4 +1,4 @@
-"""AI 교육추천 HTML/CSS/JavaScript 화면."""
+"""선택 공고의 직무 기반 교육추천 화면."""
 
 _RECOMMEND_STYLE = r"""
 .training-match-content{--ink:var(--cc-text);--muted:var(--cc-muted);--line:var(--cc-border);--paper:var(--cc-background);--yellow:var(--cc-yellow);--green:#7d9970;--pale:#edf3e7;box-sizing:border-box}
@@ -380,268 +380,240 @@ RECOMMEND_STYLE = r"""
 RECOMMEND_BODY = r"""
 <div class="training-match-content" data-member-content>
 <main class="cc-page">
-<section class="cc-page-heading"><p class="eyebrow">YOUR NEXT DIRECTION</p><h1>지금 내게 필요한 다음 배움을 찾아요</h1><p class="subtitle">잘하는 것은 이어가고, 필요한 역량은 하나씩 채워보세요.</p></section>
-<section class="perfect-match" id="analysisRequired" aria-labelledby="analysisRequiredTitle" hidden>
-<h2 id="analysisRequiredTitle">나에게 맞는 교육, 적합도 분석부터 시작해요</h2>
-<p>내 프로필과 관심 채용공고를 비교하면 보완할 역량을 확인할 수 있어요.<br>분석을 마치면 부족 역량에 맞는 교육과정을 추천해 드릴게요.</p>
-<p>현재 브라우저에 저장된 분석 결과가 없어요.</p>
-<a href="/jd_match">적합도 분석하러 가기</a>
-</section>
-<section class="perfect-match" id="perfectMatch" aria-labelledby="perfectMatchTitle" hidden>
-<h2 id="perfectMatchTitle">선택한 공고와 역량이 잘 맞아요! 🎉</h2>
-<p>적합도 분석 결과 100%로, 현재 분석에서 확인된 부족 역량이 없어요.<br>관심 있는 교육을 살펴보며 역량을 더 넓혀보세요.</p>
-<a href="/training_posts">교육모음 둘러보기</a>
-</section>
-<div id="recommendationContent">
-<details class="keyword-disclosure">
-<summary>보완할 역량 보기</summary>
+<section class="cc-page-heading training-recommend-heading"><div class="ai-course-actions"><div class="ai-action-group"><button id="aiCourseList" class="ai-course-list-button" type="button" aria-pressed="false">AI 맞춤 교육 목록 보기</button><button id="returnRoleCourses" class="ai-course-return-button" type="button" hidden></button></div><div class="ai-action-group"><button id="aiSelectedSkills" class="ai-course-list-button" type="button" aria-pressed="false">선택 역량으로 AI 추천받기</button><button id="returnSelectedRoleCourses" class="ai-course-return-button" type="button" hidden></button></div></div><p class="eyebrow">YOUR NEXT DIRECTION</p><h1>지금 내게 필요한 다음 배움을 찾아요</h1><p class="subtitle">잘하는 것은 이어가고, 필요한 역량은 하나씩 채워보세요.</p></section>
+<section id="skillSelectionSection" aria-label="보완할 역량 선택" hidden>
+<div id="skillSelectionBody">
 <section class="rec-panel" aria-labelledby="keywordSelectionTitle">
 <div class="keyword-selection-layout"><div class="keyword-selection-main"><h2 id="keywordSelectionTitle">보완할 역량을 선택해 주세요</h2>
 <p class="rec-intro">관심 있는 키워드를 고르면 관련 교육을 추천해 드려요.</p>
-<div class="gap-line"><div class="gap-keywords"><div id="gapPills"><span class="gap-pill">AI 분석 전</span></div><button id="gapMore" type="button" aria-controls="gapPills" hidden>더보기 ⌄</button></div></div>
+<div class="gap-line"><div class="gap-keywords"><div id="gapPills"></div></div></div>
 <p id="skillRecommendationStatus" role="status" aria-live="polite"></p></div>
 <aside class="selected-keyword-panel" aria-labelledby="selectedKeywordCount"><p id="selectedKeywordCount" role="status" aria-live="polite">선택한 키워드 0개</p><div id="selectedKeywordList"><p class="selected-keyword-empty">키워드를 선택해 주세요.</p></div></aside></div>
 <div class="recommend-actions"><button class="cc-top-button cc-main-button" id="selectedRecommendation" type="button">선택 키워드로 교육 추천</button></div>
 </section>
-</details>
-<section aria-labelledby="recommendTitle">
-<div class="rec-heading"><h2 id="recommendTitle">AI 추천 맞춤 교육과정 목록</h2><button class="analysis-button cc-top-button cc-main-button" id="analysisOpen" type="button">AI 맞춤 전체 교육 목록 보기</button></div>
-<div class="rec-grid" id="recommendCards" aria-live="polite"></div>
-<button id="courseMore" type="button" aria-controls="recommendCards" hidden>더보기</button>
-</section>
 </div>
-<footer><span>취준나침반 · 한 번에 찾고, 한 걸음씩 준비해요.</span><span id="recommendSource">교육추천 · Groq AI · 고용24 교육 정보</span></footer>
+<button id="skillPanelToggle" type="button" aria-controls="skillSelectionBody" aria-expanded="true">접기</button>
+</section>
+<section aria-labelledby="recommendTitle">
+<div class="rec-heading"><h2 id="recommendTitle">직무 관련 교육과정 목록</h2></div>
+<p id="aiRecommendationStatus" role="status" aria-live="polite" hidden></p>
+<div class="rec-grid" id="recommendCards" aria-live="polite" aria-busy="false"></div>
+<button id="courseMore" type="button" aria-controls="recommendCards" aria-expanded="false" hidden>더보기</button>
+</section>
+<footer><span>취준나침반 · 한 번에 찾고, 한 걸음씩 준비해요.</span><span id="recommendSource">직무 기반 교육추천 · 고용24 교육 정보</span></footer>
 </main>
-<dialog id="settingsDialog" aria-labelledby="settingsTitle"><div class="modal-top"><p>MY NEXT LEARNING</p><button class="close" id="settingsClose" type="button" aria-label="학습 정보 닫기">×</button></div><h2 class="modal-title" id="settingsTitle">채용공고와 내 프로필을 비교해요</h2>
-<form class="ai-form" id="recommendForm">
-<label>비교할 채용공고<select name="job_id" id="jobSelect" required><option value="">공고를 불러오는 중…</option></select></label>
-<p class="input-hint" id="jobPreview" style="white-space:pre-wrap"></p>
-<div class="analysis-source"><strong>마이페이지에 등록한 내 프로필</strong><p id="profilePreview" style="white-space:pre-wrap">로그인한 회원의 프로필을 불러오고 있어요.</p><a href="/mypage" style="text-decoration:underline">프로필 확인·수정 →</a></div>
-<label>보완하고 싶은 역량 (선택)<input name="goals" maxlength="300" placeholder="예: SQL, Excel 데이터 실무"></label>
-<p class="input-hint">저장 자료에는 교육비·교육 방식이 없습니다. 비용 제한이나 온라인만 조건을 선택하면 후보가 제외됩니다.</p><div class="ai-row"><label>교육비 (미제공)<select name="budget"><option value="">제한 없음</option><option value="0">무료</option><option value="100000">무료·10만원 이하</option><option value="300000">30만원 이하</option><option value="500000">50만원 이하</option></select></label><label>교육 방식<select name="mode"><option value="online_first">온라인 우선</option><option value="online_only">온라인만</option><option value="all" selected>전체 방식</option></select></label></div>
-<p class="input-hint">추천받기를 누르면 선택한 공고의 업무·자격요건과 내 자격증명·이수 교육명·희망 직무가 Groq로 전송됩니다. 회원 ID·이름·이메일은 보내지 않습니다. 프로필과 공고 원본은 수정하지 않고, 추천 결과는 DB에 저장하지 않습니다.</p>
-<div class="form-error" id="recommendError" role="alert"></div><button type="submit" class="ai-submit" id="runRecommendation">AI 교육 추천받기</button>
-</form></dialog>
-<dialog id="analysisDialog" aria-labelledby="analysisDialogTitle"><div class="modal-top"><p>MY LEARNING ANALYSIS</p><button class="close" id="analysisClose" type="button" aria-label="분석 결과 닫기">×</button></div><div id="analysisBody"></div><button type="button" class="ai-submit" id="editInputs">공고·조건 바꾸고 다시 추천받기</button></dialog>
 <dialog id="recommendDetailDialog" aria-labelledby="recommendDetailTitle"><div class="modal-top"><p>COURSE DETAILS</p><button class="close" id="recommendDetailClose" type="button" aria-label="추천 교육 상세 닫기">×</button></div><div id="recommendDetailBody"></div></dialog>
 <div class="toast" id="aiToast" role="status"></div>
+<style>
+.cc-training-page .training-recommend-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:32px;padding-right:0}
+.cc-training-page .training-recommend-heading>.eyebrow{grid-column:1;grid-row:1}
+.cc-training-page .training-recommend-heading>h1{grid-column:1;grid-row:2}
+.cc-training-page .training-recommend-heading>.subtitle{grid-column:1;grid-row:3}
+.cc-training-page .ai-course-actions{grid-column:2;grid-row:1/4;align-self:center;display:flex;align-items:flex-start;gap:12px}
+.cc-training-page .ai-action-group{display:flex;flex-direction:column;gap:8px;min-width:210px}
+.cc-training-page .ai-course-list-button,.cc-training-page .ai-course-return-button{width:100%;min-height:50px;padding:12px 20px;border:1px solid var(--cc-border);border-radius:11px;background:#eeece4;color:var(--cc-text);font-size:14px;line-height:1.5;text-align:center;white-space:nowrap}
+.cc-training-page #aiCourseList:hover:not(:disabled),.cc-training-page #aiSelectedSkills:hover:not(:disabled){background:var(--cc-yellow)}
+.cc-training-page .ai-course-list-button.is-active{background:var(--cc-yellow)}
+.cc-training-page .ai-course-return-button:hover:not(:disabled){background:#000;color:#fff}
+.cc-training-page #skillSelectionSection{clear:both;margin:30px 0}
+.cc-training-page #skillPanelToggle{display:block;margin:16px auto 0;padding:10px 28px;border:1px solid var(--cc-border);border-radius:12px;background:#fff;color:var(--cc-text);font-size:15px;cursor:pointer}
+@media(max-width:1100px){.cc-training-page .training-recommend-heading{display:flex;flex-direction:column}.cc-training-page .ai-course-actions{align-self:flex-end;order:1;margin-top:20px}}
+@media(max-width:600px){.cc-training-page .ai-course-actions{width:100%;flex-wrap:wrap;gap:10px}.cc-training-page .ai-action-group{flex:1 1 210px;min-width:0;max-width:100%}.cc-training-page .ai-course-list-button,.cc-training-page .ai-course-return-button{padding:12px 16px}}
+.cc-training-page .rec-empty{grid-column:1/-1;padding:32px;border:1px solid var(--cc-border);border-radius:20px;background:white;font-size:16px;line-height:1.8}
+</style>
 <script>
 "use strict";
 const rEl=id=>document.getElementById(id);
 const rEsc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const rMode=value=>({online:"온라인",offline:"오프라인",mixed:"혼합",unknown:"방식 확인 필요"}[value]||"방식 확인 필요");
-const rCost=value=>value==null?"원문 확인":value===0?"무료":value.toLocaleString("ko-KR")+"원";
-const rState={result:null,preferences:null,saved:[],busy:false,context:null,contextPromise:null,availableSkills:[],selectedSkills:[],visibleSkillCount:5,keywordSkills:[],perfectAnalysis:false,hasAnalysis:false,visibleCourseCount:3,companyFilter:null};
-function readMissingSkills(){
-  const prefix="jd-match-score:v2:";
-  const keys=Object.keys(localStorage).filter(key=>key.startsWith(prefix));
-  let latestScore=null,latestSavedAt=-Infinity;
-  for(const key of keys){
-    try{
-      const cached=JSON.parse(localStorage.getItem(key)||"null");
-      const score=cached?.score||cached;
-      if(!Array.isArray(score?.missing_skills))continue;
-      const savedAt=Number(cached?.savedAt)||0;
-      if(!Number.isFinite(savedAt)||savedAt<=latestSavedAt)continue;
-      latestScore=score;latestSavedAt=savedAt;
-    }catch{}
-  }
-  const skills=[];
-  for(const value of latestScore?.missing_skills||[]){
-    if(typeof value!=="string")continue;
-    const skill=value.trim();
-    if(skill&&!skills.some(item=>item.toLocaleLowerCase()===skill.toLocaleLowerCase()))skills.push(skill);
-  }
-  const hasAnalysis=latestScore!==null;
-  const signature=JSON.stringify([latestSavedAt,latestScore]);
-  const excluded=rState.companyFilter?.signature===signature?rState.companyFilter.names:[];
-  return {skills:skills.filter(skill=>!excluded.includes(skill)),hasAnalysis,signature,isPerfect:hasAnalysis&&Number(latestScore.score_percent)===100&&latestScore.missing_skills.length===0};
-}
-function updateAnalysisState(cached){
-  rState.availableSkills=cached.skills;
-  rState.perfectAnalysis=cached.isPerfect;
-  rState.hasAnalysis=cached.hasAnalysis;
-  rEl("analysisRequired").hidden=cached.hasAnalysis;
-  rEl("perfectMatch").hidden=!cached.isPerfect;
-  rEl("recommendationContent").hidden=!cached.hasAnalysis||cached.isPerfect;
-}
-function renderMissingSkills(skills){
-  const keywords=skills.slice(0,15);
-  if(JSON.stringify(keywords)!==JSON.stringify(rState.keywordSkills))rState.visibleSkillCount=5;
-  rState.keywordSkills=keywords;
-  rState.selectedSkills=rState.selectedSkills.filter(skill=>keywords.includes(skill));
-  rEl("selectedKeywordCount").textContent="선택한 키워드 "+rState.selectedSkills.length+"개";
-  rEl("selectedKeywordCount").title=rState.selectedSkills.join(", ");
-  rEl("selectedKeywordList").innerHTML=rState.selectedSkills.length?rState.selectedSkills.map(skill=>'<span class="selected-keyword-chip">'+rEsc(skill)+'</span>').join(""):'<p class="selected-keyword-empty">키워드를 선택해 주세요.</p>';
-  const visible=keywords.slice(0,rState.visibleSkillCount);
-  rEl("gapPills").innerHTML=visible.length?visible.map(skill=>'<button type="button" class="gap-pill" data-recommend-skill="'+rEsc(skill)+'" aria-pressed="'+rState.selectedSkills.includes(skill)+'" aria-label="'+rEsc(skill)+' 선택"'+(rState.busy?' disabled':'')+'>'+rEsc(skill)+'</button>').join(""):'<span class="gap-pill">저장된 부족 역량 없음</span>';
-  rEl("gapMore").hidden=visible.length>=keywords.length;
-}
-rEl("gapMore").addEventListener("click",()=>{
-  rState.visibleSkillCount=15;
-  renderMissingSkills(rState.keywordSkills);
-});
-async function recommendMissingSkills(selectedOnly=false){
-  if(rState.busy)return;
-  const status=rEl("skillRecommendationStatus"),button=rEl("analysisOpen");
-  let cached;
-  try{cached=readMissingSkills();}catch{status.textContent="분석 결과를 읽지 못했어요. 이 브라우저에서 적합도 분석을 다시 진행해 주세요.";return;}
-  updateAnalysisState(cached);
-  if(!cached.hasAnalysis||cached.isPerfect){rState.result=null;renderRecommendations();return;}
-  renderMissingSkills(cached.skills);
-  const requestedSkills=selectedOnly?[...rState.selectedSkills]:cached.skills;
-  if(selectedOnly&&!requestedSkills.length){status.textContent="추천받을 키워드를 하나 이상 선택해 주세요.";return;}
-  rState.result=null;renderRecommendations();
-  if(!cached.skills.length){
-    status.textContent=cached.hasAnalysis?"분석 결과에 부족 역량이 없어요. 보완 교육을 추천할 항목이 없습니다.":"저장된 분석 결과가 없어요. 적합도 분석을 먼저 진행해 주세요.";
-    return;
-  }
-  rState.busy=true;button.disabled=true;button.textContent="맞춤 교육을 찾고 있어요…";
-  rEl("selectedRecommendation").disabled=true;
-  renderMissingSkills(cached.skills);
-  const target=selectedOnly?requestedSkills.join(", "):"전체 부족 역량";
-  status.textContent=target+"에 맞는 교육을 찾고 있어요.";
-  rEl("recommendCards").setAttribute("aria-busy","true");
-  try{
-    const response=await fetch("/training_match/api/skill-recommendations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({missing_skills:requestedSkills}),cache:"no-store"});
-    const result=await response.json();
-    if(response.status===401){location.assign("/signin");return;}
-    if(!response.ok)throw new Error(result.error||"교육 추천을 완료하지 못했어요. 다시 시도해 주세요.");
-    const previous=rState.companyFilter?.signature===cached.signature?rState.companyFilter.names:[];
-    rState.companyFilter={signature:cached.signature,names:[...new Set([...previous,...(result.excluded_company_names||[])])]};
-    rState.availableSkills=readMissingSkills().skills;
-    rState.result=result;rState.visibleCourseCount=3;renderRecommendations();
-    status.textContent=result.items.length?target+"에 맞는 교육 "+result.items.length+"개를 추천했어요.":"저장된 교육 중 "+target+"에 맞는 과정을 찾지 못했어요.";
-  }catch(error){status.textContent=error.message||"교육을 불러오지 못했어요. 다시 시도해 주세요.";}
-  finally{rState.busy=false;button.disabled=false;rEl("selectedRecommendation").disabled=false;button.textContent="AI 맞춤 전체 교육 목록 보기";renderMissingSkills(rState.availableSkills);rEl("recommendCards").setAttribute("aria-busy","false");}
-}
-rEl("analysisOpen").addEventListener("click",()=>recommendMissingSkills());
-rEl("selectedRecommendation").addEventListener("click",()=>recommendMissingSkills(true));
-rEl("gapPills").addEventListener("click",event=>{
-  const button=event.target.closest("[data-recommend-skill]");
-  if(!button||rState.busy)return;
-  const skill=button.dataset.recommendSkill;
-  if(!rState.keywordSkills.includes(skill))return;
-  rState.selectedSkills=rState.selectedSkills.includes(skill)?rState.selectedSkills.filter(item=>item!==skill):[...rState.selectedSkills,skill];
-  renderMissingSkills(rState.keywordSkills);
-  rEl("skillRecommendationStatus").textContent="";
-});
+const rState={jobId:null,result:null,roleResult:null,saved:[],controller:null,visibleCourseCount:3,aiBusy:false,activeAction:null,skillSignature:null,availableSkills:[],selectedSkills:[],excludedCompanyNames:[]};
+const rMode=value=>({online:"온라인",offline:"오프라인",mixed:"혼합"}[value]||"방식 원문 확인");
+const rCost=value=>value==null?"교육비 원문 확인":value===0?"무료":value.toLocaleString("ko-KR")+"원";
+function safeCourseUrl(value){try{const u=new URL(value);return ["https:","http:"].includes(u.protocol)&&["www.work24.go.kr","work24.go.kr","hrd.work24.go.kr","www.hrd.go.kr"].includes(u.hostname)&&!u.username&&!u.password?u.href:"";}catch{return "";}}
 try{const keys=JSON.parse(localStorage.getItem("training-collection-favorites")||"[]");if(Array.isArray(keys))rState.saved=keys.filter(k=>typeof k==="string");}catch{}
 let rToastTimer;
 function rToast(message){rEl("aiToast").textContent=message;rEl("aiToast").classList.add("show");clearTimeout(rToastTimer);rToastTimer=setTimeout(()=>rEl("aiToast").classList.remove("show"),2800);}
-function openSettings(focusName){
-  if(!rEl("settingsDialog").open)rEl("settingsDialog").showModal();
-  loadMatchContext();
-  if(focusName)rEl("recommendForm").elements[focusName].focus();
+function latestJobId(){
+  const requested=new URLSearchParams(location.search).get("job_id");
+  const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if(requested&&uuid.test(requested))return requested;
+  let latest="",savedAt=-Infinity;
+  try{for(const key of Object.keys(localStorage)){
+    if(!key.startsWith("jd-match-score:v2:"))continue;
+    const id=key.slice("jd-match-score:v2:".length);if(!uuid.test(id))continue;
+    try{const cached=JSON.parse(localStorage.getItem(key)||"null"),time=Number(cached?.savedAt)||0;
+      if(cached&&time>savedAt){latest=id;savedAt=time;}}catch{}
+  }}catch{}
+  return latest;
 }
-function placeholder(rank,text){return '<article class="rec-card rec-placeholder"><div class="rec-card-top"><span class="rec-rank">'+String(rank).padStart(2,"0")+'</span><span style="color:#a3ad99">♡</span></div><h3>'+rEsc(text)+'</h3><p class="provider">저장된 고용24 교육에서 선택해요</p><span class="learning-badge">AI 맞춤 학습</span><p class="rec-reason">적합도 분석에서 확인한 부족 역량에 맞춰 필요한 교육을 추천해요.</p><button class="rec-detail" type="button" data-recommend-skills>부족 역량으로 추천받기 →</button></article>';}
+function readAnalyzedSkills(){
+  const id=latestJobId();
+  const cached=id?JSON.parse(localStorage.getItem("jd-match-score:v2:"+id)||"null"):null;
+  const score=cached?.score||cached;
+  const signature=JSON.stringify([id,cached]);
+  if(signature!==rState.skillSignature){rState.skillSignature=signature;rState.selectedSkills=[];rState.excludedCompanyNames=[];}
+  const skills=[];
+  for(const value of Array.isArray(score?.missing_skills)?score.missing_skills:[]){if(typeof value!=="string")continue;const skill=value.trim();if(skill&&!rState.excludedCompanyNames.includes(skill)&&!skills.some(item=>item.toLocaleLowerCase()===skill.toLocaleLowerCase()))skills.push(skill);}
+  rState.availableSkills=skills.slice(0,15);
+  rState.selectedSkills=rState.selectedSkills.filter(skill=>rState.availableSkills.includes(skill));
+  return {hasAnalysis:Array.isArray(score?.missing_skills),skills};
+}
+function renderSkillSelection(){
+  const skills=rState.availableSkills,visible=skills;
+  rEl("selectedKeywordCount").textContent="선택한 키워드 "+rState.selectedSkills.length+"개";
+  rEl("selectedKeywordList").innerHTML=rState.selectedSkills.length?rState.selectedSkills.map(skill=>'<span class="selected-keyword-chip">'+rEsc(skill)+'</span>').join(""):'<p class="selected-keyword-empty">키워드를 선택해 주세요.</p>';
+  rEl("gapPills").innerHTML=visible.length?visible.map(skill=>'<button type="button" class="gap-pill" data-recommend-skill="'+rEsc(skill)+'" aria-pressed="'+rState.selectedSkills.includes(skill)+'"'+(rState.aiBusy?' disabled':'')+'>'+rEsc(skill)+'</button>').join(""):'<span class="gap-pill">저장된 부족 역량 없음</span>';
+  rEl("selectedRecommendation").disabled=rState.aiBusy||!skills.length;
+}
+function setSkillPanelExpanded(expanded){
+  rEl("skillSelectionBody").hidden=!expanded;
+  rEl("skillPanelToggle").textContent=expanded?"접기":"펼치기";
+  rEl("skillPanelToggle").setAttribute("aria-expanded",String(expanded));
+  rEl("aiSelectedSkills").setAttribute("aria-expanded",String(expanded));
+}
+function roleReturnLabel(){
+  const role=rState.roleResult?.job.job_name||rState.result?.job.job_name||rState.result?.roles.join(" · ")||"직무별";
+  return (role==="기획자"?"기획":role)+" 교육목록 다시 보기";
+}
+function updateActionButtons(){
+  const allActive=rState.activeAction==="all",selectedActive=rState.activeAction==="selected";
+  rEl("aiCourseList").classList.toggle("is-active",allActive);
+  rEl("aiSelectedSkills").classList.toggle("is-active",selectedActive);
+  rEl("aiCourseList").setAttribute("aria-pressed",String(allActive));
+  rEl("aiSelectedSkills").setAttribute("aria-pressed",String(selectedActive));
+  rEl("returnRoleCourses").hidden=!allActive;
+  rEl("returnSelectedRoleCourses").hidden=!selectedActive;
+  rEl("returnRoleCourses").textContent=roleReturnLabel();
+  rEl("returnSelectedRoleCourses").textContent=roleReturnLabel();
+}
+function openSkillSelection(){
+  rEl("skillSelectionSection").hidden=false;setSkillPanelExpanded(true);
+  rState.activeAction="selected";updateActionButtons();
+  try{const analyzed=readAnalyzedSkills();rEl("skillRecommendationStatus").textContent=!analyzed.hasAnalysis?"적합도 분석을 먼저 진행해 주세요.":!analyzed.skills.length?"현재 분석에서 확인된 부족 역량이 없습니다.":"";}
+  catch{rState.availableSkills=[];rState.selectedSkills=[];rEl("skillRecommendationStatus").textContent="분석 결과를 읽지 못했어요. 적합도 분석을 다시 진행해 주세요.";}
+  renderSkillSelection();
+}
+function showEmpty(message){rEl("recommendCards").innerHTML='<p class="rec-empty">'+rEsc(message)+'</p>';}
 function renderRecommendations(){
-  rEl("courseMore").hidden=true;
-  if(!rState.hasAnalysis||rState.perfectAnalysis){
-    rEl("recommendCards").innerHTML="";
-    return;
-  }
-  const data=rState.result;
-  if(!data){
-    rEl("recommendCards").innerHTML=[placeholder(1,"나에게 필요한 교육"),placeholder(2,"역량을 넓히는 다음 배움"),placeholder(3,"직무 목표와 연결한 학습")].join("");
-    return;
-  }
-  renderMissingSkills(data.missing_skills?rState.availableSkills:data.analysis.gaps.map(g=>g.skill));
-  rEl("analysisOpen").textContent="AI 맞춤 전체 교육 목록 보기";
+  const data=rState.result;if(!data)return;
   const allItems=data.items.slice(0,15);
   const items=allItems.slice(0,rState.visibleCourseCount);
-  rEl("courseMore").hidden=items.length>=allItems.length;
-  let cards=items.map((c,i)=>{
+  rEl("courseMore").hidden=allItems.length<=3;
+  rEl("courseMore").textContent=rState.visibleCourseCount>3?"접기":"더보기";
+  rEl("courseMore").setAttribute("aria-expanded",String(rState.visibleCourseCount>3));
+  const isAi=["groq","gemini"].includes(data.meta.source);
+  updateActionButtons();
+  rEl("recommendTitle").textContent=isAi?"AI 맞춤 교육 "+allItems.length+"개":(data.job.job_name||data.roles.join(" · ")||"선택 공고 직무")+" 관련 교육 "+allItems.length+"개";
+  if(!items.length){showEmpty(isAi?"전체 부족 역량과 연결되는 교육을 찾지 못했어요.":data.roles.length?"선택한 직무와 연관된 교육이 없습니다. 다른 공고를 선택하거나 교육모음에서 검색해 주세요.":"선택한 공고의 직무에 해당하는 교육 분류가 없습니다. 교육모음에서 원하는 교육을 검색해 주세요.");return;}
+  rEl("recommendCards").innerHTML=items.map((c,i)=>{
     const saved=rState.saved.includes(c.key);
-    return '<article class="rec-card"><div class="rec-card-top"><span class="rec-rank">'+String(i+1).padStart(2,"0")+'</span><button type="button" class="heart" data-ai-save="'+rEsc(c.key)+'" aria-label="'+rEsc(c.title)+' 관심 '+(saved?'해제':'저장')+'" aria-pressed="'+saved+'">'+(saved?'♥':'♡')+'</button></div><h3 title="'+rEsc(c.title)+'">'+rEsc(c.title)+'</h3><p class="provider">'+rEsc(c.provider)+'</p><span class="learning-badge">'+rEsc(c.skill_label)+'</span><div class="rec-explanation"><strong class="reason-label">AI 추천 이유</strong><p class="rec-reason" title="'+rEsc(c.ai_reason)+'">'+rEsc(c.ai_reason)+'</p></div><p class="rec-meta">'+rEsc(rCost(c.cost))+' · '+rEsc(rMode(c.mode))+' · '+(c.weeks?c.weeks+'주':'기간 확인')+'</p><button type="button" class="rec-detail" data-ai-detail="'+rEsc(c.key)+'">교육 상세 / 원문 보기 →</button></article>';
-  });
-  if(!cards.length)cards=['<article class="rec-card"><h3>부족 역량과 연결되는 교육을 찾지 못했어요</h3><p class="rec-reason">현재 저장된 교육에는 관련 과정이 없습니다. 다른 공고의 적합도 분석 후 다시 추천받아 보세요.</p></article>'];
-  rEl("recommendCards").innerHTML=cards.join("");
-  rEl("recommendSource").textContent="Supabase 저장 자료 · "+data.meta.fetchedAt+" · "+data.meta.model;
+    return '<article class="rec-card"><div class="rec-card-top"><span class="rec-rank">'+String(i+1).padStart(2,"0")+'</span><button type="button" class="heart" data-course-save="'+rEsc(c.key)+'" aria-label="'+rEsc(c.title)+' 관심 '+(saved?'해제':'저장')+'" aria-pressed="'+saved+'">'+(saved?'♥':'♡')+'</button></div><h3 title="'+rEsc(c.title)+'">'+rEsc(c.title)+'</h3><p class="provider">'+rEsc(c.provider)+'</p><span class="learning-badge">'+rEsc(c.skill_label)+'</span><div class="rec-explanation"><strong class="reason-label">'+(isAi?'AI 추천 이유':'직무 관련 정보')+'</strong><p class="rec-reason" title="'+rEsc(c.reason)+'">'+rEsc(c.reason)+'</p></div><p class="rec-meta">'+rEsc(rCost(c.cost))+' · '+rEsc(rMode(c.mode))+'</p><button type="button" class="rec-detail" data-course-detail="'+rEsc(c.key)+'">교육 상세 / 원문 보기 →</button></article>';
+  }).join("");
 }
-function showAnalysis(){
-  if(!rState.result){openSettings();return;}
-  const d=rState.result;
-  rEl("analysisBody").innerHTML='<h2 class="modal-title" id="analysisDialogTitle">'+rEsc(d.job_title)+'</h2><p class="analysis-summary">'+rEsc(d.analysis.summary)+'</p>'+d.analysis.gaps.map(g=>'<div class="gap-explanation"><strong>'+rEsc(g.skill)+' · '+rEsc(g.status)+'</strong><p>'+rEsc(g.basis)+'</p></div>').join("")+'<p class="detail-note">프로필에 없는 역량을 부족하다고 단정하지 않으며, 공고·역량 비교는 학습 참고용입니다.</p>';
-  rEl("analysisDialog").showModal();
+async function loadCourses(){
+  if(rState.controller)rState.controller.abort();
+  const id=rState.jobId=latestJobId();rState.result=null;
+  rState.visibleCourseCount=3;rEl("courseMore").hidden=true;
+  rState.activeAction=null;updateActionButtons();
+  rEl("recommendTitle").textContent="직무 관련 교육과정 목록";
+  rEl("recommendSource").textContent="직무 기반 교육추천 · 고용24 교육 정보";
+  rEl("recommendCards").setAttribute("aria-busy","false");
+  if(!id){showEmpty("적합도 분석에서 공고를 먼저 선택한 뒤 교육추천을 확인해 주세요.");return;}
+  const controller=new AbortController();rState.controller=controller;
+  showEmpty("직무와 관련된 교육을 불러오고 있어요.");rEl("recommendCards").setAttribute("aria-busy","true");
+  try{
+    const response=await fetch("/training_match/api/recommendations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({job_id:id}),cache:"no-store",signal:controller.signal});
+    if(response.status===401){location.assign("/signin");return;}
+    const data=await response.json();if(!response.ok)throw new Error(data.error||"교육을 불러오지 못했습니다.");
+    if(controller.signal.aborted)return;
+    rState.roleResult=data;rState.result=data;renderRecommendations();
+    rEl("recommendSource").textContent="고용24 저장 자료 · "+data.meta.fetchedAt+" 조회";
+  }catch(error){if(error.name!=="AbortError"){showEmpty((error.message||"교육을 불러오지 못했어요.")+" 페이지를 새로고침해 다시 시도해 주세요.");}}
+  finally{if(rState.controller===controller){rState.controller=null;rEl("recommendCards").setAttribute("aria-busy","false");}}
 }
 function showRecommendedDetail(c){
-  const fields=[["교육기관",c.provider],["분야",c.categoryName],["교육 방식",rMode(c.mode)],["기간",(c.start||"미정")+" ~ "+(c.end||"미정")],["API 수강비",rCost(c.cost)],["개인 본인부담금","고용24 원문 확인"],["훈련 회차",c.round?c.round+"회차":"미제공"],["추천 이유",c.ai_reason],["과정 ID",c.courseId]];
-  rEl("recommendDetailBody").innerHTML='<h2 class="modal-title" id="recommendDetailTitle">'+rEsc(c.title)+'</h2><dl class="detail-grid">'+fields.map(([k,v])=>'<dt>'+rEsc(k)+'</dt><dd>'+rEsc(v)+'</dd>').join("")+'</dl><p class="detail-note">교육의 지원 자격·본인부담금과 상세 내용은 고용24 원문에서 확인해 주세요. AI 추천 이유는 입력 정보와 과정명에 근거한 학습 참고 의견입니다.</p>'+(c.url?'<a class="primary-link" href="'+rEsc(c.url)+'" target="_blank" rel="noopener noreferrer">고용24 원문 보기 ↗</a>':'');
+  const isAi=["groq","gemini"].includes(rState.result?.meta.source);
+  const fields=[["교육기관",c.provider],["기간",(c.start||"미정")+" ~ "+(c.end||"미정")],["교육비",rCost(c.cost)],["교육 방식",rMode(c.mode)],[isAi?"학습 목표":"관련 직무",isAi?c.skill_label:c.related_roles.join(" · ")],[isAi?"AI 추천 이유":"직무 관련 정보",c.reason]];
+  const url=safeCourseUrl(c.url);
+  rEl("recommendDetailBody").innerHTML='<h2 class="modal-title" id="recommendDetailTitle">'+rEsc(c.title)+'</h2><dl class="detail-grid">'+fields.map(([label,value])=>'<dt>'+rEsc(label)+'</dt><dd>'+rEsc(value)+'</dd>').join("")+'</dl><p class="detail-note">교육의 지원 자격·본인부담금과 최신 일정은 고용24 원문에서 확인해 주세요.</p>'+(url?'<a class="primary-link" href="'+rEsc(url)+'" target="_blank" rel="noopener noreferrer">고용24 원문 보기 ↗</a>':'');
   rEl("recommendDetailDialog").showModal();
 }
-rEl("recommendForm").addEventListener("submit",async event=>{
-  event.preventDefault();if(rState.busy)return;
-  const form=event.currentTarget;
-  const data={job_id:form.elements.job_id.value,goals:form.elements.goals.value.trim(),budget:form.elements.budget.value===""?null:Number(form.elements.budget.value),mode:form.elements.mode.value};
-  rState.busy=true;rEl("runRecommendation").disabled=true;rEl("runRecommendation").textContent="교육 조회 후 AI가 비교하고 있어요…";rEl("recommendError").textContent="";
+async function recommendAllSkills(selectedOnly=false){
+  if(rState.aiBusy)return;
+  if(!selectedOnly){rEl("skillSelectionSection").hidden=true;setSkillPanelExpanded(false);}
+  const button=rEl("aiCourseList"),status=rEl("aiRecommendationStatus");
+  status.hidden=false;
+  let skills;
   try{
-    const response=await fetch("/training_match/api/recommendations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data),cache:"no-store"});
-    const result=await response.json();
+    const analyzed=readAnalyzedSkills();
+    if(!analyzed.hasAnalysis){status.textContent="저장된 분석 결과가 없어요. 적합도 분석을 먼저 진행해 주세요.";return;}
+    if(selectedOnly&&!rState.selectedSkills.length){rEl("skillRecommendationStatus").textContent="추천받을 키워드를 하나 이상 선택해 주세요.";return;}
+    skills=selectedOnly?[...rState.selectedSkills]:analyzed.skills;
+    if(!skills.length){status.textContent="분석 결과에 부족 역량이 없어 추천할 항목이 없습니다.";return;}
+  }catch{status.textContent="분석 결과를 읽지 못했어요. 적합도 분석을 다시 진행해 주세요.";return;}
+  if(rState.controller)rState.controller.abort();
+  const previous=rState.result;
+  rState.aiBusy=true;button.disabled=true;button.textContent="맞춤 교육을 찾고 있어요…";
+  rEl("aiSelectedSkills").disabled=true;
+  renderSkillSelection();
+  rEl("returnRoleCourses").disabled=true;
+  rEl("returnSelectedRoleCourses").disabled=true;
+  const target=selectedOnly?"선택한 역량":"전체 부족 역량";
+  status.textContent=target+"에 맞는 교육을 AI가 찾고 있어요.";
+  if(selectedOnly)rEl("skillRecommendationStatus").textContent=status.textContent;
+  try{
+    const response=await fetch("/training_match/api/skill-recommendations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({missing_skills:skills}),cache:"no-store"});
     if(response.status===401){location.assign("/signin");return;}
-    if(!response.ok)throw new Error(result.error||result.detail||"저장된 공고와 프로필을 확인해 주세요.");
-    rState.result=result;rState.preferences=data;rState.visibleCourseCount=3;
-    renderRecommendations();rEl("settingsDialog").close();rToast("AI가 실제 교육 "+result.items.length+"개를 추천했어요.");
-  }catch(error){rEl("recommendError").textContent=error.message||"추천을 완료하지 못했어요. 잠시 후 다시 시도해 주세요.";}
-  finally{rState.busy=false;rEl("runRecommendation").disabled=false;rEl("runRecommendation").textContent="AI 교육 추천받기";}
+    const data=await response.json();if(!response.ok)throw new Error(data.error||"AI 교육 추천을 완료하지 못했어요. 다시 시도해 주세요.");
+    rState.excludedCompanyNames=[...new Set([...rState.excludedCompanyNames,...(data.excluded_company_names||[])])];
+    readAnalyzedSkills();renderSkillSelection();
+    rState.result={...data,job:previous?.job||{job_name:""},roles:previous?.roles||[],meta:{...data.meta,source:data.meta.source||"gemini"},items:data.items.map(c=>({...c,reason:c.ai_reason}))};
+    rState.activeAction=selectedOnly?"selected":"all";
+    rState.visibleCourseCount=3;renderRecommendations();
+    status.textContent=data.items.length?target+"에 맞는 교육 "+data.items.length+"개를 추천했어요.":"회사명을 제외한 부족 역량과 관련된 교육을 찾지 못했어요.";
+    if(selectedOnly)rEl("skillRecommendationStatus").textContent=status.textContent;
+    rEl("recommendSource").textContent="고용24 저장 자료 · "+data.meta.fetchedAt+" · "+data.meta.model;
+  }catch(error){status.textContent=error.message||"AI 교육 추천에 실패했습니다. 다시 시도해 주세요.";if(selectedOnly)rEl("skillRecommendationStatus").textContent=status.textContent;}
+  finally{rState.aiBusy=false;button.disabled=false;button.textContent="AI 맞춤 교육 목록 보기";rEl("aiSelectedSkills").disabled=false;rEl("returnRoleCourses").disabled=false;rEl("returnSelectedRoleCourses").disabled=false;renderSkillSelection();}
+}
+rEl("aiCourseList").addEventListener("click",()=>recommendAllSkills());
+rEl("aiSelectedSkills").setAttribute("aria-controls","skillSelectionSection");
+rEl("aiSelectedSkills").setAttribute("aria-expanded","false");
+rEl("aiSelectedSkills").addEventListener("click",()=>{
+  if(rState.aiBusy)return;
+  openSkillSelection();
 });
-
-function updateJobPreview(){
-  const id=rEl("jobSelect").value,job=rState.context?.jobs.find(job=>job.id===id);
-  rEl("jobPreview").textContent=job?[job.company_name+" · "+job.title,"상태: "+job.status+" · 마감일: "+(job.deadline_date||"원문 확인"),"주요 업무: "+(job.main_tasks||"미기재"),"자격요건: "+(job.qualifications||"미기재"),"우대사항: "+(job.preferred_qualifications||"미기재")].join("\n"):"비교할 채용공고를 선택해 주세요.";
+rEl("skillPanelToggle").addEventListener("click",()=>setSkillPanelExpanded(rEl("skillSelectionBody").hidden));
+rEl("gapPills").addEventListener("click",event=>{
+  const button=event.target.closest("[data-recommend-skill]");if(!button||rState.aiBusy)return;
+  const skill=button.dataset.recommendSkill;if(!rState.availableSkills.includes(skill))return;
+  rState.selectedSkills=rState.selectedSkills.includes(skill)?rState.selectedSkills.filter(item=>item!==skill):[...rState.selectedSkills,skill];
+  rEl("skillRecommendationStatus").textContent="";renderSkillSelection();
+});
+rEl("selectedRecommendation").addEventListener("click",()=>recommendAllSkills(true));
+function restoreRoleCourses(){
+  if(rState.aiBusy)return;
+  rEl("aiRecommendationStatus").hidden=true;
+  rEl("skillSelectionSection").hidden=true;setSkillPanelExpanded(false);
+  rState.activeAction=null;updateActionButtons();
+  if(!rState.roleResult){loadCourses();return;}
+  rState.result=rState.roleResult;rState.visibleCourseCount=3;
+  renderRecommendations();
+  rEl("recommendSource").textContent="고용24 저장 자료 · "+rState.roleResult.meta.fetchedAt+" 조회";
 }
-async function loadMatchContext(){
-  if(rState.context)return;
-  if(rState.contextPromise)return rState.contextPromise;
-  rState.contextPromise=(async()=>{
-    rEl("runRecommendation").disabled=true;rEl("recommendError").textContent="";
-    try{
-      const response=await fetch("/training_match/api/context",{cache:"no-store"});
-      const data=await response.json();
-      if(response.status===401){location.assign("/signin");return;}
-      if(!response.ok)throw new Error(data.error||data.detail||"공고와 프로필을 불러오지 못했습니다.");
-      rState.context=data;
-      const select=rEl("jobSelect");select.replaceChildren(new Option("비교할 채용공고를 선택해 주세요", ""));
-      for(const job of data.jobs)select.add(new Option(job.company_name+" · "+job.title,job.id));
-      const selected=new URLSearchParams(location.search).get("job_id");
-      if(selected&&data.jobs.some(job=>job.id===selected))select.value=selected;
-      const p=data.profile;
-      rEl("profilePreview").textContent=["희망 직무: "+(p.target_role||"미등록"),"자격증: "+(p.certificates.join(", ")||"미등록"),"이수 교육: "+(p.courses.join(", ")||"미등록")].join("\n");
-      if(!p.available)rEl("recommendError").textContent="마이페이지에 희망 직무·자격증·이수 교육 중 하나 이상 등록해 주세요.";
-      else if(!data.jobs.length)rEl("recommendError").textContent="저장된 채용공고가 없습니다.";
-      rEl("runRecommendation").disabled=!p.available||!data.jobs.length;
-      updateJobPreview();
-    }catch(error){rEl("recommendError").textContent=error.message;rEl("jobSelect").replaceChildren(new Option("닫은 후 다시 시도해 주세요", ""));}
-    finally{rState.contextPromise=null;}
-  })();
-  return rState.contextPromise;
-}
-rEl("jobSelect").addEventListener("change",updateJobPreview);
-
-rEl("settingsClose").addEventListener("click",()=>rEl("settingsDialog").close());
-rEl("analysisClose").addEventListener("click",()=>rEl("analysisDialog").close());
-rEl("editInputs").addEventListener("click",()=>{rEl("analysisDialog").close();openSettings();});
-rEl("recommendDetailClose").addEventListener("click",()=>rEl("recommendDetailDialog").close());
+rEl("returnRoleCourses").addEventListener("click",restoreRoleCourses);
+rEl("returnSelectedRoleCourses").addEventListener("click",restoreRoleCourses);
 rEl("courseMore").addEventListener("click",()=>{
-  if(rState.busy||!rState.result)return;
-  rState.visibleCourseCount=15;
+  if(!rState.result)return;
+  rState.visibleCourseCount=rState.visibleCourseCount>3?3:15;
   renderRecommendations();
 });
+rEl("recommendDetailClose").addEventListener("click",()=>rEl("recommendDetailDialog").close());
 rEl("recommendCards").addEventListener("click",event=>{
-  const save=event.target.closest("[data-ai-save]"),detail=event.target.closest("[data-ai-detail]"),setup=event.target.closest("[data-recommend-skills]");
-  if(setup)recommendMissingSkills();
-  if(save){
-    const key=save.dataset.aiSave;
-    rState.saved=rState.saved.includes(key)?rState.saved.filter(k=>k!==key):[...rState.saved,key];
-    try{localStorage.setItem("training-collection-favorites",JSON.stringify(rState.saved));rToast("관심목록을 변경했어요.");}catch{rToast("이번 화면에서만 관심 정보가 유지돼요.");}
-    renderRecommendations();
-  }
-  if(detail){const c=rState.result?.items.find(c=>c.key===detail.dataset.aiDetail);if(c)showRecommendedDetail(c);}
+  const save=event.target.closest("[data-course-save]"),detail=event.target.closest("[data-course-detail]");
+  if(save){const key=save.dataset.courseSave;rState.saved=rState.saved.includes(key)?rState.saved.filter(k=>k!==key):[...rState.saved,key];try{localStorage.setItem("training-collection-favorites",JSON.stringify(rState.saved));rToast("관심목록을 변경했어요.");}catch{rToast("이번 화면에서만 관심 정보가 유지돼요.");}renderRecommendations();}
+  if(detail){const course=rState.result?.items.find(c=>c.key===detail.dataset.courseDetail);if(course)showRecommendedDetail(course);}
 });
-try{const cached=readMissingSkills();updateAnalysisState(cached);renderMissingSkills(cached.skills);}
-catch{updateAnalysisState({skills:[],hasAnalysis:false,isPerfect:false});}
-renderRecommendations();
-if(rState.hasAnalysis&&!rState.perfectAnalysis&&rState.availableSkills.length)recommendMissingSkills();
+loadCourses();
 </script>
 </div>
 __CC_SCRIPT__
@@ -651,9 +623,7 @@ __CC_SCRIPT__
 RECOMMEND_PAGE = (
     '<!doctype html><html lang="ko"><head><meta charset="utf-8">'
     '<meta name="viewport" content="width=device-width, initial-scale=1">'
-    '<title>AI 교육추천 · 취준나침반</title><style>'
+    '<title>직무별 교육추천 · 취준나침반</title><style>'
     + _RECOMMEND_STYLE + RECOMMEND_STYLE + '</style><style>__CC_CSS__</style></head><body class="cc-member-page cc-training-page">'
     + '__CC_HEADER____CC_MENU__' + RECOMMEND_BODY
 )
-
-
