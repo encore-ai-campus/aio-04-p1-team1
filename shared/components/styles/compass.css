@@ -470,3 +470,36 @@ body.cc-menu-open {
 .cc-member-page :is(button,input,select,textarea) {
   font-family:var(--cc-font)
 }
+/* One bookmark icon for SVG and text-based card renderers; state stays aria-pressed. */
+.cc-member-page :is(button.heart,button.heart-button) {
+  --cc-heart-outline:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.5 5.7c-2-2.1-5.2-1.4-6.7.4L12 8.2l-1.8-2.1c-1.5-1.8-4.7-2.5-6.7-.4C.2 9.2 3.7 13.8 12 21c8.3-7.2 11.8-11.8 8.5-15.3Z' fill='none' stroke='black' stroke-width='1.65' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --cc-heart-filled:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.5 5.7c-2-2.1-5.2-1.4-6.7.4L12 8.2l-1.8-2.1c-1.5-1.8-4.7-2.5-6.7-.4C.2 9.2 3.7 13.8 12 21c8.3-7.2 11.8-11.8 8.5-15.3Z' fill='black' stroke='black' stroke-width='1.65' stroke-linejoin='round'/%3E%3C/svg%3E");
+  display:inline-grid!important;
+  place-items:center;
+  flex-shrink:0;
+  width:32px!important;
+  height:32px!important;
+  padding:4px!important;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  color:#8b9383!important;
+  font-size:0!important;
+  line-height:0!important;
+}
+.cc-member-page :is(button.heart,button.heart-button)>svg{display:none!important}
+.cc-member-page :is(button.heart,button.heart-button)::before {
+  content:"";
+  display:block;
+  width:23px;
+  height:23px;
+  background:currentColor;
+  mask-image:var(--cc-heart-outline);
+  mask-repeat:no-repeat;
+  mask-size:contain;
+  mask-position:center;
+}
+.cc-member-page :is(button.heart,button.heart-button)[aria-pressed="true"]{color:#aa6048!important}
+.cc-member-page :is(button.heart,button.heart-button)[aria-pressed="true"]::before{mask-image:var(--cc-heart-filled)}
+.cc-member-page :is(button.heart,button.heart-button):hover:not(:disabled){background:#f8f3ef;color:#aa6048!important}
+.cc-member-page :is(button.heart,button.heart-button):disabled{opacity:.5;cursor:wait}
