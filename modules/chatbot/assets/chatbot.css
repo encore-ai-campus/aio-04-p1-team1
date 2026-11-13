@@ -7,8 +7,8 @@
 #chatbot-dialog #chatbot-close{flex-shrink:0;width:36px;height:36px;border:1px solid var(--cc-border);border-radius:10px;background:white;color:var(--cc-text);font-size:24px}
 #chatbot-dialog .chatbot-log{flex:1;min-height:0;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;overscroll-behavior:contain}
 #chatbot-dialog .chatbot-message{max-width:94%;overflow-wrap:anywhere;flex-shrink:0}
-#chatbot-dialog .chatbot-assistant{position:relative;padding-left:52px;max-width:100%;min-height:82px}
-#chatbot-dialog .chatbot-assistant::before{content:"";position:absolute;left:0;top:22px;width:44px;height:60px;background-image:var(--chatbot-avatar);background-position:center top;background-size:contain;background-repeat:no-repeat}
+#chatbot-dialog .chatbot-assistant{position:relative;padding-left:47px;max-width:100%;min-height:82px}
+#chatbot-dialog .chatbot-assistant::before{content:"";position:absolute;left:0;top:22px;width:38px;height:46px;background-image:var(--chatbot-avatar);background-position:center top;background-size:contain;background-repeat:no-repeat}
 #chatbot-dialog .chatbot-speaker{display:block;margin-bottom:5px;font-size:11px;color:var(--cc-muted)}
 #chatbot-dialog .chatbot-message p{margin:0;padding:12px 14px;background:var(--cc-soft-yellow);border-radius:3px 14px 14px;white-space:pre-wrap}
 #chatbot-dialog .chatbot-user{align-self:flex-end}

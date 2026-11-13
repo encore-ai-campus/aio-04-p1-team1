@@ -22,5 +22,5 @@
       document.getElementById('saved-detail').textContent='저장 공고 '+data.counts.job+' · 교육 '+data.counts.course;
     }catch{}
   });
-  load();
+  window.CompassLoading.track(load());
 })();
