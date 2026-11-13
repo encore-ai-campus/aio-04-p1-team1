@@ -12,7 +12,9 @@
   const copy = {
     login: ['로그인 중입니다', '나침이가 당신의 취업 여정을 준비하고 있어요.'],
     main: ['메인으로 이동 중입니다', '나침이가 당신의 취업 여정을 준비하고 있어요.'],
-    mypage: ['마이페이지로 이동 중입니다', '나침이가 나의 활동과 프로필을 모으고 있어요.']
+    mypage: ['마이페이지로 이동 중입니다', '나침이가 나의 활동과 프로필을 모으고 있어요.'],
+    jd_match: ['적합도를 분석하고 있습니다', '나침이가 공고와 내 역량을 꼼꼼히 비교하고 있어요.'],
+    jd_match_navigation: ['적합도 분석 화면으로 이동하고 있습니다', '나침이가 적합도 분석 화면을 준비하고 있어요.']
   };
   function mount() {
     const overlay = document.getElementById('cc-loading');
@@ -62,9 +64,12 @@
     const link = event.target.closest('a[href]');
     if (!link || link.download || (link.target && link.target !== '_self')) return;
     const url = new URL(link.href, location.href);
-    if (url.origin !== location.origin || !/^\/(main|mypage)(\/|$)/.test(url.pathname)) return;
+    if (url.origin !== location.origin || !/^\/(main|mypage|jd_match)(\/|$)/.test(url.pathname)) return;
     if (url.pathname === location.pathname && url.search === location.search) return;
-    event.preventDefault(); navigate(url.href, url.pathname.startsWith('/mypage') ? 'mypage' : 'main');
+    event.preventDefault();
+    const nextKind = url.pathname.startsWith('/mypage') ? 'mypage'
+      : url.pathname.startsWith('/jd_match') ? 'jd_match_navigation' : 'main';
+    navigate(url.href, nextKind);
   });
   window.addEventListener('load', async () => {
     if (page === 'auth') return;

@@ -8,22 +8,11 @@
     </title>
     <style>
       __CC_CSS__
-      .analysis-loading { position:fixed; inset:0; z-index:1000; display:grid; place-items:center; background:rgba(250,250,246,.88); backdrop-filter:blur(3px); }
-      .analysis-loading[hidden] { display:none; }
-      .analysis-loading-card { display:flex; align-items:center; gap:12px; padding:18px 22px; border:1px solid #e1e4dd; border-radius:14px; background:#fff; box-shadow:0 12px 35px rgba(35,45,30,.12); color:#394333; font-size:14px; }
-      .analysis-spinner { width:18px; height:18px; border:3px solid #dfe8d5; border-top-color:var(--green,#657b4c); border-radius:50%; animation:analysis-spin .8s linear infinite; }
-      @keyframes analysis-spin { to { transform:rotate(360deg); } }
     </style>
   </head>
   <body class="cc-member-page" data-page="jd_match">
     __CC_HEADER__
     __CC_MENU__
-    <div id="analysis-loading" class="analysis-loading" role="status" aria-live="polite">
-      <div class="analysis-loading-card">
-        <span class="analysis-spinner" aria-hidden="true"></span>
-        <span>공고와 내 역량을 분석하고 있어요...</span>
-      </div>
-    </div>
     <main class="cc-page" data-member-content>
       <div class="intro">
         <div>
@@ -850,6 +839,8 @@ footer  {
 
         if (!uuidPattern.test(jobId)) return;
 
+        CompassLoading.show('jd_match');
+
         const text = (value, fallback = "-") => value || fallback;
         const list = (value) => {
           const items = (value || "").split(/\r?\n|•/).map(item => item.trim()).filter(Boolean);
@@ -900,12 +891,13 @@ footer  {
               return score;
             });
 
-        Promise.all([
+        const analysisRequest = Promise.all([
           fetchJson(`/jd_match/job-postings/${jobId}`),
           scoreRequest
-        ])
+        ]);
+        CompassLoading.track(analysisRequest);
+        analysisRequest
           .then(([job, score]) => {
-            document.querySelector("#analysis-loading").hidden = true;
             document.querySelector("#company-name").textContent = text(job.company_name);
             document.querySelector("#company-note").textContent = text(job.address || job.region_id);
             document.querySelector("#deadline").textContent = text(job.deadline_date || job.deadline_type);
@@ -945,7 +937,6 @@ footer  {
             document.querySelector("#score-source").textContent = "AI 분석 결과";
           })
           .catch(error => {
-            document.querySelector("#analysis-loading").hidden = true;
             console.error(error);
           });
       })();

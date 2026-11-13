@@ -12,7 +12,7 @@
     <main class="cc-page" data-member-content>
       <section class="match-start panel" aria-labelledby="match-start-title">
         <p class="eyebrow">YOUR NEXT DIRECTION</p>
-        <h1 id="match-start-title">내 이력서, 이 공고와 잘 맞을까요?</h1>
+        <h1 id="match-start-title">내 역량, 이 공고와 잘 맞을까요?</h1>
         <p class="match-start-copy">저장해 둔 채용공고를 선택하면 내 프로필과 공고의 적합도를 분석해 드려요.</p>
         <div class="job-select-wrap"><select id="saved-job-select" disabled><option value="">저장한 공고를 불러오는 중입니다</option></select></div>
         <p class="match-start-status" id="match-start-status" role="status" aria-live="polite"></p>
@@ -32,7 +32,10 @@
         const browseButton = document.querySelector('#browse-jobs-button');
         const status = document.querySelector('#match-start-status');
 
-        fetch('/jd_match/saved-job-postings')
+        CompassLoading.show('jd_match_navigation');
+        const savedJobsRequest = fetch('/jd_match/saved-job-postings');
+        CompassLoading.track(savedJobsRequest);
+        savedJobsRequest
           .then(response => {
             if (!response.ok) throw new Error();
             return response.json();
@@ -65,7 +68,8 @@
         });
         button.addEventListener('click', () => {
           if (!button.disabled && select.value) {
-            location.href = `/jd_match/${encodeURIComponent(select.value)}`;
+            CompassLoading.show('jd_match');
+            CompassLoading.navigate(`/jd_match/${encodeURIComponent(select.value)}`, 'jd_match');
           }
         });
       })();
