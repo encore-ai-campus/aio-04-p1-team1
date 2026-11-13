@@ -13,11 +13,11 @@
   const paths = new Set(['/job_posts', '/training_posts', '/jd_match', '/training_match']);
   const mascot = document.querySelector('[data-nachimi-sprite]');
   if (mascot) {
-    let pose = Math.floor(Math.random() * 4);
+    let pose = Math.floor(Math.random() * 5);
     try {
       const previous = sessionStorage.getItem('nachimi-pose');
-      if (previous !== null && /^[0-3]$/.test(previous)) {
-        pose = (Number(previous) + 1 + Math.floor(Math.random() * 3)) % 4;
+      if (previous !== null && /^[0-4]$/.test(previous)) {
+        pose = (Number(previous) + 1 + Math.floor(Math.random() * 4)) % 5;
       }
       sessionStorage.setItem('nachimi-pose', String(pose));
     } catch {
