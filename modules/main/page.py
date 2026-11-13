@@ -1,6 +1,7 @@
 """회원 프로필과 관심목록을 연결한 메인 대시보드 화면."""
 
 from html import escape
+from pathlib import Path
 
 from fastapi.responses import HTMLResponse
 from shared.components.compass import apply_member_shell
@@ -8,6 +9,10 @@ from shared.components.compass import apply_member_shell
 
 def render_main(user):
     html = PAGE.replace('__MEMBER_NAME__', escape(str(user['name']), quote=True))
+    assets = Path(__file__).resolve().parents[1] / 'job_posts' / 'assets'
+    html = html.replace('__JOB_CARD_CSS__', (assets / 'job_cards.css').read_text(encoding='utf-8'))
+    html = html.replace('__JOB_CARD_SCRIPT__', (assets / 'job_cards.js').read_text(encoding='utf-8'))
+    html = html.replace('__MAIN_JOBS_SCRIPT__', (Path(__file__).parent / 'assets' / 'home_jobs.js').read_text(encoding='utf-8'))
     return HTMLResponse(apply_member_shell(html, user, 'main'))
 
 
@@ -96,13 +101,7 @@ __CC_MENU__
 <section class="card profile-card" aria-labelledby="profile-title"><h2 class="card-title" id="profile-title"><span class="title-icon"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg></span>나의 준비 프로필</h2><dl class="profile-fields"><div class="profile-field"><dt>희망 직무</dt><dd class="role-value" id="profile-role">불러오는 중…</dd></div><div class="profile-field"><dt>자격증</dt><dd id="profile-certificates">불러오는 중…</dd></div><div class="profile-field"><dt>교육이수</dt><dd id="profile-courses">불러오는 중…</dd></div></dl><a class="manage-profile" href="/mypage#profile-overview">마이페이지에서 프로필 관리하기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a><p class="profile-note" id="profile-note" role="status" aria-live="polite"></p><button class="text-button" type="button" id="profile-retry" hidden>프로필 다시 불러오기</button></section>
 <div class="summary-stack"><a class="card summary-card" href="/mypage#bookmarks"><span class="summary-icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span><div class="summary-copy"><h3>관심목록</h3><p id="saved-detail">저장한 정보를 불러오는 중이에요</p></div><span class="summary-value" id="saved-total">—</span></a></div>
 </aside>
-<section class="jobs-section" id="today-jobs" aria-labelledby="jobs-title"><div class="section-heading"><h2 id="jobs-title">오늘 살펴볼 공고</h2><a class="all-jobs" href="/job_posts">공고 전체 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div><p class="section-note">화면 구성 확인을 위한 예시 공고예요. 실제 채용 정보와는 달라요.</p><div class="job-grid">
-<article class="job-card"><div class="job-top"><span class="job-tag">예시 공고</span><button class="bookmark-placeholder" disabled aria-label="예시 공고는 저장할 수 없습니다" title="실제 공고가 연결되면 저장할 수 있어요"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button></div><p class="company">나침데이터 · 예시 기업</p><h3>주니어 데이터 분석가</h3><p class="job-meta">서울 성동구 · 신입 · 정규직</p><div class="job-bottom"><span>화면 확인용</span><button class="job-detail" type="button" data-job="0">상세 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div></article>
-<article class="job-card"><div class="job-top"><span class="job-tag">예시 공고</span><button class="bookmark-placeholder" disabled aria-label="예시 공고는 저장할 수 없습니다" title="실제 공고가 연결되면 저장할 수 있어요"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button></div><p class="company">온길테크 · 예시 기업</p><h3>Python 백엔드 개발자</h3><p class="job-meta">서울 강남구 · 신입·경력 · 정규직</p><div class="job-bottom"><span>화면 확인용</span><button class="job-detail" type="button" data-job="1">상세 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div></article>
-<article class="job-card"><div class="job-top"><span class="job-tag">예시 공고</span><button class="bookmark-placeholder" disabled aria-label="예시 공고는 저장할 수 없습니다" title="실제 공고가 연결되면 저장할 수 있어요"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button></div><p class="company">모아서비스 · 예시 기업</p><h3>함께 성장할 서비스 기획자</h3><p class="job-meta">경기 성남시 · 신입 · 정규직</p><div class="job-bottom"><span>화면 확인용</span><button class="job-detail" type="button" data-job="2">상세 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div></article>
-<article class="job-card"><div class="job-top"><span class="job-tag">예시 공고</span><button class="bookmark-placeholder" disabled aria-label="예시 공고는 저장할 수 없습니다" title="실제 공고가 연결되면 저장할 수 있어요"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button></div><p class="company">그린인사이트 · 예시 기업</p><h3>데이터 기반 마케팅 담당자</h3><p class="job-meta">서울 마포구 · 신입 · 정규직</p><div class="job-bottom"><span>화면 확인용</span><button class="job-detail" type="button" data-job="3">상세 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div></article>
-<article class="job-card"><div class="job-top"><span class="job-tag">예시 공고</span><button class="bookmark-placeholder" disabled aria-label="예시 공고는 저장할 수 없습니다" title="실제 공고가 연결되면 저장할 수 있어요"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button></div><p class="company">함께피플 · 예시 기업</p><h3>인사 운영 담당자</h3><p class="job-meta">서울 영등포구 · 신입 · 정규직</p><div class="job-bottom"><span>화면 확인용</span><button class="job-detail" type="button" data-job="4">상세 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div></article>
-<article class="job-card"><div class="job-top"><span class="job-tag">예시 공고</span><button class="bookmark-placeholder" disabled aria-label="예시 공고는 저장할 수 없습니다" title="실제 공고가 연결되면 저장할 수 있어요"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button></div><p class="company">다음웹 · 예시 기업</p><h3>프론트엔드 개발자</h3><p class="job-meta">경기 성남시 · 신입·경력 · 정규직</p><div class="job-bottom"><span>화면 확인용</span><button class="job-detail" type="button" data-job="5">상세 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div></article>
+<section class="jobs-section" id="today-jobs" aria-labelledby="jobs-title"><div class="section-heading"><h2 id="jobs-title">오늘 살펴볼 공고</h2><a class="all-jobs" href="/job_posts">공고 전체 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div><p class="section-note">희망 직무가 제목이나 직무명에 포함된 공고를 먼저, 나머지는 마감 임박순으로 보여드려요.</p><p id="home-jobs-status" role="status" aria-live="polite">공고를 불러오고 있어요.</p><button type="button" id="home-jobs-retry" class="text-button" hidden>공고 다시 불러오기</button><div class="job-grid" id="home-job-list" aria-busy="true">
 </div></section>
 </div><footer class="site-footer"><span>취준나침반 · 취업의 길, 한 번에 찾고, 한 걸음씩 함께 나아가요.</span><span>YOUR NEXT DIRECTION</span></footer>
 </main>
@@ -113,8 +112,6 @@ __CC_MENU__
  'use strict';
  const byId=id=>document.getElementById(id),notice=byId('notice');
  function showNotice(title,body){byId('notice-title').textContent=title;byId('notice-body').textContent=body;notice.showModal();}
- const exampleJobs=[['주니어 데이터 분석가','나침데이터 · 서울 성동구 · 신입 · 정규직'],['Python 백엔드 개발자','온길테크 · 서울 강남구 · 신입·경력 · 정규직'],['함께 성장할 서비스 기획자','모아서비스 · 경기 성남시 · 신입 · 정규직'],['데이터 기반 마케팅 담당자','그린인사이트 · 서울 마포구 · 신입 · 정규직'],['인사 운영 담당자','함께피플 · 서울 영등포구 · 신입 · 정규직'],['프론트엔드 개발자','다음웹 · 경기 성남시 · 신입·경력 · 정규직']];
- document.querySelectorAll('[data-job]').forEach(button=>button.addEventListener('click',()=>{const [title,meta]=exampleJobs[Number(button.dataset.job)];showNotice(title,meta+'\n\n화면 구성을 확인하기 위한 예시 공고예요. 실제 채용 정보가 연결되면 자세한 내용과 원문을 확인할 수 있어요.');}));
  async function api(url){const response=await fetch(url,{credentials:'same-origin',cache:'no-store'});if(response.status===401){location.replace('/signin');throw new Error('다시 로그인해 주세요.');}const data=await response.json();if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:'정보를 불러오지 못했어요. 다시 시도해 주세요.');return data;}
  function summarize(items,empty){if(!Array.isArray(items)||items.length===0)return empty;return items[0].name+(items.length>1?' 외 '+(items.length-1)+'개':'');}
  async function loadProfile(){byId('profile-retry').hidden=true;byId('profile-note').textContent='';try{const data=await api('/api/mypage/profile');byId('profile-role').textContent=data.target_role||'희망 직무를 등록해 주세요';byId('hero-role').textContent=data.target_role?'나의 희망 직무 · '+data.target_role:'프로필을 채우고, 다음 준비를 시작해 보세요.';byId('profile-certificates').textContent=summarize(data.certificates,'등록된 자격증이 없어요');byId('profile-courses').textContent=summarize(data.courses,'등록된 교육이 없어요');byId('profile-certificates').title=(data.certificates||[]).map(item=>item.name).join(', ');byId('profile-courses').title=(data.courses||[]).map(item=>item.name).join(', ');}catch(error){byId('profile-note').textContent=error.message;byId('profile-retry').hidden=false;for(const id of ['profile-role','profile-certificates','profile-courses'])byId(id).textContent='잠시 후 다시 확인해 주세요';byId('hero-role').textContent='마이페이지에서 나의 프로필을 확인해 보세요.';}}
@@ -122,5 +119,8 @@ __CC_MENU__
  byId('profile-retry').addEventListener('click',loadProfile);loadProfile();loadBookmarks();
 })();
 </script>
+<style>__JOB_CARD_CSS__</style>
+<script>__JOB_CARD_SCRIPT__</script>
+<script>__MAIN_JOBS_SCRIPT__</script>
 __CC_SCRIPT__
 </body></html>'''
