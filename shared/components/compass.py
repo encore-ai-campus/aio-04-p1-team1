@@ -4,6 +4,7 @@ from html import escape
 import base64
 import re
 from modules.chatbot.widget import render_widget
+from shared.components.loading import apply_loading
 
 _ROOT = Path(__file__).resolve().parent
 
@@ -33,7 +34,7 @@ def apply_member_shell(html, user, current="main"):
         html = html.replace(marker, values[marker])
     html = re.sub(r"__CC_(?:MAIN|MYPAGE|JD_MATCH|JOB_POSTS)_CURRENT__", lambda match: values[match.group()], html)
     user_name = user.get("name") if isinstance(user, dict) else user.name
-    return html.replace("__CC_USER_NAME__", escape(str(user_name), quote=True))
+    return apply_loading(html.replace("__CC_USER_NAME__", escape(str(user_name), quote=True)), current)
 
 
 def common_css():

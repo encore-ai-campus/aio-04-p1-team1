@@ -84,6 +84,6 @@ SCRIPT = r'''
       window.dispatchEvent(new CustomEvent('profile-skills-loaded', {detail: skills}));
     } catch (error) { message.textContent = error.message + ' 새로고침 후 다시 시도해 주세요.'; }
   }
-  loadSkills();
+  window.CompassLoading.track(loadSkills());
 })();
 '''

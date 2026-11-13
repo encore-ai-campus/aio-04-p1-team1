@@ -201,6 +201,8 @@ def get_jd_match_score(
                 "희망직무가 일치한다는 이유만으로 필수역량을 보유했다고 간주하거나, "
                 "저장한 공고를 보유역량으로 간주하지 마세요. "
                 "미입력 정보는 역량 부족으로 단정하지 마세요. "
+                "회사명·기업명·브랜드명 자체는 역량으로 세지 마세요. "
+                "단, AWS·Excel·Python·ChatGPT·Claude처럼 학습할 수 있는 기술·도구·제품명은 역량으로 유지하세요. "
                 "반드시 숫자 점수 하나를 반환하세요."
             ),
             "criteria": [
@@ -220,7 +222,9 @@ def get_jd_match_score(
             "type": "noul",
             "instructions": (
                 f"'{skill}'이 이 공고에서 요구되는 역량이고, candidate_profile에 "
-                "확인되지 않은 부족 역량인지 판단하세요. 직무 문맥과 별칭을 고려하세요."
+                "확인되지 않은 부족 역량인지 판단하세요. 직무 문맥과 별칭을 고려하세요. "
+                "회사명·기업명·브랜드명 자체라면 부족 역량으로 판단하지 마세요. "
+                "AWS·Excel·Python·ChatGPT·Claude처럼 학습할 수 있는 기술·도구·제품명은 유지하세요."
             ),
         }
 
@@ -259,6 +263,7 @@ def get_jd_match_score(
     missing_skills = [
         skill for name, skill in skill_question_names.items()
         if (answers.get(name) or {}).get("noul", 0) >= 0.5
+        and _normalize_company_name(skill) != _normalize_company_name(job_posting.company_name)
     ]
     score = result.get("score")
     probabilities = result.get("probabilities") or {}

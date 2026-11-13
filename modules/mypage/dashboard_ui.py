@@ -132,7 +132,7 @@ byId('editor-form').addEventListener('submit',async event=>{
 
 dialog.addEventListener('cancel',event=>{if(saveButton.disabled)event.preventDefault();});byId('cancel-editor').onclick=()=>dialog.close();byId('edit-role').onclick=()=>openEditor('role');byId('edit-skills').onclick=()=>openEditor('skills');document.querySelectorAll('[data-add]').forEach(button=>button.onclick=()=>openEditor(button.dataset.add));byId('retry').onclick=load;
 
-window.addEventListener('bookmarks-loaded',event=>{const counts=event.detail;byId('saved-count').textContent=counts.all;byId('job-count').textContent=counts.job;byId('course-count').textContent=counts.course;});load();
+window.addEventListener('bookmarks-loaded',event=>{const counts=event.detail;byId('saved-count').textContent=counts.all;byId('job-count').textContent=counts.job;byId('course-count').textContent=counts.course;});window.CompassLoading.track(load());
 const sectionLinks=[...document.querySelectorAll('[data-section]')];
 function selectSection(id){for(const link of sectionLinks){const active=link.dataset.section===id;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');}}
 function updateSection(){const rect=byId('bookmarks').getBoundingClientRect();const mobile=matchMedia('(max-width:800px)').matches;const marker=mobile?document.querySelector('.sidebar').getBoundingClientRect().height+32:Math.min(innerHeight*.35,220);const atEnd=scrollY+innerHeight>=document.documentElement.scrollHeight-3;selectSection(rect.top<=marker||(atEnd&&rect.top<innerHeight)?'bookmarks':'profile-overview');}

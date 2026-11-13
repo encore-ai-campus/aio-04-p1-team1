@@ -4,6 +4,7 @@ import json
 
 from fastapi.responses import HTMLResponse
 from shared.components.compass import common_css
+from shared.components.loading import apply_loading
 
 
 def render_auth(page="signin", main_path=None):
@@ -12,7 +13,7 @@ def render_auth(page="signin", main_path=None):
     subtitle = "취준나침반과 함께 나에게 맞는 기회를 발견하세요." if signup else "저장한 기회와 나의 준비를 이어서 확인해 보세요."
     fields = '''<div class="field"><label for="name">이름</label><input id="name" name="name" autocomplete="name" placeholder="이름을 입력해 주세요" minlength="2" maxlength="30" required></div>''' if signup else ""
     confirmation = '''<div class="field"><label for="password_confirm">비밀번호 확인</label><div class="password-box"><input id="password_confirm" name="password_confirm" type="password" autocomplete="new-password" placeholder="비밀번호를 한 번 더 입력해 주세요" minlength="8" maxlength="128" required><button type="button" class="reveal" data-target="password_confirm" aria-label="비밀번호 확인 표시">보기</button></div></div>''' if signup else ""
-    return HTMLResponse(TEMPLATE.replace("__TITLE__", title).replace("__SUBTITLE__", subtitle)
+    return HTMLResponse(apply_loading(TEMPLATE.replace("__TITLE__", title).replace("__SUBTITLE__", subtitle)
                         .replace("__NAME_FIELD__", fields).replace("__CONFIRM_FIELD__", confirmation)
                         .replace("__PAGE__", page).replace("__SUCCESS_PATH__", json.dumps(main_path))
                         .replace("__CC_CSS__", common_css())
@@ -20,7 +21,7 @@ def render_auth(page="signin", main_path=None):
                         .replace("__AUTOCOMPLETE__", "new-password" if signup else "current-password")
                         .replace("__MINLENGTH__", "8" if signup else "1")
                         .replace("__HELP__", "영문과 숫자를 포함해 8~128자로 입력해 주세요." if signup else "가입할 때 사용한 비밀번호를 입력해 주세요.")
-                        .replace("__FOOTER__", '이미 계정이 있나요? <a href="/signin">로그인</a>' if signup else '아직 계정이 없나요? <a href="/signup">회원가입</a>'))
+                        .replace("__FOOTER__", '이미 계정이 있나요? <a href="/signin">로그인</a>' if signup else '아직 계정이 없나요? <a href="/signup">회원가입</a>')))
 
 
 TEMPLATE = r'''<!doctype html>
@@ -65,7 +66,7 @@ document.getElementById('password').setAttribute('aria-describedby','password-he
 document.querySelectorAll('.reveal').forEach(button=>button.addEventListener('click',()=>{const input=document.getElementById(button.dataset.target);const show=input.type==='password';input.type=show?'text':'password';button.textContent=show?'숨김':'보기';button.setAttribute('aria-pressed',String(show));}));
 const form=document.getElementById('auth-form'),submit=document.getElementById('submit'),message=document.getElementById('message');
 function showMessage(text,type){message.textContent=text;message.className='message '+type;message.focus();}
-function showAccount(user){const mainPath=__SUCCESS_PATH__;if(mainPath){location.assign(mainPath);return;}document.getElementById('form-content').classList.add('hidden');document.getElementById('account').classList.remove('hidden');document.getElementById('welcome').textContent=user.name+'님, 반가워요!';document.getElementById('account-email').textContent=user.email;}
+function showAccount(user){const mainPath=__SUCCESS_PATH__;if(mainPath){window.CompassLoading.navigate(mainPath,'login');return;}window.CompassLoading.hide();document.getElementById('form-content').classList.add('hidden');document.getElementById('account').classList.remove('hidden');document.getElementById('welcome').textContent=user.name+'님, 반가워요!';document.getElementById('account-email').textContent=user.email;}
 form.addEventListener('submit',async event=>{
  event.preventDefault();message.className='message';const data=Object.fromEntries(new FormData(form));
  if(page==='signup'){
@@ -74,14 +75,15 @@ form.addEventListener('submit',async event=>{
   if(data.password!==data.password_confirm){showMessage('비밀번호 확인이 일치하지 않습니다.','error');return;}
  }
  submit.disabled=true;submit.firstElementChild.textContent='처리 중…';
+ let navigating=false;if(page==='signin')window.CompassLoading.show('login');
  try{
   const response=await fetch('/api/auth/'+page,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
   const result=await response.json();if(!response.ok){showMessage(typeof result.detail==='string'?result.detail:'입력값을 확인해 주세요.','error');return;}
   form.reset();
   if(page==='signup'){showMessage(result.message,'success');}
-  else{showAccount(result);}
+  else{navigating=Boolean(__SUCCESS_PATH__);showAccount(result);}
  }catch(error){showMessage('서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.','error');}
- finally{submit.disabled=false;submit.firstElementChild.textContent=page==='signup'?'회원가입':'로그인';}
+ finally{if(page==='signin'&&!navigating)window.CompassLoading.hide();submit.disabled=false;submit.firstElementChild.textContent=page==='signup'?'회원가입':'로그인';}
 });
 document.getElementById('signout').addEventListener('click',async()=>{const button=document.getElementById('signout');button.disabled=true;try{const response=await fetch('/api/auth/signout',{method:'POST'});if(!response.ok)throw new Error();location.assign('/signin');}catch(error){document.getElementById('account-message').textContent='로그아웃하지 못했습니다. 다시 시도해 주세요.';button.disabled=false;}});
 if(page==='signin'){
