@@ -3,7 +3,7 @@
   const root = document.documentElement, tasks = [];
   const page = window.ccLoadingPage;
   let active = false, leaving = false, timer, previousFocus;
-  let kind = page === 'mypage' ? 'mypage' : 'main';
+  let kind = ['mypage', 'job_posts', 'training_match', 'training_posts'].includes(page) ? page : 'main';
   try {
     const pending = JSON.parse(sessionStorage.getItem('cc-loading-navigation'));
     sessionStorage.removeItem('cc-loading-navigation');
@@ -13,6 +13,9 @@
     login: ['로그인 중입니다', '나침이가 당신의 취업 여정을 준비하고 있어요.'],
     main: ['메인으로 이동 중입니다', '나침이가 당신의 취업 여정을 준비하고 있어요.'],
     mypage: ['마이페이지로 이동 중입니다', '나침이가 나의 활동과 프로필을 모으고 있어요.'],
+    job_posts: ['공고 모음으로 이동 중입니다', '나침이가 새로운 취업 기회를 모으고 있어요.'],
+    training_match: ['AI 교육 추천 페이지로 이동중입니다.', '나침이와 함께 나에게 필요한 교육을 찾아봐요.'],
+    training_posts: ['교육 모음으로 이동 중입니다', '나침이가 다양한 교육과정을 모으고 있어요.'],
     jd_match: ['적합도를 분석하고 있습니다', '나침이가 공고와 내 역량을 꼼꼼히 비교하고 있어요.'],
     jd_match_navigation: ['적합도 분석 화면으로 이동하고 있습니다', '나침이가 적합도 분석 화면을 준비하고 있어요.']
   };
@@ -58,16 +61,19 @@
     tasks.push(Promise.resolve(promise).catch(() => {}));
     return promise;
   }};
-  if (page === 'main' || page === 'mypage') show(kind);
+  if (['main', 'mypage', 'job_posts', 'training_match', 'training_posts'].includes(page)) show(kind);
   document.addEventListener('click', event => {
     if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     const link = event.target.closest('a[href]');
     if (!link || link.download || (link.target && link.target !== '_self')) return;
     const url = new URL(link.href, location.href);
-    if (url.origin !== location.origin || !/^\/(main|mypage|jd_match)(\/|$)/.test(url.pathname)) return;
+    if (url.origin !== location.origin || !/^\/(main|mypage|jd_match|job_posts|training_match|training_posts)(\/|$)/.test(url.pathname)) return;
     if (url.pathname === location.pathname && url.search === location.search) return;
     event.preventDefault();
     const nextKind = url.pathname.startsWith('/mypage') ? 'mypage'
+      : url.pathname.startsWith('/job_posts') ? 'job_posts'
+      : url.pathname.startsWith('/training_match') ? 'training_match'
+      : url.pathname.startsWith('/training_posts') ? 'training_posts'
       : url.pathname.startsWith('/jd_match') ? 'jd_match_navigation' : 'main';
     navigate(url.href, nextKind);
   });
