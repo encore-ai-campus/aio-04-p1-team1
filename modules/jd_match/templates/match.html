@@ -171,7 +171,7 @@
               </div>
               <div class="score-copy">
                 <h3 id="score-summary">
-                  다음 한 걸음은 이렇게
+                  적합도 진단 결과
                 </h3>
                 <p id="score-description">
                   부족한 역량을 채우기 위한
@@ -925,15 +925,15 @@ footer  {
             const missingSkills = Array.isArray(score.missing_skills) ? score.missing_skills : [];
             const requiredSkillCount = matchedSkills.length + missingSkills.length;
             document.querySelector("#required-skills-count").textContent = `공고 기준 ${requiredSkillCount}개`;
-            document.querySelector("#score-summary").textContent = "다음 한 걸음은 이렇게";
             document.querySelector("#score-description").innerHTML =
               '부족한 역량을 채우기 위한 <a href="/training_match">AI 교육추천</a>을 받아보세요.';
-            const grade = percent >= 80 ? "매우 잘 부합" : percent >= 60 ? "대부분 부합" : percent >= 40 ? "보통 수준으로 부합" : percent >= 20 ? "일부만 부합" : "거의 부합하지 않음";
+            const grade = percent >= 80 ? "바로 지원할 인재" : percent >= 60 ? "강점이 선명한 인재" : percent >= 40 ? "저평가된 유망주" : percent >= 20 ? "성장 곡선이 기대되는 인재" : "다음 방향을 설계할 시점";
+            document.querySelector("#score-summary").textContent = grade;
             document.querySelector("#analysis-basis").textContent =
               `역량 적합도 ${percent}% · ${grade}. AI가 공고와 프로필의 적합도를 ` +
-              `1~5단계로 평가한 뒤, 100점 기준 점수로 환산했어요.`;
+              `5등급으로 평가한 뒤, 가중치를 반영해 종합 점수로 환산했어요.`;
             document.querySelector("#analysis-formula").textContent =
-              "계산식: ((평가 단계 - 1) ÷ 4 × 50) = 적합도 점수";
+              "계산식: α + (등급 기반 역량 가중치) = 종합 적합도 점수";
             document.querySelector("#missing-skills-count").textContent = missingSkills.length;
             document.querySelector("#missing-skills").innerHTML = missingSkills.length
               ? missingSkills.map(skill => `<span class="skill-chip">${text(skill)}</span>`).join("")
