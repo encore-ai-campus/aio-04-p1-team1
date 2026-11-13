@@ -12,6 +12,98 @@
   let activeRequest = null;
   const paths = new Set(['/job_posts', '/training_posts', '/jd_match', '/training_match']);
   const mascot = document.querySelector('[data-nachimi-sprite]');
+  const launcher = document.querySelector('.nachimi-launcher');
+  const character = launcher.querySelector('.nachimi-character');
+  const notice = document.querySelector('.nachimi-notice');
+  const headerButton = document.querySelector('[data-chatbot-open]:not(.nachimi-character):not(.nachimi-invite)');
+  let launcherState = {used: false, hidden: false, position: null};
+  let noticeTimer;
+  let drag = null;
+  let suppressClickUntil = 0;
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('nachimi-launcher') || 'null');
+    if (saved) {
+      launcherState.used = saved.used === true;
+      launcherState.hidden = saved.hidden === true;
+      if (Number.isFinite(saved.position?.left) && Number.isFinite(saved.position?.bottom)) {
+        launcherState.position = saved.position;
+      }
+    }
+  } catch { /* 저장소 없이도 현재 페이지에서 사용할 수 있습니다. */ }
+
+  function saveLauncher() {
+    try { sessionStorage.setItem('nachimi-launcher', JSON.stringify(launcherState)); } catch {}
+  }
+
+  function placeLauncher() {
+    launcher.hidden = launcherState.hidden;
+    launcher.classList.toggle('nachimi-used', launcherState.used);
+    if (!launcherState.position || launcher.hidden) return;
+    const position = launcherState.position;
+    position.left = Math.max(8, Math.min(position.left, window.innerWidth - launcher.offsetWidth - 8));
+    // 호버 시 추가되는 안내 문구가 화면 위로 벗어나지 않게 여유를 둡니다.
+    position.bottom = Math.max(8, Math.min(position.bottom, window.innerHeight - launcher.offsetHeight - 32));
+    launcher.style.left = position.left + 'px';
+    launcher.style.bottom = position.bottom + 'px';
+    launcher.style.right = 'auto';
+  }
+
+  function clearNotice() {
+    clearTimeout(noticeTimer);
+    notice.hidden = true;
+    notice.textContent = '';
+  }
+
+  launcher.querySelector('.nachimi-hide').addEventListener('click', () => {
+    launcherState.hidden = true;
+    placeLauncher();
+    saveLauncher();
+    clearNotice();
+    notice.hidden = false;
+    notice.textContent = '챗봇을 숨겼습니다. 다시 사용하려면 상단의 ‘챗봇 사용하기’를 눌러주세요.';
+    noticeTimer = setTimeout(clearNotice, 8000);
+    headerButton?.focus();
+  });
+
+  character.addEventListener('pointerdown', event => {
+    if (event.button !== 0 || !event.isPrimary) return;
+    const box = launcher.getBoundingClientRect();
+    drag = {id: event.pointerId, x: event.clientX, y: event.clientY,
+      left: box.left, bottom: window.innerHeight - box.bottom, moved: false};
+    character.setPointerCapture(event.pointerId);
+  });
+  character.addEventListener('pointermove', event => {
+    if (!drag || event.pointerId !== drag.id) return;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    if (Math.hypot(dx, dy) > 5) drag.moved = true;
+    if (!drag.moved) return;
+    launcher.classList.add('nachimi-dragging');
+    launcherState.position = {left: drag.left + dx, bottom: drag.bottom - dy};
+    placeLauncher();
+  });
+  function finishDrag(event) {
+    if (!drag || event.pointerId !== drag.id) return;
+    if (drag.moved) suppressClickUntil = Date.now() + 500;
+    drag = null;
+    launcher.classList.remove('nachimi-dragging');
+    saveLauncher();
+  }
+  character.addEventListener('pointerup', finishDrag);
+  character.addEventListener('pointercancel', finishDrag);
+  character.addEventListener('lostpointercapture', finishDrag);
+  character.addEventListener('keydown', event => {
+    const step = event.shiftKey ? 40 : 10;
+    const delta = {ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, step], ArrowDown: [0, -step]}[event.key];
+    if (!delta) return;
+    event.preventDefault();
+    const box = launcher.getBoundingClientRect();
+    launcherState.position = {left: box.left + delta[0], bottom: window.innerHeight - box.bottom + delta[1]};
+    placeLauncher();
+    saveLauncher();
+  });
+  window.addEventListener('resize', placeLauncher);
+  placeLauncher();
   if (mascot) {
     let pose = Math.floor(Math.random() * 5);
     try {
@@ -115,8 +207,20 @@
   }
 
   document.querySelectorAll('[data-chatbot-open]').forEach(button => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', event => {
+      if (button === character && event.detail !== 0 && Date.now() < suppressClickUntil) return;
+      clearNotice();
+      if (!launcher.contains(button) && launcherState.hidden) {
+        launcherState.hidden = false;
+        placeLauncher();
+        saveLauncher();
+        return;
+      }
       if (dialog.open) return;
+      launcherState.used = true;
+      launcherState.hidden = false;
+      placeLauncher();
+      saveLauncher();
       dialog.showModal();
       document.body.classList.add('chatbot-open');
       input.focus();

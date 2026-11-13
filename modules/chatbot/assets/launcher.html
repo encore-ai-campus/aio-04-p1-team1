@@ -3,7 +3,11 @@
     <span class="nachimi-invite-title">챗봇 사용하기</span>
     <span class="nachimi-invite-note">나침이에게 물어보세요</span>
   </button>
-  <button class="nachimi-character" type="button" data-chatbot-open aria-label="나침이와 대화하기" aria-haspopup="dialog" aria-controls="chatbot-dialog">
+  <div class="nachimi-character-wrap">
+  <button class="nachimi-hide" type="button" aria-label="챗봇 숨기기">×</button>
+  <button class="nachimi-character" type="button" data-chatbot-open aria-label="나침이와 대화하기. 드래그하거나 방향키로 이동할 수 있습니다" aria-haspopup="dialog" aria-controls="chatbot-dialog">
     <span class="nachimi-sprite" data-nachimi-sprite data-pose="0" aria-hidden="true" style="--nachimi-poses:url('__NACHIMI_POSES__');--nachimi-question:url('__NACHIMI_QUESTION__')"></span>
   </button>
+  </div>
 </section>
+<div class="nachimi-notice" role="status" aria-live="polite" aria-atomic="true" hidden></div>
