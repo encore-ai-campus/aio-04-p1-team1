@@ -348,7 +348,14 @@ def create_app(title):
     @app.middleware("http")
     async def browser_origin_check(request: Request, call_next):
         origin = request.headers.get("origin")
-        if request.method in {"POST", "PUT", "PATCH", "DELETE"} and origin and origin != str(request.base_url).rstrip("/"):
+        configured_origins = {
+            value.strip().rstrip("/")
+            for value in os.environ.get("ALLOWED_ORIGINS", "").split(",")
+            if value.strip()
+        }
+        request_origin = str(request.base_url).rstrip("/")
+        if request.method in {"POST", "PUT", "PATCH", "DELETE"} and origin \
+                and origin.rstrip("/") not in (configured_origins or {request_origin}):
             return JSONResponse(status_code=403, content={"detail": "다른 사이트에서 보낸 요청은 허용하지 않습니다."})
         response = await call_next(request)
         apply_auth_cookies(request, response)
