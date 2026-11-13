@@ -1,0 +1,49 @@
+<div class="training-match-content" data-member-content>
+<main class="cc-page education-page">
+<section class="cc-page-heading education-hero">
+<p class="eyebrow">MY NEXT LEARNING</p>
+<h1><img src="__EDUCATION_MASCOT__" alt="" width="72" height="84"><span>AI와 함께 필요한 교육 찾기</span></h1>
+<p>직무에 맞는 교육부터, 보완역량을 채우는 AI 추천까지.</p>
+</section>
+<section class="education-panel" aria-labelledby="jobSelectionTitle">
+<p class="education-step">STEP 1 · 공고 선택</p>
+<h2 id="jobSelectionTitle">어떤 공고를 기준으로 교육을 찾을까요?</h2>
+<p>적합도 분석을 마친 공고를 선택하면, 해당 공고의 보완역량을 가져와요.</p>
+<label class="education-job-label" for="analyzedJob">분석한 공고 선택</label>
+<select id="analyzedJob" disabled><option value="">분석한 공고를 불러오는 중이에요.</option></select>
+<p class="education-note">적합도 분석 결과는 같은 브라우저에 최근 5개까지 보관돼요. 새 분석 결과가 저장되면 가장 오래된 결과부터 제외됩니다.</p>
+<p class="education-note">공고를 변경하면 선택한 역량과 교육 추천 결과가 초기화돼요.</p>
+<p id="jobSelectionStatus" role="status" aria-live="polite"></p>
+<button id="retryJobs" class="education-secondary" type="button" hidden>공고 다시 불러오기</button>
+</section>
+<p id="selectJobPrompt" class="education-prompt">공고를 먼저 선택해 주세요.<br>선택한 공고의 보완역량으로 교육을 추천받을 수 있어요.</p>
+<div id="educationContent" hidden>
+<p id="selectedJobSummary" class="education-context" aria-live="polite"></p>
+<section id="recommendStep" class="education-panel" aria-labelledby="recommendStepTitle">
+<p class="education-step">STEP 2 · AI 맞춤 추천</p>
+<h2 id="recommendStepTitle">어떤 역량을 보완하고 싶으세요?</h2>
+<p>선택한 공고의 보완역량과 교육 모음의 과정을 비교해, 관련 있는 교육을 추천해요.</p>
+<fieldset class="education-modes"><legend class="education-sr-only">추천할 역량 범위</legend>
+<label><input type="radio" name="recommendMode" value="all" checked><span><strong>전체 보완역량</strong><small>분석에서 확인한 모든 보완역량으로 추천</small></span></label>
+<label><input type="radio" name="recommendMode" value="selected"><span><strong>직접 선택</strong><small>집중해서 배우고 싶은 역량만 골라 추천</small></span></label>
+</fieldset>
+<div id="gapPills" class="education-skills" aria-label="보완역량"></div>
+<button id="gapMore" class="education-secondary" type="button" aria-controls="gapPills" aria-expanded="false" hidden>전체 보기</button>
+<p id="skillRecommendationStatus" class="education-note" role="status" aria-live="polite"></p>
+<div class="education-action"><p id="selectedKeywordCount" role="status" aria-live="polite"></p><button id="aiCourseList" class="education-primary" type="button" disabled>전체 보완역량으로 AI 추천받기</button></div>
+</section>
+<section class="education-results" aria-labelledby="recommendTitle">
+<div class="education-results-heading"><div><h2 id="recommendTitle">AI 가 추천하는 직무 관련 교육</h2><p id="recommendCriteria"></p></div><button id="returnRoleCourses" class="education-secondary" type="button" hidden>직무 관련 교육으로 돌아가기</button></div>
+<p id="aiRecommendationStatus" role="status" aria-live="polite" hidden></p>
+<div class="rec-grid" id="recommendCards" aria-live="polite" aria-busy="false"></div>
+<button id="courseMore" type="button" aria-controls="recommendCards" aria-expanded="false" hidden>직무 관련 교육 더 보기</button>
+</section>
+</div>
+<footer><span>취준나침반 · 한 번에 찾고, 한 걸음씩 준비해요.</span><span id="recommendSource">직무 기반 교육추천 · 고용24 교육 정보</span></footer>
+</main>
+<dialog id="recommendDetailDialog" aria-labelledby="recommendDetailTitle"><div class="modal-top"><p>COURSE DETAILS</p><button class="close" id="recommendDetailClose" type="button" aria-label="추천 교육 상세 닫기">×</button></div><div id="recommendDetailBody"></div></dialog>
+<div class="toast" id="aiToast" role="status"></div>
+<script>__EDUCATION_SCRIPT__</script>
+</div>
+__CC_SCRIPT__
+</body></html>

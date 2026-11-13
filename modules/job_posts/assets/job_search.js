@@ -54,7 +54,7 @@
       for(const [field,values] of [['job',options.jobs],['region',options.regions],['employment',options.employments]])for(const value of values){if(field==='region'&&value==='수도권')continue;const option=element('option',value);option.value=value;selects[field].append(option);}
       for(const key of Object.keys(selects))if(state[key]&&![...selects[key].options].some(option=>option.value===state[key])){const option=element('option',state[key]);option.value=state[key];selects[key].append(option);}
     }catch(error){$('inline-status').textContent=error.message;}
-    fillControls();loadJobs();
+    fillControls();return loadJobs();
   }
-  init();
+  window.CompassLoading.track(init());
 })();

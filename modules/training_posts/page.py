@@ -58,13 +58,70 @@ body.cc-member-page.cc-training-page{font-size:14px}
 """
 
 
+# Match job_posts typography only in the education catalogue.
+TRAINING_POSTS_TYPOGRAPHY = r"""
+.cc-training-page .training-posts-content .cc-page-heading h1{font-size:30px;font-weight:600;letter-spacing:-1.1px}
+.cc-training-page .training-posts-content .cc-page-heading .eyebrow{font-size:10px;letter-spacing:.7px}
+.cc-training-page .training-posts-content .cc-page-heading>p:last-child{font-size:15px}
+.cc-training-page .training-posts-content .results-head h2{font-size:19px;font-weight:600;letter-spacing:-.4px}
+.cc-training-page .training-posts-content .card h3{font-size:16px;font-weight:600;letter-spacing:-.45px;line-height:1.6}
+.cc-training-page .training-posts-content .provider{font-size:11px;line-height:1.7}
+.cc-training-page .training-posts-content .card-meta{font-size:10px;letter-spacing:normal;line-height:1.9}
+.cc-training-page .training-posts-content :is(.badge,.tags){font-size:10px;letter-spacing:normal}
+.cc-training-page .training-posts-content .details{font-size:10px;font-weight:600}
+.cc-training-page .training-posts-content .search input{font-size:14px;letter-spacing:normal}
+.cc-training-page .training-posts-content :is(.search button,.apply,.ai-recommend-link){font-size:13px;font-weight:600}
+.cc-training-page .training-posts-content .pagination button{font-size:12px}
+.cc-training-page .training-posts-content .pagination .selected{font-weight:600}
+.cc-training-page .training-posts-content .empty h3{font-size:19px;font-weight:600}
+.cc-training-page .training-posts-content footer,.cc-training-page .training-posts-content footer span{font-size:9px;letter-spacing:normal}
+@media(max-width:960px){
+  .cc-training-page .training-posts-content .cc-page-heading h1{font-size:27px}
+  .cc-training-page .training-posts-content .cc-page-heading>p:last-child{font-size:13px}
+}
+@media(max-width:650px){
+  .cc-training-page .training-posts-content .cc-page-heading h1{font-size:25px}
+  .cc-training-page .training-posts-content .results-head h2{font-size:17px}
+  .cc-training-page .training-posts-content .card h3{font-size:17px}
+  .cc-training-page .training-posts-content .card-meta{font-size:11px}
+  .cc-training-page .training-posts-content .search input{font-size:12px}
+}
+"""
+
+
+TRAINING_POSTS_LAYOUT = r"""
+.cc-training-page .training-posts-content .cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;min-height:0}
+.cc-training-page .training-posts-content .card{min-width:0;min-height:209px;padding:16px;border-radius:14px}
+.cc-training-page .training-posts-content .card-top{margin-bottom:10px}
+.cc-training-page .training-posts-content .badge{padding:3px 10px;border-radius:15px}
+.cc-training-page .training-posts-content .heart{width:28px;height:28px;padding:0 3px;font-size:24px;line-height:1}
+.cc-training-page .training-posts-content .card h3{min-height:51px;margin:0 0 7px}
+.cc-training-page .training-posts-content .provider{margin:0 0 5px}
+.cc-training-page .training-posts-content .card-meta{margin:0 0 12px}
+.cc-training-page .training-posts-content .course-card-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px;border-top:1px solid var(--cc-border)}
+.cc-training-page .training-posts-content .tags{min-width:0;margin:0;padding:0;gap:5px;overflow-wrap:anywhere}
+.cc-training-page .training-posts-content .details{position:static;flex-shrink:0;padding:4px 0;white-space:nowrap}
+.cc-training-page .training-posts-content .pagination{flex-wrap:wrap;margin:23px 0 14px;gap:7px;min-height:35px}
+.cc-training-page .training-posts-content .pagination button{min-width:35px;height:35px;padding:0 10px;border-radius:9px}
+@media(max-width:820px){.cc-training-page .training-posts-content .cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){
+  .cc-training-page .training-posts-content .cards{grid-template-columns:1fr}
+  .cc-training-page .training-posts-content .card{min-height:195px}
+  .cc-training-page .training-posts-content .card h3{min-height:0}
+}
+"""
+
+
 def render_training_page(template, user, current):
     """Use the shared shell and connect its existing training menu entries."""
     rendered = apply_member_shell(template, user, current=current)
     if current == 'training_posts':
         bookmarks = (Path(__file__).resolve().parents[2] / 'shared/components/scripts/bookmarks.js').read_text(encoding='utf-8')
         rendered = rendered.replace('</head>', '<script>' + bookmarks + '</script></head>', 1)
-    rendered = rendered.replace('</head>', '<style>' + TRAINING_TYPOGRAPHY + '</style></head>', 1)
+    typography = TRAINING_TYPOGRAPHY
+    if current == 'training_posts':
+        typography += TRAINING_POSTS_TYPOGRAPHY + TRAINING_POSTS_LAYOUT
+    rendered = rendered.replace('</head>', '<style>' + typography + '</style></head>', 1)
     routes = {"training": "training_match", "courses": "training_posts"}
 
     def connect_menu(match):
@@ -292,7 +349,7 @@ __CC_HEADER____CC_MENU__
 <script>
 "use strict";
 const el = (id) => document.getElementById(id);
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 6;
 const state = {data:JSON.parse(el("initial-data").textContent),filtered:[],page:0,saved:[],filter:{category:"",mode:"all",budget:"",query:""},controller:null,generation:0};
 const courseBookmarks = CompassBookmarks.create("course");
 const esc=(value)=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -326,7 +383,7 @@ function render(){
   el("cards").innerHTML=visible.length?visible.map(c=>{
     const saved=state.saved.includes(c.key);
     const tags=c.tags.length?c.tags:[c.categoryName];
-    return '<article class="card"><div class="card-top"><span class="badge">'+esc(c.badge)+'</span><button class="heart" type="button" data-save="'+esc(c.key)+'" aria-label="'+esc(c.title)+' 관심 '+(saved?'해제':'저장')+'" aria-pressed="'+saved+'"'+(!courseBookmarks.ready||courseBookmarks.isPending(c.key)?' disabled':'')+'>'+ (saved?'♥':'♡')+'</button></div><h3 title="'+esc(c.title)+'">'+esc(c.title)+'</h3><p class="provider">'+esc(c.provider)+'</p><p class="card-meta">'+esc(costText(c.cost))+' · '+esc(modeName(c.mode))+' · '+(c.weeks?c.weeks+'주':'기간 확인')+'</p><div class="tags">'+tags.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div><button class="details" type="button" data-detail="'+esc(c.key)+'">상세 보기 →</button></article>';
+    return '<article class="card"><div class="card-top"><span class="badge">'+esc(c.badge)+'</span><button class="heart" type="button" data-save="'+esc(c.key)+'" aria-label="'+esc(c.title)+' 관심 '+(saved?'해제':'저장')+'" aria-pressed="'+saved+'"'+(!courseBookmarks.ready||courseBookmarks.isPending(c.key)?' disabled':'')+'>'+ (saved?'♥':'♡')+'</button></div><h3 title="'+esc(c.title)+'">'+esc(c.title)+'</h3><p class="provider">'+esc(c.provider)+'</p><p class="card-meta">'+esc(costText(c.cost))+' · '+esc(modeName(c.mode))+' · '+(c.weeks?c.weeks+'주':'기간 확인')+'</p><div class="course-card-footer"><div class="tags">'+tags.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div><button class="details" type="button" data-detail="'+esc(c.key)+'">상세 보기 →</button></div></article>';
   }).join(""):'<div class="empty"><h3>조건에 맞는 교육이 없어요</h3><p>검색어나 분야·교육 방식·교육비 조건을 넓혀서 다시 찾아보세요. 금액이 확인되지 않은 교육은 교육비 제한에서 제외됩니다.</p><button id="emptyReset" type="button">조건 초기화</button></div>';
   el("emptyReset")?.addEventListener("click",reset);
   if(pages<=1){el("pagination").innerHTML="";return;}
@@ -390,7 +447,7 @@ const initialQuery = (new URLSearchParams(location.search).get("q") || "").slice
 el("searchInput").value = initialQuery;
 state.filter.query = initialQuery;
 applyFilters();
-courseBookmarks.load().then(()=>{state.saved=courseBookmarks.ids();render();}).catch(error=>toast(error.message));
+window.CompassLoading.track(courseBookmarks.load().then(()=>{state.saved=courseBookmarks.ids();render();}).catch(error=>toast(error.message)));
 window.addEventListener("pageshow",event=>{if(event.persisted)courseBookmarks.load().then(()=>{state.saved=courseBookmarks.ids();render();}).catch(error=>{render();toast(error.message);});});
 </script>
 </div>

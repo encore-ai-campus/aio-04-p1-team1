@@ -1,0 +1,45 @@
+html:has(.cc-training-page .education-page){scrollbar-gutter:stable both-edges}
+.cc-training-page .training-match-content{width:100%;margin-inline:auto}
+.cc-training-page .education-page{width:100%;max-width:1100px;margin-inline:auto}
+.cc-training-page .education-page :is(.education-panel,.education-context,.education-results){width:100%;max-width:1028px;margin-inline:auto}
+.cc-training-page .education-hero{text-align:center;padding:12px 0 30px}
+.cc-training-page .education-hero h1{display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0 10px;line-height:1.45;font-size:29px}
+.cc-training-page .education-hero h1 img{width:72px;height:84px;object-fit:contain;flex-shrink:0;background:transparent}
+.cc-training-page .education-hero>p:last-child{color:var(--cc-muted);font-size:14px}
+.cc-training-page .education-panel{padding:26px;background:#fff;border:1px solid var(--cc-border);border-radius:18px}
+.cc-training-page .education-panel h2{font-size:21px;margin:0 0 7px;line-height:1.5}
+.cc-training-page .education-panel p{color:var(--cc-muted);line-height:1.8;margin:0;font-size:14px}
+.cc-training-page .education-panel .education-step{font-size:11px;letter-spacing:1px;margin:0 0 7px}
+.cc-training-page .education-job-label{display:block;margin:20px 0 8px;font-size:14px}
+.cc-training-page #analyzedJob{width:100%;min-height:48px;padding:10px 14px;background:#fff;border:1px solid var(--cc-border);border-radius:10px;font-size:14px;color:var(--cc-text)}
+.cc-training-page .education-panel .education-note{font-size:12px;margin-top:10px}
+.cc-training-page #jobSelectionStatus{margin-top:10px;white-space:pre-line}
+.cc-training-page .education-prompt{text-align:center;padding:36px 12px;color:var(--cc-muted);font-size:14px;line-height:1.9}
+.cc-training-page .education-context{padding:18px 0;margin:0;color:var(--cc-muted);font-size:13px;overflow-wrap:anywhere}
+.cc-training-page #recommendStep{scroll-margin-top:100px}
+.cc-training-page .education-modes{border:0;padding:0;margin:22px 0 0;display:flex;gap:12px;min-width:0;flex-wrap:wrap}
+.cc-training-page .education-modes label{flex:1 1 230px;display:flex;align-items:flex-start;gap:10px;padding:16px;border:1px solid var(--cc-border);border-radius:11px;cursor:pointer}
+.cc-training-page .education-modes label:has(input:checked){background:#edf3e7;border-color:#8a9b7b}
+.cc-training-page .education-modes input{margin-top:5px;accent-color:#748b5c}
+.cc-training-page .education-modes strong{font-size:14px;font-weight:600}
+.cc-training-page .education-modes small{display:block;font-size:12px;color:var(--cc-muted);margin-top:4px}
+.cc-training-page #gapPills{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 12px;min-width:0}
+.cc-training-page #gapPills .gap-pill{flex:0 0 auto;width:auto;min-width:0;max-width:100%;padding:7px 13px;border:1px solid var(--cc-border);background:var(--cc-background);border-radius:22px;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.cc-training-page #gapPills button.gap-pill[aria-pressed="true"]{background:#edf3e7;border-color:#8a9b7b}
+.cc-training-page #gapPills .gap-pill[hidden]{display:none!important}
+.cc-training-page #gapPills[data-expanded="false"] .gap-pill{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-training-page .education-secondary,.cc-training-page #gapMore{width:auto;min-height:40px;padding:8px 14px;border:1px solid var(--cc-border);border-radius:9px;background:#fff;color:var(--cc-text);font:inherit;font-size:13px;cursor:pointer;margin:0}
+.cc-training-page .education-secondary[hidden],.cc-training-page #gapMore[hidden]{display:none!important}
+.cc-training-page .education-action{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:20px}
+.cc-training-page .education-action #selectedKeywordCount{font-size:13px;color:var(--cc-muted);margin:0}
+.cc-training-page .education-primary{min-height:46px;padding:12px 22px;border:0;border-radius:10px;background:var(--cc-yellow);color:var(--cc-text);font-size:14px;cursor:pointer}
+.cc-training-page .education-results{margin-top:30px}
+.cc-training-page .education-results .rec-card{min-height:310px}
+.cc-training-page .education-results-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.cc-training-page .education-results-heading h2{font-size:22px;line-height:1.5;margin:0 0 6px}
+.cc-training-page #recommendCriteria{font-size:13px;color:var(--cc-muted);margin:0;overflow-wrap:anywhere}
+.cc-training-page #aiRecommendationStatus{margin:0 0 16px;color:var(--cc-muted);line-height:1.8}
+.cc-training-page .rec-empty{grid-column:1/-1;padding:32px;border:1px solid var(--cc-border);border-radius:18px;background:#fff;font-size:14px;line-height:1.8}
+.cc-training-page .education-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.cc-training-page .education-page [hidden]{display:none!important}
+@media(max-width:650px){.cc-training-page .education-panel{padding:20px}.cc-training-page .education-hero h1{font-size:23px;gap:8px}.cc-training-page .education-hero h1 img{width:52px;height:62px}.cc-training-page .education-panel h2{font-size:19px}.cc-training-page .education-primary{max-width:100%;white-space:normal}}
