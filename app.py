@@ -1,5 +1,7 @@
+from pathlib import Path
+
 from fastapi import HTTPException, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from modules.auth.Signin import router as signin_router
 from modules.auth.Signup import router as signup_router
 from modules.auth import auth_store
@@ -25,6 +27,13 @@ app.include_router(training_match_router)
 app.include_router(mypage_router)
 app.include_router(main_router)
 app.include_router(chatbot_router)
+
+GOOGLE_VERIFY_FILE = "googleca9d4096df3c76fc.html"
+
+
+@app.get(f"/{GOOGLE_VERIFY_FILE}", include_in_schema=False)
+def google_verification_file():
+    return FileResponse(Path(__file__).with_name(GOOGLE_VERIFY_FILE))
 
 @app.get("/")
 def root(request: Request):
