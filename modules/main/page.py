@@ -54,6 +54,45 @@ __CC_CSS__
 .hero-feature-courses .secondary{background:white;border-color:var(--line)}
 @media(max-width:1100px){.main-hero h2{font-size:23px}.hero-intro{padding:25px 19px}.hero-feature{padding:18px}.hero-feature h3{font-size:14px}}
 @media(max-width:620px){.main-hero.hero{grid-template-columns:1fr}.hero-intro{padding:28px 22px}.main-hero h2{font-size:26px}.hero-features{grid-template-rows:auto auto}.hero-feature{padding:22px}.hero-feature h3{font-size:15px}}
+.main-hero .hero-intro{display:block;padding:28px 20px 20px;color:var(--ink)}
+.main-hero .compass-eyebrow{font-size:10px;letter-spacing:2px;color:#7a8063;font-weight:400}
+.main-hero .hero-intro h2{font-size:32px;line-height:1.4;letter-spacing:-1.2px;font-weight:400;margin:12px 0 10px}
+.main-hero .hero-intro .hero-description{font-size:12px;line-height:1.7;color:#777d65;margin:0;max-width:none}
+.hero-intro .compass-map{display:grid;grid-template-columns:minmax(0,1fr) 104px minmax(0,1fr);grid-template-rows:85px 110px 85px;align-items:center;justify-items:center;margin:10px 0 0;position:relative;isolation:isolate}
+.hero-intro .compass-map:before{content:"";position:absolute;width:280px;height:280px;max-width:100%;border:1px solid #8e97651c;border-radius:50%;pointer-events:none;z-index:-1}
+.hero-intro .compass-message{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;position:relative;z-index:1;width:100%;min-width:0;animation:main-compass-reveal 2s ease-in-out both;animation-delay:var(--reveal-delay)}
+.hero-intro .compass-message b{font-size:24px;font-weight:400;color:#76814c}
+.hero-intro .compass-message strong{font-size:12px;font-weight:400;line-height:1.5;color:#4e5c3c;overflow-wrap:anywhere}
+.hero-intro .compass-message span{font-size:11px;color:#828469;line-height:1.5;word-break:keep-all}
+.hero-intro .compass-north{grid-area:1/1/2/4;--reveal-delay:.4s}
+.hero-intro .compass-east{grid-area:2/3;--reveal-delay:2.6s}
+.hero-intro .compass-south{grid-area:3/1/4/4;--reveal-delay:4.8s}
+.hero-intro .compass-west{grid-area:2/1;--reveal-delay:7s}
+.hero-intro .compass-dial{grid-area:2/2;width:94px;height:94px;border:1px solid #87915b60;border-radius:50%;position:relative;background:#fcf8e366;box-shadow:0 0 0 7px #87915b08,0 0 0 16px #87915b06}
+.hero-intro .compass-inner-ring{position:absolute;inset:9px;border:1px dashed #87915b50;border-radius:50%}
+.hero-intro .compass-cross{position:absolute;background:#87915b33}
+.hero-intro .compass-horizontal{height:1px;left:-12px;right:-12px;top:50%}
+.hero-intro .compass-vertical{width:1px;top:-15px;bottom:-15px;left:50%}
+.hero-intro .compass-needle{position:absolute;inset:13px;animation:main-compass-sway 5s ease-in-out infinite;transform:rotate(25deg)}
+.hero-intro .compass-needle span,.hero-intro .compass-needle i{position:absolute;left:calc(50% - 8px);width:16px;height:34px;clip-path:polygon(50% 0,100% 100%,50% 88%,0 100%);background:#66764b;top:0}
+.hero-intro .compass-needle i{transform:rotate(180deg);top:32px;background:#c4bd89}
+.hero-intro .compass-pin{position:absolute;left:calc(50% - 5px);top:calc(50% - 5px);width:10px;height:10px;border-radius:50%;background:#fbf6df;border:2px solid #788456}
+@keyframes main-compass-reveal{from{opacity:0;filter:brightness(.75)}to{opacity:1;filter:brightness(1)}}
+@keyframes main-compass-sway{0%,100%{transform:rotate(20deg)}50%{transform:rotate(36deg)}}
+html.cc-loading-active .hero-intro .compass-message,html.cc-loading-active .hero-intro .compass-needle{animation-play-state:paused}
+.dashboard-grid>.sidebar{align-self:stretch}
+.dashboard-grid>.sidebar>.profile-card{flex:1;display:flex;flex-direction:column}
+.dashboard-grid>.sidebar .profile-fields{flex:1;align-content:space-evenly;gap:16px}
+.dashboard-grid>.sidebar .manage-profile{margin-top:22px}
+.dashboard-grid>.sidebar .profile-note:empty{margin:0}
+.profile-skills{display:flex;flex-wrap:wrap;gap:6px}
+.profile-skill{padding:3px 9px;border-radius:20px;background:#f0f4e9;color:var(--green);font-size:11px;overflow-wrap:anywhere;max-width:100%}
+@media(max-width:1100px){.main-hero .hero-intro h2{font-size:28px}.hero-intro .compass-map{grid-template-columns:minmax(0,1fr) 82px minmax(0,1fr)}.hero-intro .compass-dial{width:78px;height:78px}.hero-intro .compass-needle{inset:10px}.hero-intro .compass-needle span,.hero-intro .compass-needle i{height:28px;width:14px;left:calc(50% - 7px)}.hero-intro .compass-needle i{top:27px}}
+@media(min-width:821px) and (max-width:1100px){.main-hero.hero{grid-template-columns:1fr}.main-hero .hero-features{grid-template-columns:1fr 1fr;grid-template-rows:auto}}
+@media(max-width:820px){.dashboard-grid>.sidebar .profile-fields{grid-template-columns:repeat(2,minmax(0,1fr));align-content:start}}
+@media(max-width:520px){.dashboard-grid>.sidebar .profile-fields{grid-template-columns:1fr}}
+@media(max-width:380px){.main-hero .hero-intro{padding:24px 14px 20px}.main-hero .hero-intro h2{font-size:28px}.hero-intro .compass-message strong{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.hero-intro .compass-message,.hero-intro .compass-needle{animation:none}}
 </style>
 </head>
 <body class="cc-member-page">
@@ -79,10 +118,17 @@ __CC_MENU__
 <div class="dashboard-grid">
 <section class="hero main-hero" aria-labelledby="hero-title">
   <div class="hero-intro">
-    <p class="hero-label">나만의 취업 준비 대시보드</p>
-    <h2 id="hero-title">내 프로필에 맞는 공고,<br>필요한 배움까지</h2>
-    <p class="hero-description">지금까지 쌓아온 경험에서 가능성을 발견하고,<br>나에게 필요한 다음 한 걸음을 찾아보세요.</p>
-    <p class="hero-role" id="hero-role">나의 프로필을 확인하고 있어요.</p>
+    <span class="compass-eyebrow">YOUR NEXT DIRECTION</span>
+    <h2 id="hero-title">당신의 속도로,<br>당신의 방향으로.</h2>
+    <p class="hero-description">다음 기회를 향한 한 걸음, 취준나침반과 함께.</p>
+    <div class="compass-map" aria-label="네 방향으로 펼쳐지는 응원 문구">
+      <div class="compass-message compass-north"><b>N</b><strong>Next chapter</strong><span>당신의 다음 이야기를 향해</span></div>
+      <div class="compass-message compass-west"><b>W</b><strong>Walk your own path</strong><span>당신만의 길을 걸어가세요</span></div>
+      <div class="compass-dial" role="img" aria-label="천천히 흔들리는 나침반 바늘"><div class="compass-inner-ring"></div><div class="compass-cross compass-horizontal"></div><div class="compass-cross compass-vertical"></div><div class="compass-needle"><span></span><i></i></div><div class="compass-pin"></div></div>
+      <div class="compass-message compass-east"><b>E</b><strong>Every step counts</strong><span>한 걸음마다 의미가 있어요</span></div>
+      <div class="compass-message compass-south"><b>S</b><strong>Start where you are</strong><span>지금 여기서 시작하세요</span></div>
+    </div>
+    <p class="hero-role" id="hero-role" hidden>나의 프로필을 확인하고 있어요.</p>
   </div>
   <div class="hero-features">
     <article class="hero-feature hero-feature-match">
@@ -98,7 +144,7 @@ __CC_MENU__
   </div>
 </section>
 <aside class="sidebar" aria-label="내 준비 현황">
-<section class="card profile-card" aria-labelledby="profile-title"><h2 class="card-title" id="profile-title"><span class="title-icon"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg></span>나의 준비 프로필</h2><dl class="profile-fields"><div class="profile-field"><dt>희망 직무</dt><dd class="role-value" id="profile-role">불러오는 중…</dd></div><div class="profile-field"><dt>자격증</dt><dd id="profile-certificates">불러오는 중…</dd></div><div class="profile-field"><dt>교육이수</dt><dd id="profile-courses">불러오는 중…</dd></div></dl><a class="manage-profile" href="/mypage#profile-overview">마이페이지에서 프로필 관리하기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a><p class="profile-note" id="profile-note" role="status" aria-live="polite"></p><button class="text-button" type="button" id="profile-retry" hidden>프로필 다시 불러오기</button></section>
+<section class="card profile-card" aria-labelledby="profile-title"><h2 class="card-title" id="profile-title"><span class="title-icon"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg></span>나의 준비 프로필</h2><dl class="profile-fields"><div class="profile-field"><dt>희망 직무</dt><dd class="role-value" id="profile-role">불러오는 중…</dd></div><div class="profile-field"><dt>자격증</dt><dd id="profile-certificates">불러오는 중…</dd></div><div class="profile-field"><dt>교육이수</dt><dd id="profile-courses">불러오는 중…</dd></div><div class="profile-field"><dt>역량</dt><dd class="profile-skills" id="profile-skills">불러오는 중…</dd></div></dl><a class="manage-profile" href="/mypage#profile-overview">마이페이지에서 프로필 관리하기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a><p class="profile-note" id="profile-note" role="status" aria-live="polite"></p><button class="text-button" type="button" id="profile-retry" hidden>프로필 다시 불러오기</button></section>
 <div class="summary-stack"><a class="card summary-card" href="/mypage#bookmarks"><span class="summary-icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span><div class="summary-copy"><h3>관심목록</h3><p id="saved-detail">저장한 정보를 불러오는 중이에요</p></div><span class="summary-value" id="saved-total">—</span></a></div>
 </aside>
 <section class="jobs-section" id="today-jobs" aria-labelledby="jobs-title"><div class="section-heading"><h2 id="jobs-title">오늘 살펴볼 공고</h2><a class="all-jobs" href="/job_posts">공고 전체 보기<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div><p class="section-note">희망 직무가 제목이나 직무명에 포함된 공고를 먼저, 나머지는 마감 임박순으로 보여드려요.</p><p id="home-jobs-status" role="status" aria-live="polite">공고를 불러오고 있어요.</p><button type="button" id="home-jobs-retry" class="text-button" hidden>공고 다시 불러오기</button><div class="job-grid" id="home-job-list" aria-busy="true">
@@ -122,7 +168,8 @@ __CC_MENU__
  function summarize(items,empty){if(!Array.isArray(items)||items.length===0)return empty;return items[0].name+(items.length>1?' 외 '+(items.length-1)+'개':'');}
  async function loadProfile(){byId('profile-retry').hidden=true;byId('profile-note').textContent='';try{const data=await api('/api/mypage/profile');byId('profile-role').textContent=data.target_role||'희망 직무를 등록해 주세요';byId('hero-role').textContent=data.target_role?'나의 희망 직무 · '+data.target_role:'프로필을 채우고, 다음 준비를 시작해 보세요.';byId('profile-certificates').textContent=summarize(data.certificates,'등록된 자격증이 없어요');byId('profile-courses').textContent=summarize(data.courses,'등록된 교육이 없어요');byId('profile-certificates').title=(data.certificates||[]).map(item=>item.name).join(', ');byId('profile-courses').title=(data.courses||[]).map(item=>item.name).join(', ');}catch(error){byId('profile-note').textContent=error.message;byId('profile-retry').hidden=false;for(const id of ['profile-role','profile-certificates','profile-courses'])byId(id).textContent='잠시 후 다시 확인해 주세요';byId('hero-role').textContent='마이페이지에서 나의 프로필을 확인해 보세요.';}}
  async function loadBookmarks(){try{const data=await api('/api/bookmarks?size=1');byId('saved-total').textContent=data.counts.all;byId('saved-detail').textContent='저장 공고 '+data.counts.job+' · 교육 '+data.counts.course;}catch(error){byId('saved-total').textContent='—';byId('saved-detail').textContent='마이페이지에서 다시 확인해 주세요';}}
- byId('profile-retry').addEventListener('click',loadProfile);window.CompassLoading.track(loadProfile());window.CompassLoading.track(loadBookmarks());
+ async function loadSkills(){const field=byId('profile-skills');try{const data=await api('/api/mypage/skills');const skills=Array.isArray(data.skills)?data.skills:[];field.replaceChildren();if(!skills.length){field.textContent='등록된 역량이 없어요';return;}for(const skill of skills){const tag=document.createElement('span');tag.className='profile-skill';tag.textContent=skill;field.append(tag);}}catch(error){field.textContent='마이페이지에서 역량을 확인해 주세요';}}
+ byId('profile-retry').addEventListener('click',()=>{loadProfile();loadSkills();});window.CompassLoading.track(loadProfile());window.CompassLoading.track(loadBookmarks());window.CompassLoading.track(loadSkills());
 })();
 </script>
 <style>__JOB_CARD_CSS__</style>
