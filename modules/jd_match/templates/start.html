@@ -11,19 +11,30 @@
     __CC_MENU__
     <main class="cc-page" data-member-content>
       <section class="match-start panel" aria-labelledby="match-start-title">
-        <p class="eyebrow">YOUR NEXT DIRECTION</p>
-        <h1 id="match-start-title">내 역량, 이 공고와 잘 맞을까요?</h1>
-        <p class="match-start-copy">저장해 둔 채용공고를 선택하면 내 프로필과 공고의 적합도를 분석해 드려요.</p>
-        <div class="job-select-wrap"><select id="saved-job-select" disabled><option value="">저장한 공고를 불러오는 중입니다</option></select></div>
-        <p class="match-start-status" id="match-start-status" role="status" aria-live="polite"></p>
-        <a class="match-start-button match-start-link" id="browse-jobs-button" href="/job_posts" hidden>채용공고 저장하러 가기</a>
-        <button class="match-start-button" id="match-start-button" type="button" disabled>🚀 분석 시작!</button>
+        <div class="match-start-top"><p class="eyebrow">MY NEXT DIRECTION</p><span class="match-start-step">01 · 공고 선택</span></div>
+        <h1 id="match-start-title">채용공고와 내 역량을 비교해요</h1>
+        <p class="match-start-copy">교육분석 페이지처럼 저장한 공고를 먼저 선택하면, 내 프로필과 공고의 적합도를 확인할 수 있어요.</p>
+        <div class="match-start-grid">
+          <div class="match-start-form">
+            <label class="match-start-label" for="saved-job-select">비교할 채용공고</label>
+            <div class="job-select-wrap"><select id="saved-job-select" disabled><option value="">저장한 공고를 불러오는 중입니다</option></select></div>
+            <p class="match-start-status" id="match-start-status" role="status" aria-live="polite"></p>
+            <a class="match-start-button match-start-link" id="browse-jobs-button" href="/job_posts" hidden>채용공고 저장하러 가기</a>
+            <button class="match-start-button" id="match-start-button" type="button" disabled>적합도 분석 시작하기</button>
+          </div>
+          <aside class="match-start-guide" aria-label="적합도 분석 안내">
+            <p class="guide-label">ANALYSIS GUIDE</p>
+            <h2>무엇을 확인하나요?</h2>
+            <p>공고의 주요 업무와 자격요건을 내 프로필의 희망 직무·자격증·이수 교육과 비교해요.</p>
+            <span>저장한 공고는 언제든 다시 분석할 수 있어요.</span>
+          </aside>
+        </div>
       </section>
     </main>
     <style>
-      .match-start{max-width:760px;margin:70px auto 90px;padding:62px 78px 68px;text-align:center;background:#fff;border-radius:24px;border:1px solid var(--cc-border,#e4e6dd)}
-      .match-start h1{font-size:34px;line-height:1.35;letter-spacing:-1.8px;margin:8px 0 18px}.match-start-copy{color:var(--cc-muted,#7b8075);font-size:17px;line-height:1.8;margin:0 auto 54px}.job-select-wrap{position:relative}.job-select-wrap:after{content:"";position:absolute;right:23px;top:50%;width:8px;height:8px;border-right:2px solid #4c6949;border-bottom:2px solid #4c6949;transform:translateY(-65%) rotate(45deg);pointer-events:none}#saved-job-select{appearance:none;width:100%;height:62px;padding:0 52px 0 20px;border:1px solid #dfe3d5;border-radius:13px;background:#fff;font-size:16px;line-height:1.2;text-align:left;color:#263127}#saved-job-select:disabled{color:#9aa198;background:#f8f9f6}.match-start-status{min-height:24px;color:#b15c4d;font-size:13px;margin:11px 0 16px;text-align:left}.match-start-button{width:100%;height:62px;border:0;border-radius:14px;background:#f7ca43;color:#263127;font-size:19px;font-weight:700}.match-start-button:disabled{cursor:default;opacity:.45}.match-start-link{display:flex;align-items:center;justify-content:center;margin-top:12px;text-decoration:none}.match-start-link + .match-start-button{margin-top:12px}
-      @media(max-width:700px){.match-start{margin:35px auto 60px;padding:42px 22px}.match-start h1{font-size:27px}.match-start-copy{font-size:15px;margin-bottom:38px}}
+      .match-start{max-width:980px;margin:60px auto 90px;padding:34px 38px 40px;background:#fff;border-radius:20px;border:1px solid var(--cc-border,#e4e6dd)}
+      .match-start-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}.eyebrow,.guide-label{margin:0;color:#8e9a80;font-size:12px;letter-spacing:2px}.match-start-step{color:#a4aa9b;font-size:13px}.match-start h1{font-size:30px;line-height:1.4;letter-spacing:-1.4px;margin:0 0 10px}.match-start-copy{color:var(--cc-muted,#7b8075);font-size:15px;line-height:1.8;margin:0 0 30px}.match-start-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(220px,1fr);gap:26px;align-items:stretch}.match-start-form{padding:25px 27px;border:1px solid #e0e3d7;border-radius:16px;background:#fdfdf9}.match-start-label{display:block;margin-bottom:10px;color:#263127;font-size:16px;font-weight:600}.job-select-wrap{position:relative}.job-select-wrap:after{content:"⌄";position:absolute;right:19px;top:15px;color:#64705c;pointer-events:none}#saved-job-select{appearance:none;width:100%;height:58px;padding:10px 42px 10px 17px;border:1px solid #dfe3d5;border-radius:12px;background:#fff;font-size:16px;line-height:1.2;text-align:left;color:#263127}#saved-job-select:disabled{color:#9aa198;background:#f8f9f6}.match-start-status{min-height:24px;color:#b15c4d;font-size:13px;line-height:1.6;margin:11px 0 16px;text-align:left}.match-start-button{width:100%;height:54px;border:0;border-radius:13px;background:#f7ca43;color:#263127;font-size:17px;font-weight:700}.match-start-button:disabled{cursor:default;opacity:.45}.match-start-link{display:flex;align-items:center;justify-content:center;margin-top:12px;text-decoration:none}.match-start-link + .match-start-button{margin-top:12px}.match-start-guide{padding:25px 27px;border-radius:16px;background:#f5efd0}.match-start-guide h2{font-size:21px;line-height:1.5;margin:13px 0 10px}.match-start-guide p:not(.guide-label){color:#8d947f;font-size:14px;line-height:1.8;margin:0 0 18px}.match-start-guide span{display:block;color:#a39a71;font-size:12px;line-height:1.7}
+      @media(max-width:700px){.match-start{margin:35px auto 60px;padding:25px 18px 26px}.match-start-top{margin-bottom:20px}.match-start h1{font-size:25px}.match-start-copy{font-size:14px;margin-bottom:24px}.match-start-grid{grid-template-columns:1fr;gap:16px}.match-start-form,.match-start-guide{padding:20px}.match-start-step{font-size:11px}.match-start-guide h2{font-size:19px}}
     </style>
     <script>
       (() => {
