@@ -7,7 +7,6 @@
 | [table.py](table.py) | 최종 테이블·인덱스·RLS·컬럼 권한 생성, Auth 초기 반영, 구조 검증 및 실행 |
 | [profile_functions.sql](profile_functions.sql) | 가입 시 프로필 생성·이메일 동기화 트리거, 프로필 배열·여러 이력의 원자 저장 RPC |
 | [profile_checks.py](profile_checks.py) | 실제 DB에서 가입·이름 수정·소유권·RPC·삭제 연쇄 확인. 검증 데이터는 롤백 |
-| [test_profiles_api.py](test_profiles_api.py) | 생성 SQL·정책 테스트 및 과거 REST/RPC API 회귀 테스트. 현재 API와 맞지 않는 항목이 있어 보완 필요 |
 | [__init__.py](__init__.py) | Python 패키지 설명 |
 
 ## 최종 설계
@@ -57,21 +56,9 @@ python -m modules.database.table
 
 전체 관계와 실행 순서는 [database README](../README.md)를 확인하세요.
 
-## 테스트 종류와 현재 상태
+## DB 초기화 시 실행되는 검증
 
 `profile_checks.py`는 생성 명령 실행 중 실제 DB 연결에서 호출됩니다. 임시 Auth 사용자 생성, 본인 이름 수정·이메일 직접 수정 차단, RPC 저장·실패 롤백, Auth 이메일 동기화 시 이름 보존, 프로필 삭제 연쇄를 검사합니다. 검증용 변경은 내부 트랜잭션에서 롤백하며, 활성 프로필이 없으면 소유권·RPC 검증 일부는 건너뜁니다. 현재 함수에는 비활성 계정의 모든 접근을 별도로 검사하는 테스트는 없습니다.
-
-`test_profiles_api.py`의 API 테스트는 이전 REST 요청 모의 객체와 RPC 일괄 저장 인터페이스를 전제로 합니다. 현재 Auth·마이페이지의 직접 SQL 방식과 달라 수정이 필요하며, 기존 모의 객체가 DB 접근을 막지 못하는 항목도 있습니다. 2026-11-11 확인에서 11개 중 3개 실패·5개 오류가 있었습니다. 이 결과는 DB 테이블 생성 실패를 뜻하지 않습니다.
-
-생성 SQL·정책만 DB 연결 없이 확인하려면 다음 두 테스트를 실행합니다.
-
-```bash
-python -m unittest \
-  modules.database.profiles.test_profiles_api.ProfilesAPITests.test_final_schema_does_not_depend_on_legacy_users \
-  modules.database.profiles.test_profiles_api.ProfilesAPITests.test_isolated_schema_names_and_inactive_access_policy -v
-```
-
-테스트 코드 수정은 이번 문서 정리에 포함하지 않았습니다.
 
 ## 운영 테이블 보존과 임시 생성 테스트
 

@@ -1,6 +1,8 @@
 from pathlib import Path
 
 from fastapi import HTTPException, Request
+from fastapi.middleware.gzip import GZipMiddleware
+from shared.components.static_assets import ASSETS, asset_url
 from fastapi.responses import FileResponse, RedirectResponse
 from modules.auth.Signin import router as signin_router
 from modules.auth.Signup import router as signup_router
@@ -15,6 +17,7 @@ from modules.chatbot.router import router as chatbot_router
 
 # 로그인, 회원가입 후 이동할 주소
 app = auth_store.create_app("취준나침반 - 회원·마이페이지")
+app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
 app.description = "회원가입 → 로그인 → 메인 → 마이페이지. 관심 목록 API는 로그인한 회원의 데이터만 처리합니다."
 app.state.main_path = "/main"
 
@@ -27,6 +30,15 @@ app.include_router(training_match_router)
 app.include_router(mypage_router)
 app.include_router(main_router)
 app.include_router(chatbot_router)
+
+@app.get("/assets/compass/{version}/{name}", include_in_schema=False)
+def public_asset(version: str, name: str):
+    if name not in ASSETS or asset_url(name) != f"/assets/compass/{version}/{name}":
+        raise HTTPException(404, "파일을 찾을 수 없습니다.")
+    media_type = "font/woff2" if name.endswith(".woff2") else "image/png"
+    return FileResponse(ASSETS[name], media_type=media_type,
+                        headers={"Cache-Control": "public, max-age=31536000, immutable"})
+
 
 GOOGLE_VERIFY_FILE = "googleca9d4096df3c76fc.html"
 

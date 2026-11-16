@@ -11,7 +11,6 @@
 | [schemas.py](schemas.py) | `JobPosting` 데이터클래스. 테이블의 17개 컬럼과 선택값 타입 정의 |
 | [save_to_supabase.py](save_to_supabase.py) | `.env` 연결 정보 읽기, 데이터·스키마 검증, SQL 실행, INSERT/UPDATE, 저장 후 값 비교. CSV만으로 저장 재시도도 가능 |
 | [job_postings.sql](job_postings.sql) | 테이블 생성과 PK·UNIQUE·NOT NULL·CHECK·기본값·RLS 정의 |
-| [test_wanted_crawler.py](test_wanted_crawler.py) | 필드 변환, 실행 모드, 미저장 공고만 수집·저장하는 흐름을 네트워크/DB 없이 검증 |
 | [source.txt](source.txt) | `## 직무명` 아래 URL을 한 줄씩 적은 입력 목록 |
 | `.gitignore` | Python 바이트코드와 과거 캐시 경로를 Git 추적에서 제외 |
 
@@ -53,12 +52,6 @@ python -m modules.database.job_posting.collect --samples-only --per-job 10 --sav
 
 ```bash
 python -m modules.database.job_posting.save_to_supabase
-```
-
-로컬 테스트(실제 원티드 요청·DB 저장 없음, 2026-11-11 확인에서 12개 통과):
-
-```bash
-python -m unittest modules.database.job_posting.test_wanted_crawler -v
 ```
 
 ## 주요 함수와 처리 흐름

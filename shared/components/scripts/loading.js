@@ -77,11 +77,9 @@
       : url.pathname.startsWith('/jd_match') ? 'jd_match_navigation' : 'main';
     navigate(url.href, nextKind);
   });
-  window.addEventListener('load', async () => {
-    if (page === 'auth') return;
-    await Promise.allSettled([document.fonts.ready, ...tasks]);
-    if (leaving) return;
-    await Promise.allSettled([...document.images].map(img => img.decode ? img.decode() : Promise.resolve()));
+  document.addEventListener('DOMContentLoaded', () => {
+    if (page === 'auth' || leaving) return;
+    // 각 영역의 로딩·오류 표시를 유지하고 느린 API가 전체 화면을 가리지 않게 한다.
     requestAnimationFrame(() => requestAnimationFrame(() => { if (!leaving) hide(); }));
   }, {once: true});
   window.addEventListener('pageshow', event => { if (event.persisted) { leaving = false; hide(); } });

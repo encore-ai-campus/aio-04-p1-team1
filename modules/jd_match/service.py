@@ -5,6 +5,20 @@ from uuid import UUID
 from psycopg import Connection
 import requests
 from kiwipiepy import Kiwi
+from threading import Lock
+
+_kiwi = None
+_kiwi_lock = Lock()
+
+
+def _tokenize(text):
+    global _kiwi
+    # 생성과 토큰화를 보호해 동시 요청에서도 하나의 모델을 안전하게 재사용한다.
+    with _kiwi_lock:
+        if _kiwi is None:
+            _kiwi = Kiwi()
+        return _kiwi.tokenize(text)
+
 
 from modules.jd_match.model import JobPosting, Profile, SavedJobPosting
 
@@ -21,7 +35,7 @@ def _extract_skill_candidates(text: str, company_name: str = "") -> list[str]:
     ignored = {"경험", "업무", "가능", "이상", "이하", "이용", "기반", "관련", "대한", "통한"}
     normalized_company_name = _normalize_company_name(company_name)
     result = []
-    tokens = Kiwi().tokenize(text or "")
+    tokens = _tokenize(text or "")
     for index, token in enumerate(tokens):
         if token.tag not in {"NNG", "NNP", "SL", "SH", "SN"}:
             continue

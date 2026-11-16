@@ -25,7 +25,6 @@
 | [assets/job_search.css](assets/job_search.css) | 화면 배치, 카드·하트·태그 스타일, 좁은 화면 대응 |
 | [assets/job_search.js](assets/job_search.js) | 검색 요청·URL 조건 복원·페이지 이동 |
 | [assets/job_cards.js](assets/job_cards.js), [assets/job_cards.css](assets/job_cards.css) | 메인과 공고모음에서 공유하는 카드 디자인·상태 표시·원문 링크·하트 저장/취소 |
-| [test_job_search.py](test_job_search.py) | 실제 네트워크/DB 없이 인증·SQL 조건·응답·오류를 검증하는 9개 테스트 |
 
 내용이 없던 `model.py`, `page.py`, `service.py`는 역할이 명확한 위 파일들로 대체했습니다. 수집 코드는 이 폴더에 포함하지 않으며 [database/job_posting](../database/job_posting/README.md)에서 관리합니다.
 
@@ -64,7 +63,6 @@
 
 ```bash
 uvicorn app:app --reload
-python -m unittest modules.job_posts.test_job_search -v
 ```
 
 실제 DB에서 공고 목록·조건 조합 검색과 기존 북마크 저장·조회·취소를 확인했습니다. 북마크 검증은 전체 롤백하여 기존 데이터를 보존했습니다. 브라우저 화면은 별도 테스트 데이터로 카드·검색·빈 결과·초기화·하트·페이지 이동을 확인했습니다. 운영 화면은 테스트 데이터 대신 실제 API를 호출합니다.
@@ -82,5 +80,3 @@ python -m unittest modules.job_posts.test_job_search -v
 ### 이번 변경의 검증 범위
 
 이전 검증에서는 실제 DB에서 제목순, 희망 직무 우선 6건, 부족분 보충, N인 공고 포함, 어제/오늘/NULL 마감 갱신을 확인했습니다. 임시 공고·프로필 변경·상태 갱신은 모두 롤백했습니다. 로그인한 브라우저에서 메인 6개 카드와 당시 공고모음 제목순 렌더링을 확인했습니다. 현재는 두 화면 모두 제목 또는 직무명 기준 추천순으로 변경했습니다.
-
-기존 `test_job_search.py`는 이전 응답 fixture에 `use_yn`이 없고, 마감 제외를 해제해도 Y만 조회한다는 기대값이 남아 있어 그대로 실행하면 2개가 실패합니다. 기존 테스트 파일은 변경하지 않았습니다. 실행 중 fixture에 새 컬럼을 제공한 8개 테스트와 별도 새 사양 검증은 통과했습니다. 하트 버튼의 실제 저장·취소 요청은 이번 브라우저 확인에서 실행하지 않았습니다.

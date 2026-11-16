@@ -1,7 +1,8 @@
 """Shared header, drawer, palette and A2Z fonts. No app routes are registered."""
 from pathlib import Path
 from html import escape
-import base64
+from functools import lru_cache
+from shared.components.static_assets import asset_url
 import re
 from modules.chatbot.widget import render_widget
 from shared.components.loading import apply_loading
@@ -11,7 +12,7 @@ _ROOT = Path(__file__).resolve().parent
 def apply_member_shell(html, user, current="main"):
     """Fill __CC_CSS__/HEADER/MENU/SCRIPT markers in existing HTML.
 
-    Fonts are embedded so FastAPI string-rendered pages need no static mount.
+    Fonts use versioned URLs so browsers can reuse them across pages.
     Call with the authenticated user, and use body.cc-member-page and
     data-member-content on the page content. Include each marker once.
     """
@@ -37,10 +38,10 @@ def apply_member_shell(html, user, current="main"):
     return apply_loading(html.replace("__CC_USER_NAME__", escape(str(user_name), quote=True)), current)
 
 
+@lru_cache(maxsize=1)
 def common_css():
-    """Return shared styles with embedded fonts; no member header is required."""
+    """Return shared styles with cacheable fonts; no member header is required."""
     css = (_ROOT / "styles" / "compass.css").read_text(encoding="utf-8")
     for name in ("A2Z-Regular.woff2", "A2Z-SemiBold.woff2"):
-        encoded = base64.b64encode((_ROOT / "fonts" / name).read_bytes()).decode("ascii")
-        css = css.replace('url("' + name + '")', 'url("data:font/woff2;base64,' + encoded + '")')
+        css = css.replace('url("' + name + '")', 'url("' + asset_url(name) + '")')
     return css

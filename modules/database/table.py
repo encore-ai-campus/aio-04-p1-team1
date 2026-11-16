@@ -111,7 +111,7 @@ def create_tables(database_url, job_table=None, training_table=None, *, dry_run=
             connection.execute("SET LOCAL statement_timeout='30s'")
             connection.execute("SELECT pg_advisory_xact_lock(hashtextextended('career_compass_profile_schema',0))")
             job_table = _resolve_post_table(connection, job_table, 'saved_jobs', ('job_posting','job_posting_mj','job_postings'))
-            training_table = _resolve_post_table(connection, training_table, 'saved_trainings', ('training_posting','training_posting_mj','training_postings'))
+            training_table = _resolve_post_table(connection, training_table or 'training_posting', 'saved_trainings', ('training_posting',))
             snapshot = {}
             for table in ('saved_jobs', 'saved_trainings'):
                 if _exists(connection, 'public.' + table):

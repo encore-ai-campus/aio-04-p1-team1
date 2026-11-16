@@ -1,6 +1,6 @@
 # training_posts — 고용24 교육과정 수집 및 저장
 
-고용24의 **국민내일배움카드 훈련과정 API - 목록**을 사용해 8개 직무와 관련된 교육을 수집합니다. 직무별 최대 125개를 선정하고, JSON 파일과 Supabase의 `public.training_posting_mj` 테이블에 저장합니다.
+고용24의 **국민내일배움카드 훈련과정 API - 목록**을 사용해 8개 직무와 관련된 교육을 수집합니다. 직무별 최대 125개를 선정하고, JSON 파일과 Supabase의 `public.training_posting` 테이블에 저장합니다.
 
 현재 구현은 **명령줄에서 실행하는 수집·검증·저장 기능**입니다. 웹 화면에서 검색하거나 저장하는 기능은 아직 구현하지 않았습니다.
 
@@ -12,9 +12,7 @@
 | [service.py](service.py) | 인증키 로딩, 검색 조건 검증, API 요청, XML 파싱, 오류 처리, 원본 항목 확인 | API를 조회할 때 필수. 단독 실행하면 과정명·기관·지역·NCS 조건으로 한 페이지를 검색할 수 있음 |
 | [collect.py](collect.py) | 8개 직무 검색, 제목 기반 관련성 판별, 중복 제거, 직무별 수량 배정, 캐시 재사용, 결과·보고서 생성 | 여러 직무를 모아 수집할 때 사용하는 실행 진입점 |
 | [save_to_supabase.py](save_to_supabase.py) | JSON 검증, PostgreSQL 연결, 테이블 준비, 데이터 추가·갱신, 저장 후 조회 비교 | Supabase에 저장할 때 필요. 수집 없이 기존 JSON만 저장할 수도 있음 |
-| [training_posting_mj.sql](training_posting_mj.sql) | 테이블의 컬럼·타입·기본값·제약조건 정의 | 저장 코드가 읽어 실행하므로 DB 저장 시 필수. 별도로 직접 실행할 필요는 없음 |
-| [test_work24_api.py](test_work24_api.py) | XML 파싱, 빈 결과와 API 오류 구분, 검색 조건 검증, 인증키 비노출 테스트 | 개발·검증용. 실제 수집 실행에 필수는 아님 |
-| [test_collection.py](test_collection.py) | 컬럼 변환, 관련성 판별, 중복 제거, 교차 직무 배정, 목표 충족 시 중단, 캐시 재개 테스트 | 수집 규칙을 수정할 때 검증용. 실제 수집 실행에 필수는 아님 |
+| [training_posting.sql](../database/training_posting/training_posting.sql) | 테이블의 컬럼·타입·기본값·제약조건 정의 | 저장 코드가 읽어 실행하므로 DB 저장 시 필수. 별도로 직접 실행할 필요는 없음 |
 | [router.py](router.py) | `/training_posts` 접두사를 가진 FastAPI 라우터 선언 | 향후 웹 API 연결용. 현재 처리하는 엔드포인트가 없으며 CLI 수집에는 사용하지 않음 |
 | [page.py](page.py) | 현재 빈 파일 | 향후 교육 목록·검색 화면 구현용 자리. 현재 수집·저장에는 필요하지 않음 |
 | [.gitignore](.gitignore) | 대용량 응답 캐시와 임시 JSON 파일을 Git 관리에서 제외 | 실행 기능에는 영향이 없지만 생성 파일 관리에 사용 |
@@ -49,9 +47,9 @@
   │                  results/validation_report.json
   │
   └─ DATABASE_URL → save_to_supabase.py
-                        ├─ training_posting_mj.sql로 테이블 준비
+                        ├─ training_posting.sql로 테이블 준비
                         ├─ JSON 데이터 추가·갱신 및 비교 검증
-                        └─ public.training_posting_mj
+                        └─ public.training_posting
 ```
 
 `model.py`는 이 흐름에서 사용하는 공통 데이터 구조를 정의합니다. `router.py`와 `page.py`는 현재 위 실행 흐름에 연결되어 있지 않습니다.
@@ -215,14 +213,6 @@ python -m modules.training_posts.save_to_supabase --create-only
 ```
 
 위 명령은 교육 API를 다시 조회하지 않습니다. 다른 JSON을 저장할 때는 `--input 파일경로`를 지정합니다.
-
-### 테스트
-
-```bash
-python -m unittest modules.training_posts.test_work24_api modules.training_posts.test_collection -v
-```
-
-테스트는 합성 응답을 사용하며 실제 API 호출이나 DB 저장을 수행하지 않습니다. 이번 구현에서 15개 테스트가 통과했습니다.
 
 ## 6. 저장된 결과와 보고서 읽는 방법
 

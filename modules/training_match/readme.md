@@ -3,7 +3,7 @@
 - 로그인한 회원이 교육추천 화면에서 채용공고를 선택하고 추천받기를 누릅니다.
 - public.job_posting_mj: 공고 ID로 업무·자격요건·우대사항 조회
 - public.profiles_LYR: 로그인 회원의 user_id와 Supabase JWT/RLS로 본인 프로필만 조회
-- public.training_posting_mj: use_yn이 Y인 교육을 실제 컬럼 구조에 맞춰 읽기 전용 조회
+- public.training_posting: use_yn이 Y인 교육을 실제 컬럼 구조에 맞춰 읽기 전용 조회
 - Groq가 공고 요구 역량과 자격증·이수 교육을 비교하여 최대 3개 교육과 짧은 추천 이유를 반환
 - 희망 직무는 보유 능력으로 간주하지 않고, 이수 교육만으로 숙련도나 경력을 단정하지 않습니다.
 - 프로필 항목이 모두 비어 있으면 마이페이지 등록을 안내합니다.

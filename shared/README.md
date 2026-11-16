@@ -47,7 +47,7 @@ python -m shared.migration --print-sql
 python -m shared.migration
 ```
 
-기본 외래키 대상은 `job_posting_mj`, `training_posting_mj`입니다. 다른 테이블을
+기본 외래키 대상은 `job_posting_mj`, `training_posting`입니다. 다른 테이블을
 사용하려면 `--job-table`과 `--training-table` 옵션을 지정합니다.
 마이그레이션은 기존 테이블의 구조와 외래키를 먼저 검증하며, 검증에 실패하면
 트랜잭션을 롤백합니다. 실제 실행에는 `.env`의 `DATABASE_URL`이 필요합니다.

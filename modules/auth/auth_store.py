@@ -6,6 +6,7 @@ import re
 from urllib.parse import urlparse
 
 import httpx
+from threading import Lock
 
 from fastapi import APIRouter, FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
@@ -14,6 +15,18 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from shared.auth_dependencies import User
 from modules.auth.signup_guard import DUPLICATE_EMAIL_MESSAGE, signup_guard
 from modules.auth import withdrawal_service, password_service, member_store
+
+_http_client = None
+_http_lock = Lock()
+
+
+def auth_client():
+    global _http_client
+    with _http_lock:
+        if _http_client is None:
+            _http_client = httpx.Client(timeout=10, limits=httpx.Limits(max_connections=32, max_keepalive_connections=16))
+        return _http_client
+
 
 LEGACY_COOKIE_NAME = "compass_supabase_session"
 ACCESS_COOKIE_NAME = "compass_supabase_access"
@@ -37,8 +50,17 @@ def configuration():
 
 @asynccontextmanager
 async def lifespan(app):
+    global _http_client
     configuration()
-    yield
+    try:
+        yield
+    finally:
+        from shared.database import close_pool
+        close_pool()
+        with _http_lock:
+            if _http_client is not None:
+                _http_client.close()
+                _http_client = None
 
 
 def apply_auth_cookies(request, response):
@@ -147,8 +169,7 @@ def supabase_request(method, path, *, token=None, json=None, params=None, header
     if token:
         request_headers["Authorization"] = f"Bearer {token}"
     try:
-        with httpx.Client(timeout=10) as client:
-            result = client.request(method, url + path, headers=request_headers, json=json, params=params)
+        result = auth_client().request(method, url + path, headers=request_headers, json=json, params=params)
     except httpx.RequestError:
         failure(503, "인증 서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.")
     if result.is_error:
@@ -219,9 +240,13 @@ def signin(body: SigninRequest, request: Request):
 
 
 def authenticated(request: Request):
+    if cached := getattr(request.state, "authenticated_member", None):
+        return cached
     user, access_token = verified_session(request)
     try:
-        return profile(user, access_token), access_token
+        result = profile(user, access_token), access_token
+        request.state.authenticated_member = result
+        return result
     except HTTPException as exc:
         if exc.status_code == 403:
             request.state.clear_auth_cookies = True
@@ -359,7 +384,8 @@ def create_app(title):
             return JSONResponse(status_code=403, content={"detail": "다른 사이트에서 보낸 요청은 허용하지 않습니다."})
         response = await call_next(request)
         apply_auth_cookies(request, response)
-        response.headers["Cache-Control"] = "no-store"
+        if not (request.url.path.startswith("/assets/compass/") and response.headers.get("Cache-Control")):
+            response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"

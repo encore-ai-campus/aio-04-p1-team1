@@ -29,8 +29,6 @@
 | [collect.py](collect.py) | 8개 직무 검색, 제목 기반 관련성 판별, 중복 제거, 직무별 수량 배정, 캐시 재사용, 결과·보고서 생성 | 여러 직무를 모아 수집할 때 사용하는 실행 진입점 |
 | [save_to_supabase.py](save_to_supabase.py) | JSON 검증, PostgreSQL 연결, 테이블 준비, 데이터 추가·갱신, 저장 후 조회 비교 | Supabase에 저장할 때 필요. 수집 없이 기존 JSON만 저장할 수도 있음 |
 | [training_posting.sql](training_posting.sql) | 테이블의 컬럼·타입·기본값·제약조건 정의 | 저장 코드가 읽어 실행하므로 DB 저장 시 필수. 별도로 직접 실행할 필요는 없음 |
-| [test_work24_api.py](test_work24_api.py) | XML 파싱, 빈 결과와 API 오류 구분, 검색 조건 검증, 인증키 비노출 테스트 | 개발·검증용. 실제 수집 실행에 필수는 아님 |
-| [test_collection.py](test_collection.py) | 컬럼 변환, 관련성 판별, 중복 제거, 교차 직무 배정, 목표 충족 시 중단, 캐시 재개 테스트 | 수집 규칙을 수정할 때 검증용. 실제 수집 실행에 필수는 아님 |
 | `.gitignore` | 대용량 응답 캐시와 임시 JSON 파일을 Git 관리에서 제외 | 실행 기능에는 영향이 없지만 생성 파일 관리에 사용 |
 | `README.md` | 파일 역할, 실행법, 수집 기준과 결과 설명 | 사용·유지보수 안내용 |
 
@@ -233,14 +231,6 @@ python -m modules.database.training_posting.save_to_supabase --create-only
 ```
 
 위 명령은 교육 API를 다시 조회하지 않습니다. 다른 JSON을 저장할 때는 `--input 파일경로`를 지정합니다.
-
-### 테스트
-
-```bash
-python -m unittest modules.database.training_posting.test_work24_api modules.database.training_posting.test_collection -v
-```
-
-테스트는 합성 응답을 사용하며 실제 API 호출이나 DB 저장을 수행하지 않습니다. 2026-11-11 로컬 확인에서 15개 테스트가 통과했습니다.
 
 ## 6. 저장된 결과와 보고서 읽는 방법
 

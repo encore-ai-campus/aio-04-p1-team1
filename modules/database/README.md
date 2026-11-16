@@ -21,7 +21,6 @@ modules/database/
 │   ├── table.py
 │   ├── profile_functions.sql
 │   ├── profile_checks.py
-│   └── test_profiles_api.py
 ├── job_posting/
 │   ├── README.md
 │   ├── collect.py
@@ -29,7 +28,6 @@ modules/database/
 │   ├── schemas.py
 │   ├── save_to_supabase.py
 │   ├── job_postings.sql
-│   ├── test_wanted_crawler.py
 │   ├── source.txt
 │   └── results/
 └── training_posting/
@@ -39,8 +37,6 @@ modules/database/
     ├── schemas.py
     ├── save_to_supabase.py
     ├── training_posting.sql
-    ├── test_work24_api.py
-    ├── test_collection.py
     └── results/
 ```
 
@@ -122,14 +118,6 @@ python -m modules.database.table
 python -m modules.database.job_posting.collect --all --save
 python -m modules.database.job_posting.collect --check
 ```
-
-채용·교육 수집 규칙의 로컬 테스트(실제 API 호출·DB 저장 없음):
-
-```bash
-python -m unittest modules.database.job_posting.test_wanted_crawler modules.database.training_posting.test_work24_api modules.database.training_posting.test_collection -v
-```
-
-`profiles/test_profiles_api.py`에는 과거 REST/RPC 방식의 API 테스트가 남아 있습니다. 현재 직접 SQL 방식과 달라 전체 테스트가 통과하지 않으며, 예전 모의 객체가 실제 DB 접근 경로를 막지 못합니다. 전체 실행을 DB 없는 검증으로 간주하면 안 됩니다. 생성 SQL만 확인하는 명령과 현재 검증 상태는 [profiles README](profiles/README.md)를 참고하세요.
 
 고용24 배치 수집·저장 예시:
 
