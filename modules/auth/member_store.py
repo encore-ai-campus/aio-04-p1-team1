@@ -4,7 +4,7 @@ import json
 from uuid import UUID
 
 from fastapi import HTTPException
-from psycopg import Error
+from psycopg import Error, sql
 from shared.database import get_db
 
 
@@ -42,16 +42,25 @@ def update_name(user_id, name):
         return cursor.fetchone()
 
 
-def deactivate(user_id):
-    """비밀번호 검증 후 서버에서만 본인 계정을 비활성화합니다."""
+def deactivate(user_id, *, previously_withdrawn=False):
+    """회원 상태를 확인하고 계정과 연결 기록을 한 트랜잭션에서 비활성화합니다."""
     identifier = UUID(str(user_id))
     try:
         # 상태 변경은 서버 권한으로만 수행하며 클라이언트가 회원 ID를 지정하지 않습니다.
         with contextmanager(get_db)() as db, db.cursor() as cursor:
             cursor.execute(
-                "UPDATE public.profiles SET use_yn='N' WHERE user_id=%s AND use_yn='Y' RETURNING user_id",
-                (identifier,),
+                "UPDATE public.profiles SET use_yn='N' WHERE user_id=%s AND use_yn=%s RETURNING user_id",
+                (identifier, "N" if previously_withdrawn else "Y"),
             )
-            return cursor.fetchone() is not None
+            if cursor.fetchone() is None:
+                return False
+            for table in ("profiles_certifications", "profiles_trainings", "saved_jobs", "saved_trainings"):
+                cursor.execute(
+                    sql.SQL("UPDATE public.{} SET use_yn='N' WHERE user_id=%s AND use_yn='Y'").format(
+                        sql.Identifier(table)
+                    ),
+                    (identifier,),
+                )
+            return True
     except Error:
         raise HTTPException(503, '탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.') from None

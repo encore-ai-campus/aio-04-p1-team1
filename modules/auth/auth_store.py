@@ -193,14 +193,24 @@ def profile(user, access_token):
     if not row or str(row["user_id"]) != str(user["id"]):
         failure(503, "회원정보가 없습니다. profiles 테이블과 가입 트리거 설정을 확인해 주세요.")
     if row["use_yn"] != "Y":
-        failure(403, "탈퇴한 계정입니다. 서비스를 이용할 수 없습니다.")
+        failure(403, "탈퇴한 계정입니다. 회원가입 화면에서 같은 이메일로 다시 가입한 뒤 이메일 인증을 완료해 주세요.")
     return {"id": str(row["user_id"]), "name": row["name"], "email": row["email"]}
 
 
 
 @api.post("/signup", status_code=202, summary="회원가입 및 인증 메일 요청")
 def signup(body: SignupRequest):
-    with signup_guard(body.email):
+    with signup_guard(body.email) as withdrawn_user_id:
+        if withdrawn_user_id is not None:
+            secret_key = os.environ.get("SUPABASE_SECRET_KEY", "").strip()
+            if not secret_key:
+                failure(503, "재가입을 처리하지 못했습니다. 관리자에게 문의해 주세요.")
+            if not member_store.deactivate(withdrawn_user_id, previously_withdrawn=True):
+                failure(409, DUPLICATE_EMAIL_MESSAGE)
+            supabase_request(
+                "DELETE", f"/auth/v1/admin/users/{withdrawn_user_id}",
+                headers={"apikey": secret_key}, json={"should_soft_delete": True},
+            )
         supabase_request("POST", "/auth/v1/signup",
                          params={"redirect_to": configuration()[2]},
                          json={"email": body.email, "password": body.password, "data": {"name": body.name}})

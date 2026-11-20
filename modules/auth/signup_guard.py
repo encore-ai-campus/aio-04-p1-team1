@@ -14,27 +14,33 @@ SIGNUP_IN_PROGRESS_MESSAGE = "해당 이메일의 회원가입을 처리 중입�
 def signup_guard(email):
     """공통 DB 연결로 가입 요청 동안 동일 이메일의 트랜잭션 잠금을 유지합니다.
 
-    인증 완료 상태와 무관하게 기존 회원을 확인합니다. 회원 데이터에는 쓰지
-    않으며, 종료 시 롤백으로 잠금을 해제하고 공통 연결을 닫습니다.
+    탈퇴 회원의 Auth ID를 반환하며, 종료 시 롤백으로 잠금을 해제합니다.
     """
+    normalized_email = email.strip().lower()
     try:
         with contextmanager(get_db)() as connection:
             with connection.transaction(force_rollback=True), connection.cursor() as cursor:
                 cursor.execute("SET LOCAL statement_timeout = '5s'")
                 cursor.execute(
                     "SELECT pg_catalog.pg_try_advisory_xact_lock(pg_catalog.hashtextextended(%s, 73419027)) AS acquired",
-                    (email.strip().lower(),),
+                    (normalized_email,),
                 )
                 acquired = cursor.fetchone()["acquired"]
                 cursor.execute(
-                    "SELECT EXISTS (SELECT 1 FROM auth.users WHERE lower(email) = %s) AS email_exists",
-                    (email.strip().lower(),),
+                    """
+                    SELECT u.id, p.use_yn
+                    FROM auth.users AS u
+                    LEFT JOIN public.profiles AS p ON p.user_id = u.id
+                    WHERE lower(u.email) = %s AND u.deleted_at IS NULL
+                    """,
+                    (normalized_email,),
                 )
-                if cursor.fetchone()["email_exists"]:
+                accounts = cursor.fetchall()
+                if accounts and (len(accounts) != 1 or accounts[0]["use_yn"] != "N"):
                     raise HTTPException(status_code=409, detail=DUPLICATE_EMAIL_MESSAGE)
                 if not acquired:
                     raise HTTPException(status_code=409, detail=SIGNUP_IN_PROGRESS_MESSAGE)
-                yield
+                yield accounts[0]["id"] if accounts else None
     except HTTPException:
         raise
     except Exception:

@@ -27,7 +27,7 @@ def verify_password(user, password, auth_request):
 
 
 def complete_withdrawal(user_id: str) -> bool:
-    """연관 데이터를 삭제하지 않고 profiles.use_yn만 N으로 변경합니다."""
+    """프로필과 연결된 이력 및 저장 항목을 비활성화합니다."""
     from modules.auth import member_store
     if not member_store.deactivate(user_id):
         raise HTTPException(status_code=409, detail="회원정보가 없거나 이미 탈퇴한 계정입니다.")
